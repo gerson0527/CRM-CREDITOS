@@ -1,10 +1,12 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useAuth } from '@/components/providers/auth-provider';
 import { AppLayout } from '@/components/app-layout';
-import AdminDashboard from './admin-dashboard';
-import SupervisorDashboard from './supervisor-dashboard';
-import AsesorDashboard from './asesor-dashboard';
+
+const AdminDashboard = dynamic(() => import('./admin-dashboard'), { ssr: false });
+const SupervisorDashboard = dynamic(() => import('./supervisor-dashboard'), { ssr: false });
+const AsesorDashboard = dynamic(() => import('./asesor-dashboard'), { ssr: false });
 
 export default function DashboardPage() {
   const { profile } = useAuth();
