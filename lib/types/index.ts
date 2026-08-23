@@ -1,0 +1,16 @@
+export type {
+  UserRole,
+  UserStatus,
+  CreditStatus,
+  DocumentStatus,
+  FollowUpChannel,
+  Profile,
+  FinancialEntity,
+  CreditType,
+  Client,
+  Credit,
+  CreditStatusHistory,
+  Document,
+  FollowUp,
+  Database,
+} from './database';
