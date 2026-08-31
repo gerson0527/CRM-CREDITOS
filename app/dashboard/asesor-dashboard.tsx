@@ -1,26 +1,27 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   Target, DollarSign, Clock, AlertTriangle, TrendingUp,
   Plus, Phone, MessageCircle, Mail, MapPin, CheckCircle2,
-  FileWarning,
+  FileWarning, Calendar, UserPlus,
 } from 'lucide-react';
-import { AppLayout } from '@/components/app-layout';
 import { PageTransition, StaggerList, StaggerItem } from '@/components/transitions';
-import { AnimatedCounter } from '@/components/animated-counter';
+import { PageHeader } from '@/components/page-header';
+import { RoleBanner, AttentionSection } from '@/components/role-banner';
+import { KpiCard } from '@/components/kpi-card';
 import { StatusBadge } from '@/components/status-badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/providers/auth-provider';
-import { CREDIT_STATUSES, formatCurrency, formatDate, FOLLOW_UP_CHANNELS, daysSince } from '@/lib/constants';
+import { CREDIT_STATUSES, formatCurrency, formatDate } from '@/lib/constants';
 import type { Credit, FollowUp } from '@/lib/types';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 export default function AsesorDashboard() {
   const { profile } = useAuth();
@@ -74,25 +75,25 @@ export default function AsesorDashboard() {
   const disbursedThisMonth = credits.filter(
     (c) => c.status === 'desembolsado' && c.status_changed_at && new Date(c.status_changed_at) >= monthStart
   );
-  const totalColocado = disbursedThisMonth.reduce((sum, c) => sum + (c.approved_amount || c.requested_amount), 0);
-  const monthlyGoal = profile?.monthly_goal || 0;
+  const totalColocado = disbursedThisMonth.reduce(
+    (sum, c) => sum + Number(c.approved_amount ?? c.requested_amount ?? 0),
+    0
+  );
+  const monthlyGoal = Number(profile?.monthly_goal ?? 0);
   const metaProgress = monthlyGoal > 0 ? (totalColocado / monthlyGoal) * 100 : 0;
-  const commissionRate = profile?.commission_rate || 0;
+  const commissionRate = Number(profile?.commission_rate ?? 0);
   const estimatedCommission = totalColocado * (commissionRate / 100);
 
   const activeStatuses = ['lead', 'documentacion', 'enviado', 'estudio', 'aprobado'];
   const activeCredits = credits.filter((c) => activeStatuses.includes(c.status));
 
-  // Credits with incomplete docs
   const incompleteDocs = credits.filter((c) => c.status === 'documentacion' || c.status === 'lead');
 
-  // Group by status
   const byStatus = CREDIT_STATUSES.filter((s) => activeStatuses.includes(s.value)).map((s) => ({
     ...s,
     count: credits.filter((c) => c.status === s.value).length,
   }));
 
-  // Today's follow-ups
   const todayStr = now.toISOString().split('T')[0];
   const todayFollowUps = followUps.filter((f) => f.next_action_date === todayStr);
   const weekFollowUps = followUps.filter((f) => {
@@ -102,39 +103,42 @@ export default function AsesorDashboard() {
     weekEnd.setDate(weekEnd.getDate() + 7);
     return d >= now && d <= weekEnd;
   });
+  const overdueFollowUps = followUps.filter((f) =>
+    !f.completed && f.next_action_date && f.next_action_date.split('T')[0] < todayStr
+  );
 
   const kpiCards = [
     {
       label: 'Meta del mes',
       value: monthlyGoal,
       icon: <Target className="h-5 w-5" />,
-      color: 'text-blue-600',
-      bg: 'bg-blue-100',
+      tone: 'blue' as const,
       format: (n: number) => formatCurrency(n),
+      footer: `${metaProgress.toFixed(1)}% avance`,
     },
     {
       label: 'Colocado (mes)',
       value: totalColocado,
       icon: <TrendingUp className="h-5 w-5" />,
-      color: 'text-green-600',
-      bg: 'bg-green-100',
+      tone: 'green' as const,
       format: (n: number) => formatCurrency(n),
+      footer: `${disbursedThisMonth.length} créditos`,
     },
     {
       label: 'Comisión estimada',
       value: estimatedCommission,
       icon: <DollarSign className="h-5 w-5" />,
-      color: 'text-violet-600',
-      bg: 'bg-violet-100',
+      tone: 'violet' as const,
       format: (n: number) => formatCurrency(n),
+      footer: `${commissionRate}% tasa`,
     },
     {
       label: 'Seguimientos hoy',
       value: todayFollowUps.length,
       icon: <Clock className="h-5 w-5" />,
-      color: 'text-amber-600',
-      bg: 'bg-amber-100',
+      tone: 'amber' as const,
       format: (n: number) => Math.round(n).toString(),
+      footer: `${weekFollowUps.length} esta semana`,
     },
   ];
 
@@ -145,150 +149,196 @@ export default function AsesorDashboard() {
     email: <Mail className="h-3.5 w-3.5" />,
   };
 
+  const channelStyles: Record<string, string> = {
+    llamada: 'bg-blue-50 text-blue-700',
+    whatsapp: 'bg-emerald-50 text-emerald-700',
+    visita: 'bg-violet-50 text-violet-700',
+    email: 'bg-amber-50 text-amber-700',
+  };
+
   return (
     <PageTransition>
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Mi dashboard</h1>
-          <p className="text-sm text-muted-foreground">Hola, {profile?.full_name}. Aquí está tu resumen.</p>
-        </div>
-        <Button onClick={() => router.push('/creditos/nuevo')} size="lg" className="h-11">
-          <Plus className="mr-2 h-4 w-4" />
-          Nuevo crédito
-        </Button>
+      <RoleBanner
+        roleLabel="Asesor"
+        tone="violet"
+        greeting={`Hola, ${profile?.full_name?.split(' ')[0] || ''}`}
+        subtitle="Aquí está tu día a día: tareas, seguimientos y cómo vas con tu meta."
+        actions={[
+          { label: 'Nuevo crédito', href: '/creditos/nuevo', icon: <Plus className="h-3.5 w-3.5" /> },
+          { label: 'Mi agenda', href: '/calendario', icon: <Calendar className="h-3.5 w-3.5" /> },
+          { label: 'Mis clientes', href: '/clientes', icon: <UserPlus className="h-3.5 w-3.5" /> },
+        ]}
+      />
+
+      <div className="mt-6">
+        <AttentionSection
+          title="Hoy"
+          subtitle="Lo que tienes que hacer ahora"
+          items={[
+            {
+              label: 'Seguimientos hoy',
+              value: todayFollowUps.length,
+              href: '/calendario',
+              tone: 'amber',
+              description: todayFollowUps[0] ? `${todayFollowUps[0].credit?.client?.first_name || ''} ${todayFollowUps[0].credit?.client?.last_name || ''}` : 'Sin tareas hoy',
+            },
+            {
+              label: 'Vencidos',
+              value: overdueFollowUps.length,
+              href: '/calendario',
+              tone: 'red',
+              description: overdueFollowUps.length > 0 ? 'requieren reagendar' : 'Todo al día',
+            },
+            {
+              label: 'Docs incompletas',
+              value: incompleteDocs.length,
+              href: '/kanban',
+              tone: 'blue',
+              description: 'créditos que necesitan documentación',
+            },
+          ]}
+        />
       </div>
 
-      {/* KPI Cards */}
+      <PageHeader
+        title="Mis Indicadores Clave"
+        description="Seguimiento en tiempo real de tu avance mensual y comisiones."
+        className="mt-6 mb-3"
+      />
+
       <StaggerList className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpiCards.map((kpi) => (
           <StaggerItem key={kpi.label}>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">{kpi.label}</CardTitle>
-                <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${kpi.bg} ${kpi.color}`}>{kpi.icon}</div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold tracking-tight">
-                  <AnimatedCounter value={kpi.value} format={kpi.format} />
-                </div>
-              </CardContent>
-            </Card>
+            <KpiCard
+              label={kpi.label}
+              value={kpi.value}
+              icon={kpi.icon}
+              tone={kpi.tone}
+              format={kpi.format}
+              footer={kpi.footer}
+            />
           </StaggerItem>
         ))}
       </StaggerList>
 
-      {/* Meta progress */}
-      <Card className="mt-6">
+      <Card className="mt-6 border border-border/80 bg-card/90 shadow-xs backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-primary" />
-            Progreso de meta del mes
+          <CardTitle className="flex items-center gap-2 font-display text-base font-bold text-foreground">
+            <Target className="h-4 w-4 text-primary" />
+            Progreso de Meta del Mes
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground font-medium">
                 {formatCurrency(totalColocado)} de {formatCurrency(monthlyGoal)}
               </span>
-              <span className="text-sm font-semibold">{metaProgress.toFixed(1)}%</span>
+              <span className="font-display text-sm font-bold text-foreground tabular-nums">{metaProgress.toFixed(1)}%</span>
             </div>
-            <Progress value={Math.min(metaProgress, 100)} className="h-3" />
+            <Progress value={Math.min(metaProgress, 100)} className="h-3 rounded-full bg-accent" />
             {metaProgress >= 100 && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex items-center gap-2 text-sm text-green-600"
+                className="flex items-center gap-2 rounded-2xl bg-emerald-500/15 border border-emerald-500/20 px-3.5 py-2 text-xs font-bold text-emerald-700 dark:text-emerald-300"
               >
                 <CheckCircle2 className="h-4 w-4" />
-                ¡Meta alcanzada!
+                ¡Felicitaciones! Has superado tu meta mensual de colocación.
               </motion.div>
             )}
           </div>
         </CardContent>
       </Card>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
-        {/* Mini kanban */}
-        <Card className="lg:col-span-2">
+      <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-3">
+        <Card className="border border-border/80 bg-card/90 shadow-xs backdrop-blur-sm lg:col-span-2">
           <CardHeader>
-            <CardTitle>Mis créditos activos</CardTitle>
+            <CardTitle className="font-display text-base font-bold text-foreground">Mis Créditos en Curso</CardTitle>
           </CardHeader>
           <CardContent>
             {activeCredits.length > 0 ? (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-                {byStatus.filter((s) => s.count > 0).map((s, i) => (
-                  <motion.div
-                    key={s.value}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.06 }}
-                    className={`rounded-lg border-2 p-3 text-center ${s.borderColor} ${s.bgColor}`}
-                  >
-                    <div className="text-2xl font-bold" style={{ color: s.color }}>{s.count}</div>
-                    <div className={`text-xs ${s.textColor}`}>{s.label}</div>
-                  </motion.div>
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                  {byStatus.filter((s) => s.count > 0).map((s, i) => (
+                    <motion.div
+                      key={s.value}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.06 }}
+                      className="rounded-2xl border border-border/70 p-3 text-center bg-accent/20"
+                    >
+                      <div className="font-display text-2xl font-bold" style={{ color: s.color }}>{s.count}</div>
+                      <div className="text-xs font-bold text-foreground mt-0.5">{s.label}</div>
+                    </motion.div>
+                  ))}
+                </div>
+                <div className="mt-5 space-y-2.5">
+                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Créditos Recientes</p>
+                  {activeCredits.slice(0, 4).map((credit) => (
+                    <Link
+                      key={credit.id}
+                      href={`/creditos/${credit.id}`}
+                      className="flex items-center justify-between rounded-2xl border border-border/70 p-3 transition-all hover:bg-accent/60 hover:shadow-2xs"
+                    >
+                      <div className="min-w-0 pr-2">
+                        <p className="truncate text-xs font-bold text-foreground">
+                          {credit.client?.first_name} {credit.client?.last_name}
+                        </p>
+                        <p className="text-[11px] font-semibold text-muted-foreground tabular-nums">{formatCurrency(credit.requested_amount)}</p>
+                      </div>
+                      <StatusBadge status={credit.status} />
+                    </Link>
+                  ))}
+                </div>
+              </>
             ) : (
               <EmptyState text="No tienes créditos activos. ¡Crea uno nuevo!" />
-            )}
-
-            {activeCredits.length > 0 && (
-              <div className="mt-4 space-y-2">
-                <p className="text-xs font-medium text-muted-foreground">Créditos recientes</p>
-                {activeCredits.slice(0, 4).map((credit) => (
-                  <Link
-                    key={credit.id}
-                    href={`/creditos/${credit.id}`}
-                    className="flex items-center justify-between rounded-lg border p-2.5 transition-colors hover:bg-accent"
-                  >
-                    <div>
-                      <p className="text-sm font-medium">{credit.client?.first_name} {credit.client?.last_name}</p>
-                      <p className="text-xs text-muted-foreground">{formatCurrency(credit.requested_amount)}</p>
-                    </div>
-                    <StatusBadge status={credit.status} />
-                  </Link>
-                ))}
-              </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Follow-ups today */}
-        <Card>
+        <Card className="border border-border/80 bg-card/90 shadow-xs backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-amber-500" />
-              Seguimientos pendientes
+            <CardTitle className="flex items-center gap-2 font-display text-base font-bold text-foreground">
+              <Clock className="h-4 w-4 text-amber-500" />
+              Seguimientos Pendientes
             </CardTitle>
           </CardHeader>
           <CardContent>
             {weekFollowUps.length > 0 ? (
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {weekFollowUps.slice(0, 6).map((fu) => {
                   const isToday = fu.next_action_date === todayStr;
+                  const isOverdue = fu.next_action_date && fu.next_action_date.split('T')[0] < todayStr;
                   return (
                     <Link
                       key={fu.id}
                       href={`/creditos/${fu.credit_id}`}
-                      className={`flex items-start gap-2 rounded-lg border p-3 transition-colors hover:bg-accent ${
-                        isToday ? 'border-amber-300 bg-amber-50' : ''
-                      }`}
+                      className={cn(
+                        'flex items-start gap-3 rounded-2xl border p-3 transition-all hover:shadow-2xs',
+                        isOverdue
+                          ? 'border-red-500/30 bg-red-500/5 hover:bg-red-500/10'
+                          : isToday
+                          ? 'border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10'
+                          : 'border-border/70 bg-accent/20 hover:bg-accent/50'
+                      )}
                     >
-                      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <div className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-xl', channelStyles[fu.channel] || 'bg-muted text-muted-foreground')}>
                         {channelIcons[fu.channel]}
                       </div>
-                      <div className="flex-1 overflow-hidden">
-                        <p className="truncate text-sm font-medium">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-xs font-bold text-foreground">
                           {fu.credit?.client?.first_name} {fu.credit?.client?.last_name}
                         </p>
-                        <p className="truncate text-xs text-muted-foreground">{fu.next_action_note || fu.comment}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {isToday ? (
-                            <span className="font-medium text-amber-600">Hoy</span>
+                        <p className="truncate text-[11px] text-muted-foreground">{fu.next_action_note || fu.comment}</p>
+                        <p className="mt-0.5 text-[11px]">
+                          {isOverdue ? (
+                            <span className="font-bold text-red-600 dark:text-red-400">Vencido</span>
+                          ) : isToday ? (
+                            <span className="font-bold text-amber-600 dark:text-amber-400">Hoy</span>
                           ) : (
-                            formatDate(fu.next_action_date)
+                            <span className="text-muted-foreground font-medium">{formatDate(fu.next_action_date)}</span>
                           )}
                         </p>
                       </div>
@@ -303,26 +353,27 @@ export default function AsesorDashboard() {
         </Card>
       </div>
 
-      {/* Incomplete docs */}
       {incompleteDocs.length > 0 && (
-        <Card className="mt-6 border-amber-300">
+        <Card className="mt-6 border border-amber-500/30 bg-amber-500/5 shadow-xs">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-amber-700">
-              <FileWarning className="h-5 w-5" />
-              Créditos con documentación incompleta
+            <CardTitle className="flex items-center gap-2 font-display text-base font-bold text-amber-700 dark:text-amber-300">
+              <FileWarning className="h-4 w-4" />
+              Créditos con Documentación Incompleta
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               {incompleteDocs.map((credit) => (
                 <Link
                   key={credit.id}
                   href={`/creditos/${credit.id}`}
-                  className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 p-3 transition-colors hover:bg-amber-100"
+                  className="flex items-center justify-between rounded-2xl border border-amber-500/20 bg-background/80 p-3 transition-all hover:bg-background hover:shadow-2xs"
                 >
-                  <div>
-                    <p className="text-sm font-medium">{credit.client?.first_name} {credit.client?.last_name}</p>
-                    <p className="text-xs text-muted-foreground">{formatCurrency(credit.requested_amount)}</p>
+                  <div className="min-w-0 pr-2">
+                    <p className="truncate text-xs font-bold text-foreground">
+                      {credit.client?.first_name} {credit.client?.last_name}
+                    </p>
+                    <p className="text-[11px] font-semibold text-muted-foreground tabular-nums">{formatCurrency(credit.requested_amount)}</p>
                   </div>
                   <StatusBadge status={credit.status} />
                 </Link>
@@ -340,12 +391,12 @@ function EmptyState({ text }: { text: string }) {
     <motion.div
       animate={{ scale: [1, 1.02, 1] }}
       transition={{ duration: 3, repeat: Infinity }}
-      className="flex flex-col items-center justify-center py-8 text-center"
+      className="flex flex-col items-center justify-center py-10 text-center"
     >
-      <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-        <TrendingUp className="h-5 w-5 text-muted-foreground" />
+      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-accent text-muted-foreground">
+        <TrendingUp className="h-5 w-5" />
       </div>
-      <p className="text-sm text-muted-foreground">{text}</p>
+      <p className="text-xs font-medium text-muted-foreground">{text}</p>
     </motion.div>
   );
 }

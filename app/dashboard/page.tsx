@@ -9,15 +9,21 @@ const SupervisorDashboard = dynamic(() => import('./supervisor-dashboard'), { ss
 const AsesorDashboard = dynamic(() => import('./asesor-dashboard'), { ssr: false });
 
 export default function DashboardPage() {
-  const { profile } = useAuth();
+  const { profile, loading, session } = useAuth();
+
+  console.log('[FRONT Dashboard] render — loading:', loading, 'session:', !!session, 'profile:', profile ? { id: profile.id, role: profile.role } : null);
+
+  if (!profile) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <AppLayout>
-      {!profile ? (
-        <div className="flex h-96 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-        </div>
-      ) : profile.role === 'admin' ? (
+      {profile.role === 'admin' ? (
         <AdminDashboard />
       ) : profile.role === 'supervisor' ? (
         <SupervisorDashboard />

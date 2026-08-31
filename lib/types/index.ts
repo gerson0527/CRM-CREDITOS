@@ -5,6 +5,8 @@ export type {
   DocumentStatus,
   FollowUpChannel,
   Profile,
+  Role,
+  Sede,
   FinancialEntity,
   CreditType,
   Client,

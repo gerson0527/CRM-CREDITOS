@@ -2,15 +2,16 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, Download, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Filter, Plus, FileSpreadsheet, RotateCcw } from 'lucide-react';
 import { AppLayout } from '@/components/app-layout';
 import { PageTransition, StaggerList, StaggerItem } from '@/components/transitions';
+import { PageHeader } from '@/components/page-header';
+import { Pagination } from '@/components/pagination';
 import { StatusBadge } from '@/components/status-badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -19,8 +20,8 @@ import {
 } from '@/components/ui/table';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/providers/auth-provider';
-import { CREDIT_STATUSES, formatCurrency, formatDate, ROLE_LABELS } from '@/lib/constants';
-import type { Credit, CreditStatus, Profile, FinancialEntity } from '@/lib/types';
+import { CREDIT_STATUSES, formatCurrency, formatDateShort } from '@/lib/constants';
+import type { Credit, Profile, FinancialEntity } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -38,7 +39,7 @@ export default function CreditsTablePage() {
   const [asesorFilter, setAsesorFilter] = useState<string>('all');
   const [entityFilter, setEntityFilter] = useState<string>('all');
   const [page, setPage] = useState(0);
-  const pageSize = 15;
+  const [pageSize, setPageSize] = useState(15);
 
   useEffect(() => {
     loadData();
@@ -48,11 +49,9 @@ export default function CreditsTablePage() {
     if (!profile) return;
     setLoading(true);
 
-    // Load entities
     const { data: ents } = await supabase.from('financial_entities').select('*').eq('active', true);
     setEntities(ents as FinancialEntity[] || []);
 
-    // Load asesores (for admin/supervisor filter)
     if (profile.role === 'admin') {
       const { data: users } = await supabase.from('profiles').select('*').eq('role', 'asesor').eq('status', 'activo');
       setAsesores(users as Profile[] || []);
@@ -80,7 +79,7 @@ export default function CreditsTablePage() {
       query = query.eq('asesor_id', profile.id);
     } else if (profile.role === 'supervisor') {
       const { data: team } = await supabase.from('profiles').select('id').eq('supervisor_id', profile.id);
-      const teamIds = (team || []).map((t) => t.id);
+      const teamIds = (team || []).map((t: { id: string }) => t.id);
       if (teamIds.length > 0) {
         query = query.in('asesor_id', teamIds);
       }
@@ -112,40 +111,44 @@ export default function CreditsTablePage() {
   return (
     <AppLayout>
       <PageTransition>
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Tabla de créditos</h1>
-            <p className="text-sm text-muted-foreground">{filteredCredits.length} créditos encontrados.</p>
-          </div>
-          <Button onClick={() => router.push('/creditos/nuevo')}>
-            <Plus className="mr-2 h-4 w-4" />
-            Nuevo crédito
-          </Button>
-        </div>
+        <PageHeader
+          title="Directorio de Créditos"
+          description={`${filteredCredits.length} créditos registrados bajo tus permisos.`}
+          actions={
+            <Link href="/creditos/nuevo">
+              <Button className="rounded-xl bg-primary text-xs font-bold shadow-sm shadow-primary/25">
+                <Plus className="mr-1.5 h-4 w-4" />
+                Nuevo Crédito
+              </Button>
+            </Link>
+          }
+        />
 
-        {/* Filters */}
-        <Card className="mb-4">
-          <CardContent className="pt-4">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        {/* Filters Card */}
+        <Card className="mb-5 border border-border/80 bg-card/90 shadow-xs backdrop-blur-sm">
+          <CardContent className="p-4 sm:p-5">
+            <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-5">
               <div className="space-y-1.5">
-                <Label className="text-xs">Buscar</Label>
+                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Buscar Cliente</Label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
-                    placeholder="Nombre o cédula..."
+                    placeholder="Nombre o documento..."
                     value={search}
                     onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-                    className="pl-9"
+                    className="h-10 pl-9 rounded-xl border-border/80 bg-background text-xs"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs">Estado</Label>
+                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Estado Operativo</Label>
                 <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(0); }}>
-                  <SelectTrigger><SelectValue placeholder="Todos" /></SelectTrigger>
+                  <SelectTrigger className="h-10 rounded-xl border-border/80 bg-background text-xs">
+                    <SelectValue placeholder="Todos" />
+                  </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="all">Todos los estados</SelectItem>
                     {CREDIT_STATUSES.map((s) => (
                       <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
                     ))}
@@ -155,11 +158,13 @@ export default function CreditsTablePage() {
 
               {profile?.role !== 'asesor' && (
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Asesor</Label>
+                  <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Asesor Comercial</Label>
                   <Select value={asesorFilter} onValueChange={(v) => { setAsesorFilter(v); setPage(0); }}>
-                    <SelectTrigger><SelectValue placeholder="Todos" /></SelectTrigger>
+                    <SelectTrigger className="h-10 rounded-xl border-border/80 bg-background text-xs">
+                      <SelectValue placeholder="Todos" />
+                    </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Todos</SelectItem>
+                      <SelectItem value="all">Todos los asesores</SelectItem>
                       {asesores.map((a) => (
                         <SelectItem key={a.id} value={a.id}>{a.full_name}</SelectItem>
                       ))}
@@ -169,11 +174,13 @@ export default function CreditsTablePage() {
               )}
 
               <div className="space-y-1.5">
-                <Label className="text-xs">Entidad</Label>
+                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Entidad Bancaria</Label>
                 <Select value={entityFilter} onValueChange={(v) => { setEntityFilter(v); setPage(0); }}>
-                  <SelectTrigger><SelectValue placeholder="Todas" /></SelectTrigger>
+                  <SelectTrigger className="h-10 rounded-xl border-border/80 bg-background text-xs">
+                    <SelectValue placeholder="Todas" />
+                  </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todas</SelectItem>
+                    <SelectItem value="all">Todas las entidades</SelectItem>
                     {entities.map((e) => (
                       <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
                     ))}
@@ -184,7 +191,7 @@ export default function CreditsTablePage() {
               <div className="flex items-end">
                 <Button
                   variant="outline"
-                  className="w-full"
+                  className="h-10 w-full rounded-xl border-border/80 text-xs font-bold hover:bg-accent"
                   onClick={() => {
                     setSearch('');
                     setStatusFilter('all');
@@ -193,17 +200,17 @@ export default function CreditsTablePage() {
                     setPage(0);
                   }}
                 >
-                  <Filter className="mr-2 h-4 w-4" />
-                  Limpiar
+                  <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
+                  Limpiar Filtros
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Table */}
-        <Card>
-          <CardContent className="p-0">
+        {/* Table Container */}
+        <Card className="overflow-hidden border border-border/80 bg-card/90 shadow-xs backdrop-blur-sm">
+          <CardContent className="overflow-x-auto p-0">
             {loading ? (
               <div className="flex h-64 items-center justify-center">
                 <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -214,90 +221,74 @@ export default function CreditsTablePage() {
                 transition={{ duration: 3, repeat: Infinity }}
                 className="flex flex-col items-center justify-center py-16 text-center"
               >
-                <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-                  <Search className="h-6 w-6 text-muted-foreground" />
+                <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-muted-foreground">
+                  <Search className="h-6 w-6" />
                 </div>
-                <p className="text-sm font-medium">No se encontraron créditos</p>
-                <p className="text-sm text-muted-foreground">Ajusta los filtros o crea un nuevo crédito.</p>
+                <p className="font-display text-base font-bold text-foreground">No se encontraron créditos coincidentes</p>
+                <p className="text-xs text-muted-foreground mt-1">Ajusta los filtros de búsqueda o radica un nuevo crédito.</p>
               </motion.div>
             ) : (
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Cliente</TableHead>
-                    <TableHead>Cédula</TableHead>
-                    <TableHead>Monto</TableHead>
-                    <TableHead>Estado</TableHead>
-                    {profile?.role !== 'asesor' && <TableHead>Asesor</TableHead>}
-                    <TableHead>Entidad</TableHead>
-                    <TableHead>Creado</TableHead>
-                    <TableHead>Actualizado</TableHead>
+                <TableHeader className="bg-accent/40">
+                  <TableRow className="border-border/70">
+                    <TableHead className="font-display text-xs font-bold text-foreground">Cliente</TableHead>
+                    <TableHead className="font-display text-xs font-bold text-foreground">Documento</TableHead>
+                    <TableHead className="font-display text-xs font-bold text-foreground">Monto Radicado</TableHead>
+                    <TableHead className="font-display text-xs font-bold text-foreground">Estado Operativo</TableHead>
+                    {profile?.role !== 'asesor' && <TableHead className="font-display text-xs font-bold text-foreground">Asesor</TableHead>}
+                    <TableHead className="font-display text-xs font-bold text-foreground">Entidad</TableHead>
+                    <TableHead className="font-display text-xs font-bold text-foreground">Radicado</TableHead>
+                    <TableHead className="font-display text-xs font-bold text-foreground">Último Cambio</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <StaggerList>
                     {pagedCredits.map((credit) => (
-                      <StaggerItem key={credit.id}>
-                        <TableRow
-                          className="cursor-pointer transition-colors hover:bg-accent"
+                        <TableRow key={credit.id}
+                          className="cursor-pointer border-border/60 transition-colors hover:bg-accent/50"
                           onClick={() => router.push(`/creditos/${credit.id}`)}
                         >
-                          <TableCell className="font-medium">
-                            {credit.client?.first_name} {credit.client?.last_name}
+                          <TableCell className="max-w-[200px] font-display text-xs font-bold text-foreground">
+                            <span className="block truncate">{credit.client?.first_name} {credit.client?.last_name}</span>
                           </TableCell>
-                          <TableCell className="text-muted-foreground">
-                            {credit.client?.document_number}
+                          <TableCell className="whitespace-nowrap text-xs text-muted-foreground font-medium">
+                            CC {credit.client?.document_number}
                           </TableCell>
-                          <TableCell>{formatCurrency(credit.requested_amount)}</TableCell>
+                          <TableCell className="whitespace-nowrap font-display text-xs font-bold text-primary tabular-nums">
+                            {formatCurrency(credit.requested_amount)}
+                          </TableCell>
                           <TableCell><StatusBadge status={credit.status} /></TableCell>
                           {profile?.role !== 'asesor' && (
-                            <TableCell className="text-muted-foreground">
-                              {credit.asesor?.full_name || '—'}
+                            <TableCell className="max-w-[160px]">
+                              <span className="block truncate text-xs text-muted-foreground font-medium">
+                                {credit.asesor?.full_name || '—'}
+                              </span>
                             </TableCell>
                           )}
-                          <TableCell className="text-muted-foreground">
-                            {credit.entity?.name || '—'}
+                          <TableCell className="max-w-[140px]">
+                            <span className="block truncate text-xs text-foreground font-semibold">
+                              {credit.entity?.name || '—'}
+                            </span>
                           </TableCell>
-                          <TableCell className="text-muted-foreground">{formatDate(credit.created_at)}</TableCell>
-                          <TableCell className="text-muted-foreground">{formatDate(credit.status_changed_at)}</TableCell>
+                          <TableCell className="whitespace-nowrap text-xs text-muted-foreground">{formatDateShort(credit.created_at)}</TableCell>
+                          <TableCell className="whitespace-nowrap text-xs text-muted-foreground">{formatDateShort(credit.status_changed_at)}</TableCell>
                         </TableRow>
-                      </StaggerItem>
                     ))}
-                  </StaggerList>
                 </TableBody>
               </Table>
             )}
           </CardContent>
         </Card>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="mt-4 flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              Página {page + 1} de {totalPages}
-            </p>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.max(0, p - 1))}
-                disabled={page === 0}
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Anterior
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-                disabled={page >= totalPages - 1}
-              >
-                Siguiente
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        )}
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          totalItems={filteredCredits.length}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={(s) => { setPageSize(s); setPage(0); }}
+          itemLabel="créditos"
+          className="mt-5"
+        />
       </PageTransition>
     </AppLayout>
   );

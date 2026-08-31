@@ -20,12 +20,27 @@ export interface Profile {
   full_name: string;
   phone: string | null;
   role: UserRole;
+  role_id: string | null;
   status: UserStatus;
   supervisor_id: string | null;
-  monthly_goal: number;
-  commission_rate: number;
+  // NUMERIC en Postgres. pg devuelve string para preservar precisión.
+  monthly_goal: number | string;
+  commission_rate: number | string;
+  sede_id: string | null;
   created_at: string;
   updated_at: string;
+  permissions?: string[];
+}
+
+export interface Role {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  permissions: string[];
+  is_system: boolean;
+  is_default: boolean;
+  created_at: string;
 }
 
 export interface FinancialEntity {
@@ -37,6 +52,8 @@ export interface FinancialEntity {
   contact_phone: string | null;
   active: boolean;
   created_at: string;
+  credit_min_amount: number | string | null;
+  credit_max_amount: number | string | null;
 }
 
 export interface CreditType {
@@ -65,6 +82,18 @@ export interface Client {
   created_at: string;
 }
 
+export interface Sede {
+  id: string;
+  name: string;
+  code: string | null;
+  address: string | null;
+  city: string | null;
+  phone: string | null;
+  manager_id: string | null;
+  active: boolean;
+  created_at: string;
+}
+
 export interface Credit {
   id: string;
   client_id: string;
@@ -72,8 +101,10 @@ export interface Credit {
   entity_id: string | null;
   credit_type_id: string | null;
   status: CreditStatus;
-  requested_amount: number;
-  approved_amount: number | null;
+  // NUMERIC en Postgres. pg devuelve string para preservar precisión.
+  // Convertir a number con Number() al usar.
+  requested_amount: number | string;
+  approved_amount: number | string | null;
   term_months: number | null;
   rate: number | null;
   rejection_reason: string | null;
@@ -135,6 +166,11 @@ export interface Database {
         Insert: Partial<Profile>;
         Update: Partial<Profile>;
       };
+      sedes: {
+        Row: Sede;
+        Insert: Partial<Sede>;
+        Update: Partial<Sede>;
+      };
       financial_entities: {
         Row: FinancialEntity;
         Insert: Partial<FinancialEntity>;
@@ -165,11 +201,16 @@ export interface Database {
         Insert: Partial<Document>;
         Update: Partial<Document>;
       };
-      follow_ups: {
+follow_ups: {
         Row: FollowUp;
         Insert: Partial<FollowUp>;
         Update: Partial<FollowUp>;
       };
-    };
-  };
+      roles: {
+        Row: Role;
+        Insert: Partial<Role>;
+        Update: Partial<Role>;
+      };
+    },
+  },
 }

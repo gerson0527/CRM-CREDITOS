@@ -40,6 +40,33 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
+-- Helper functions for RLS checks (SECURITY DEFINER to prevent infinite recursion)
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND role = 'admin'
+  );
+$$;
+
+CREATE OR REPLACE FUNCTION public.is_supervisor()
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND role = 'supervisor'
+  );
+$$;
+
 DROP POLICY IF EXISTS "select_own_profile" ON public.profiles;
 CREATE POLICY "select_own_profile" ON public.profiles
   FOR SELECT TO authenticated
@@ -48,14 +75,13 @@ CREATE POLICY "select_own_profile" ON public.profiles
 DROP POLICY IF EXISTS "select_all_profiles_admin" ON public.profiles;
 CREATE POLICY "select_all_profiles_admin" ON public.profiles
   FOR SELECT TO authenticated
-  USING (EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = auth.uid() AND p.role = 'admin'));
+  USING (public.is_admin());
 
 DROP POLICY IF EXISTS "select_team_profiles_supervisor" ON public.profiles;
 CREATE POLICY "select_team_profiles_supervisor" ON public.profiles
   FOR SELECT TO authenticated
   USING (
-    EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = auth.uid() AND p.role = 'supervisor')
-    AND supervisor_id = auth.uid()
+    public.is_supervisor() AND supervisor_id = auth.uid()
   );
 
 DROP POLICY IF EXISTS "update_own_profile" ON public.profiles;
@@ -67,8 +93,8 @@ CREATE POLICY "update_own_profile" ON public.profiles
 DROP POLICY IF EXISTS "update_any_profile_admin" ON public.profiles;
 CREATE POLICY "update_any_profile_admin" ON public.profiles
   FOR UPDATE TO authenticated
-  USING (EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = auth.uid() AND p.role = 'admin'))
-  WITH CHECK (EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = auth.uid() AND p.role = 'admin'));
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 DROP POLICY IF EXISTS "insert_own_profile" ON public.profiles;
 CREATE POLICY "insert_own_profile" ON public.profiles
@@ -78,7 +104,7 @@ CREATE POLICY "insert_own_profile" ON public.profiles
 DROP POLICY IF EXISTS "insert_profile_admin" ON public.profiles;
 CREATE POLICY "insert_profile_admin" ON public.profiles
   FOR INSERT TO authenticated
-  WITH CHECK (EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = auth.uid() AND p.role = 'admin'));
+  WITH CHECK (public.is_admin());
 
 -- ============================================================
 -- FINANCIAL ENTITIES TABLE

@@ -1,12 +1,10 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
-import type { Session } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase/client';
 import type { Profile } from '@/lib/types';
 
 interface AuthContextValue {
-  session: Session | null;
+  session: { access_token: string } | null;
   profile: Profile | null;
   loading: boolean;
   signOut: () => Promise<void>;
@@ -22,69 +20,52 @@ const AuthContext = createContext<AuthContextValue>({
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<{ access_token: string } | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const loadProfile = useCallback(async (userId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .maybeSingle();
-
-    if (error) {
-      console.error('Error loading profile:', error);
+  const loadProfile = useCallback(async () => {
+    console.log('[FRONT AuthProvider] loadProfile ▶');
+    try {
+      const res = await fetch('/api/auth/me', { credentials: 'include' });
+      console.log('[FRONT AuthProvider] /me status:', res.status);
+      const data = await res.json();
+      console.log('[FRONT AuthProvider] /me data:', data);
+      if (data.user) {
+        console.log('[FRONT AuthProvider] ✓ user loaded:', { id: data.user.id, role: data.user.role });
+        setProfile(data.user as Profile);
+        setSession({ access_token: 'cookie' });
+      } else {
+        console.log('[FRONT AuthProvider] ✕ no user in response');
+        setProfile(null);
+        setSession(null);
+      }
+    } catch (err) {
+      console.error('[FRONT AuthProvider] ✕ error loading profile:', err);
       setProfile(null);
-      return;
+      setSession(null);
     }
-    setProfile(data as Profile | null);
   }, []);
 
   const refreshProfile = useCallback(async () => {
-    if (session?.user?.id) {
-      await loadProfile(session.user.id);
-    }
-  }, [session, loadProfile]);
+    console.log('[FRONT AuthProvider] refreshProfile ▶');
+    await loadProfile();
+  }, [loadProfile]);
 
   useEffect(() => {
+    console.log('[FRONT AuthProvider] useEffect ▶ mount, calling loadProfile');
     let mounted = true;
-
-    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
-      if (!mounted) return;
-      setSession(initialSession);
-      if (initialSession?.user?.id) {
-        loadProfile(initialSession.user.id).finally(() => {
-          if (mounted) setLoading(false);
-        });
-      } else {
+    loadProfile().finally(() => {
+      if (mounted) {
+        console.log('[FRONT AuthProvider] useEffect ▶ setting loading=false');
         setLoading(false);
       }
     });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      (async () => {
-        if (!mounted) return;
-        setSession(newSession);
-        if (newSession?.user?.id) {
-          await loadProfile(newSession.user.id);
-        } else {
-          setProfile(null);
-        }
-        setLoading(false);
-      })();
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
+    return () => { mounted = false; };
   }, [loadProfile]);
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
     setSession(null);
     setProfile(null);
   }, []);

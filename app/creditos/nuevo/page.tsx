@@ -4,14 +4,16 @@ import { useState, useEffect, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, ArrowRight, Check, User, CreditCard, FileText, Upload, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, User, CreditCard, FileText, Upload, CheckCircle2, X } from 'lucide-react';
 import { AppLayout } from '@/components/app-layout';
 import { PageTransition } from '@/components/transitions';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/components/page-header';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -19,6 +21,26 @@ import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/providers/auth-provider';
 import { formatCurrency } from '@/lib/constants';
 import type { FinancialEntity, CreditType } from '@/lib/types';
+
+const ACCEPTED_DOC_TYPES = '.pdf,.png,.jpg,.jpeg';
+const ACCEPTED_MIME = ['application/pdf', 'image/png', 'image/jpeg'];
+const MAX_FILE_SIZE_MB = 10;
+
+const REQUIRED_DOCUMENTS: { key: string; label: string; required: boolean }[] = [
+  { key: 'desprendible', label: 'Desprendibles', required: true },
+  { key: 'cedula_trasera', label: 'Cédula (trasera)', required: true },
+  { key: 'cedula_adelante', label: 'Cédula (adelante)', required: true },
+  { key: 'formato_consulta', label: 'Formato de consulta', required: true },
+  { key: 'adicional_1', label: 'Adicional 1', required: false },
+  { key: 'adicional_2', label: 'Adicional 2', required: false },
+];
+
+interface UploadedFile {
+  key: string;
+  name: string;
+  size: number;
+  type: string;
+}
 
 export default function NewCreditPage() {
   const { profile } = useAuth();
@@ -33,9 +55,9 @@ export default function NewCreditPage() {
     first_name: '', last_name: '', document_number: '', phone: '', email: '', address: '', city: '', reported_income: '',
   });
   const [creditData, setCreditData] = useState({
-    entity_id: '', credit_type_id: '', requested_amount: '', term_months: '36', rate: '',
+    entity_id: '', credit_type_id: '', requested_amount: '', term_months: '36',
   });
-  const [documents, setDocuments] = useState<{ type: string; fileName: string }[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
 
   useEffect(() => {
     supabase.from('financial_entities').select('*').eq('active', true).then(({ data }) => setEntities(data || []));
@@ -49,29 +71,39 @@ export default function NewCreditPage() {
   ];
 
   const selectedCreditType = creditTypes.find((ct) => ct.id === creditData.credit_type_id);
+  const defaultRate = selectedCreditType ? Number(selectedCreditType.default_rate) : null;
 
-  function handleNext() {
-    if (step === 0) {
-      if (!clientData.first_name || !clientData.last_name || !clientData.document_number) {
-        toast.error('Completa los campos requeridos');
-        return;
-      }
+  function handleFileUpload(docKey: string, e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validar tipo MIME
+    if (!ACCEPTED_MIME.includes(file.type)) {
+      toast.error('Formato no permitido', {
+        description: `Solo se aceptan PDF, PNG o JPG. Recibido: ${file.type || 'desconocido'}`,
+      });
+      e.target.value = '';
+      return;
     }
-    if (step === 1) {
-      if (!creditData.entity_id || !creditData.credit_type_id || !creditData.requested_amount) {
-        toast.error('Completa los campos requeridos');
-        return;
-      }
+
+    // Validar tamaño
+    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      toast.error('Archivo muy grande', {
+        description: `Máximo ${MAX_FILE_SIZE_MB}MB. Tu archivo: ${(file.size / 1024 / 1024).toFixed(1)}MB`,
+      });
+      e.target.value = '';
+      return;
     }
-    setStep((s) => Math.min(s + 1, 2));
+
+    setUploadedFiles((prev) => [
+      ...prev.filter((f) => f.key !== docKey),
+      { key: docKey, name: file.name, size: file.size, type: file.type },
+    ]);
+    toast.success(`${REQUIRED_DOCUMENTS.find((d) => d.key === docKey)?.label} cargado`);
   }
 
-  function handleFileUpload(docType: string, e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) {
-      setDocuments((prev) => [...prev.filter((d) => d.type !== docType), { type: docType, fileName: file.name }]);
-      toast.success(`${docType} cargado`);
-    }
+  function removeFile(docKey: string) {
+    setUploadedFiles((prev) => prev.filter((f) => f.key !== docKey));
   }
 
   async function handleSubmit() {
@@ -109,7 +141,7 @@ export default function NewCreditPage() {
           status: 'lead',
           requested_amount: parseFloat(creditData.requested_amount),
           term_months: parseInt(creditData.term_months) || null,
-          rate: parseFloat(creditData.rate) || null,
+          rate: defaultRate,
         })
         .select()
         .single();
@@ -125,7 +157,21 @@ export default function NewCreditPage() {
         comment: 'Crédito creado',
       });
 
-      toast.success('Crédito creado', { description: 'El cliente y crédito fueron registrados.' });
+      // 4. Registrar documentos cargados
+      if (uploadedFiles.length > 0) {
+        const docsToInsert = uploadedFiles.map((f) => ({
+          credit_id: credit.id,
+          document_type: f.key,
+          file_url: f.name, // En local guardamos el nombre; en prod se subiría a storage
+          status: 'pendiente',
+          uploaded_by: profile.id,
+        }));
+        await supabase.from('documents').insert(docsToInsert);
+      }
+
+      toast.success('Crédito creado', {
+        description: `Cliente + crédito + ${uploadedFiles.length} documento(s) registrado(s).`,
+      });
       router.push(`/creditos/${credit.id}`);
     } catch (err: any) {
       toast.error('Error al crear crédito', { description: err.message });
@@ -137,36 +183,38 @@ export default function NewCreditPage() {
   return (
     <AppLayout>
       <PageTransition>
-        <div className="mb-6 flex items-center gap-3">
+        <div className="mb-4 flex items-center gap-3">
           <Button variant="ghost" size="sm" onClick={() => router.push('/creditos')}>
-            <ArrowLeft className="mr-1 h-4 w-4" />
+            <ArrowLeft className="h-4 w-4" />
             Volver
           </Button>
         </div>
 
-        <h1 className="text-2xl font-semibold tracking-tight">Nuevo crédito</h1>
-        <p className="text-sm text-muted-foreground">Registra un nuevo cliente y solicitud de crédito.</p>
+        <PageHeader
+          title="Nuevo crédito"
+          description="Registra un nuevo cliente y solicitud de crédito."
+        />
 
         {/* Stepper */}
-        <div className="mt-6 flex items-center justify-center">
+        <div className="mt-2 flex items-center justify-center">
           <div className="flex items-center gap-2">
             {steps.map((s, i) => (
               <div key={i} className="flex items-center gap-2">
                 <div className={`flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors ${
-                  i === step ? 'bg-primary text-primary-foreground' :
-                  i < step ? 'bg-secondary text-secondary-foreground' : 'bg-muted text-muted-foreground'
+                  i === step ? 'bg-primary text-primary-foreground shadow-sm' :
+                  i < step ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'
                 }`}>
                   {i < step ? <Check className="h-4 w-4" /> : s.icon}
                   <span className="hidden text-sm font-medium sm:inline">{s.label}</span>
                 </div>
-                {i < steps.length - 1 && <div className="h-0.5 w-6 bg-border" />}
+                {i < steps.length - 1 && <div className="h-0.5 w-6 bg-slate-200" />}
               </div>
             ))}
           </div>
         </div>
 
-        <Card className="mx-auto mt-6 max-w-2xl">
-          <CardContent className="pt-6">
+        <Card className="mx-auto mt-6 max-w-3xl">
+          <CardContent className="pt-5">
             <AnimatePresence mode="wait">
               {/* Step 0: Client data */}
               {step === 0 && (
@@ -199,10 +247,10 @@ export default function NewCreditPage() {
                       <Input type="email" value={clientData.email} onChange={(e) => setClientData({ ...clientData, email: e.target.value })} placeholder="cliente@email.com" />
                     </div>
                     <div className="space-y-2">
-                      <Label>Ingresos reportados</Label>
+                      <Label>Ingresos reportados (COP)</Label>
                       <Input type="number" value={clientData.reported_income} onChange={(e) => setClientData({ ...clientData, reported_income: e.target.value })} placeholder="3500000" />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-2 sm:col-span-2">
                       <Label>Dirección</Label>
                       <Input value={clientData.address} onChange={(e) => setClientData({ ...clientData, address: e.target.value })} placeholder="Calle 45 #23-10" />
                     </div>
@@ -235,7 +283,7 @@ export default function NewCreditPage() {
                     </div>
                     <div className="space-y-2">
                       <Label>Tipo de crédito *</Label>
-                      <Select value={creditData.credit_type_id} onValueChange={(v) => setCreditData({ ...creditData, credit_type_id: v, rate: String(creditTypes.find((ct) => ct.id === v)?.default_rate || '') })}>
+                      <Select value={creditData.credit_type_id} onValueChange={(v) => setCreditData({ ...creditData, credit_type_id: v })}>
                         <SelectTrigger><SelectValue placeholder="Seleccionar..." /></SelectTrigger>
                         <SelectContent>
                           {creditTypes.map((ct) => <SelectItem key={ct.id} value={ct.id}>{ct.name}</SelectItem>)}
@@ -246,7 +294,7 @@ export default function NewCreditPage() {
                       <Label>Monto solicitado *</Label>
                       <Input type="number" value={creditData.requested_amount} onChange={(e) => setCreditData({ ...creditData, requested_amount: e.target.value })} placeholder="5000000" />
                       {selectedCreditType && (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-slate-500">
                           Rango: {formatCurrency(selectedCreditType.min_amount)} - {formatCurrency(selectedCreditType.max_amount)}
                         </p>
                       )}
@@ -255,10 +303,17 @@ export default function NewCreditPage() {
                       <Label>Plazo (meses)</Label>
                       <Input type="number" value={creditData.term_months} onChange={(e) => setCreditData({ ...creditData, term_months: e.target.value })} placeholder="36" />
                     </div>
-                    <div className="space-y-2">
-                      <Label>Tasa (%)</Label>
-                      <Input type="number" step="0.1" value={creditData.rate} onChange={(e) => setCreditData({ ...creditData, rate: e.target.value })} placeholder="18.5" />
-                    </div>
+                    {defaultRate !== null && (
+                      <div className="space-y-2 sm:col-span-2">
+                        <Label>Tasa de interés (anual %)</Label>
+                        <div className="flex h-10 items-center rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700">
+                          <span className="font-semibold">{defaultRate.toFixed(2)}%</span>
+                          <span className="ml-2 text-xs text-slate-500">
+                            (tasa por defecto del tipo de crédito "{selectedCreditType?.name}")
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               )}
@@ -272,48 +327,118 @@ export default function NewCreditPage() {
                   exit={{ opacity: 0, x: -20 }}
                   className="space-y-4"
                 >
-                  <p className="text-sm text-muted-foreground">
-                    Sube los documentos requeridos para este tipo de crédito. Puedes saltar este paso y subirlos después.
-                  </p>
-                  {selectedCreditType?.required_documents.map((doc) => {
-                    const uploaded = documents.find((d) => d.type === doc);
-                    return (
-                      <div key={doc} className="flex items-center justify-between rounded-lg border p-3">
-                        <div className="flex items-center gap-3">
-                          <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${uploaded ? 'bg-green-100' : 'bg-muted'}`}>
-                            {uploaded ? <CheckCircle2 className="h-5 w-5 text-green-600" /> : <Upload className="h-5 w-5 text-muted-foreground" />}
+                  <div className="rounded-xl border border-blue-200 bg-blue-50/60 p-3">
+                    <p className="text-sm text-slate-700">
+                      Sube los <strong>6 documentos</strong> requeridos. Los 4 marcados como obligatorios son necesarios para avanzar el crédito.
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      Formatos aceptados: <strong>PDF, PNG, JPG</strong>. Tamaño máx: {MAX_FILE_SIZE_MB}MB por archivo.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    {REQUIRED_DOCUMENTS.map((doc) => {
+                      const uploaded = uploadedFiles.find((f) => f.key === doc.key);
+                      return (
+                        <div
+                          key={doc.key}
+                          className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-3"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+                              uploaded ? 'bg-emerald-50' : doc.required ? 'bg-amber-50' : 'bg-slate-100'
+                            }`}>
+                              {uploaded ? (
+                                <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                              ) : (
+                                <Upload className={`h-5 w-5 ${doc.required ? 'text-amber-500' : 'text-slate-400'}`} />
+                              )}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-slate-900">{doc.label}</span>
+                                {doc.required ? (
+                                  <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-[10px]">Requerido</Badge>
+                                ) : (
+                                  <Badge className="bg-slate-100 text-slate-600 border-slate-200 text-[10px]">Opcional</Badge>
+                                )}
+                              </div>
+                              <p className="text-xs text-slate-500">
+                                {uploaded ? (
+                                  <span className="text-emerald-600">
+                                    {uploaded.name} ({(uploaded.size / 1024).toFixed(0)} KB)
+                                  </span>
+                                ) : (
+                                  'Sin archivo'
+                                )}
+                              </p>
+                            </div>
                           </div>
-                          <span className="text-sm font-medium capitalize">{doc.replace(/_/g, ' ')}</span>
+                          <div className="flex items-center gap-1">
+                            {uploaded && (
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => removeFile(doc.key)}
+                                className="h-8 w-8 text-slate-400 hover:text-red-600"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            )}
+                            <label>
+                              <input
+                                type="file"
+                                accept={ACCEPTED_DOC_TYPES}
+                                onChange={(e) => handleFileUpload(doc.key, e)}
+                                className="hidden"
+                              />
+                              <span className="inline-flex h-8 cursor-pointer items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50">
+                                <Upload className="mr-1.5 h-3 w-3" />
+                                {uploaded ? 'Cambiar' : 'Subir'}
+                              </span>
+                            </label>
+                          </div>
                         </div>
-                        <label className="cursor-pointer">
-                          <input type="file" className="hidden" onChange={(e) => handleFileUpload(doc, e)} />
-                          <span className="rounded-md border px-3 py-1.5 text-xs font-medium hover:bg-accent">
-                            {uploaded ? uploaded.fileName : 'Subir'}
-                          </span>
-                        </label>
-                      </div>
-                    );
-                  }) || (
-                    <p className="text-sm text-muted-foreground">Selecciona un tipo de crédito para ver los documentos requeridos.</p>
-                  )}
+                      );
+                    })}
+                  </div>
+
+                  <p className="text-xs text-slate-500">
+                    💡 También puedes saltar este paso y subir los documentos después desde el detalle del crédito.
+                  </p>
                 </motion.div>
               )}
             </AnimatePresence>
 
             {/* Navigation buttons */}
-            <div className="mt-6 flex items-center justify-between border-t pt-4">
+            <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-4">
               <Button variant="outline" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}>
-                <ArrowLeft className="mr-1 h-4 w-4" />
+                <ArrowLeft className="h-4 w-4" />
                 Anterior
               </Button>
               {step < 2 ? (
-                <Button onClick={handleNext}>
+                <Button onClick={() => {
+                  if (step === 0) {
+                    if (!clientData.first_name || !clientData.last_name || !clientData.document_number) {
+                      toast.error('Completa los campos requeridos');
+                      return;
+                    }
+                  }
+                  if (step === 1) {
+                    if (!creditData.entity_id || !creditData.credit_type_id || !creditData.requested_amount) {
+                      toast.error('Completa los campos requeridos');
+                      return;
+                    }
+                  }
+                  setStep((s) => Math.min(s + 1, 2));
+                }}>
                   Siguiente
-                  <ArrowRight className="ml-1 h-4 w-4" />
+                  <ArrowRight className="h-4 w-4" />
                 </Button>
               ) : (
                 <Button onClick={handleSubmit} disabled={loading}>
-                  {loading ? <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <Check className="mr-1 h-4 w-4" />}
+                  {loading ? <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <Check className="h-4 w-4" />}
                   Crear crédito
                 </Button>
               )}

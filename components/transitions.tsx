@@ -55,7 +55,7 @@ export function StaggerItem({ children, className }: { children: React.ReactNode
         hidden: { opacity: 0, y: 12 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' } },
       }}
-      className={className}
+      className={cn('h-full', className)}
     >
       {children}
     </motion.div>

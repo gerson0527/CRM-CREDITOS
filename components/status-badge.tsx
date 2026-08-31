@@ -16,17 +16,23 @@ export function StatusBadge({ status, className, animate = false }: StatusBadgeP
   const content = (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium',
+        'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold tracking-wide transition-all shadow-xs select-none',
         config.bgColor,
         config.textColor,
         config.borderColor,
         className
       )}
     >
-      <span
-        className="h-1.5 w-1.5 rounded-full"
-        style={{ backgroundColor: config.color }}
-      />
+      <span className="relative flex h-2 w-2">
+        <span
+          className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60"
+          style={{ backgroundColor: config.color }}
+        />
+        <span
+          className="relative inline-flex h-2 w-2 rounded-full"
+          style={{ backgroundColor: config.color }}
+        />
+      </span>
       {config.label}
     </span>
   );
@@ -47,3 +53,4 @@ export function StatusBadge({ status, className, animate = false }: StatusBadgeP
 
   return content;
 }
+

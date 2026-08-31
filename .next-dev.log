@@ -1,0 +1,3192 @@
+
+> nextjs@0.1.0 dev
+> next dev
+
+  ▲ Next.js 13.5.1
+  - Local:        http://localhost:3000
+  - Environments: .env.local, .env
+
+ ✓ Ready in 12.7s
+ ✓ Compiled /api/auth/login/route in 606ms (48 modules)
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'admin@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: admin@credilibranzas.com
+[BACK /api/auth/login] DB result: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  status: 'activo',
+  has_hash: true,
+  role: 'admin',
+  full_name: 'Administrador Principal'
+}
+[BACK /api/auth/login] comparing bcrypt...
+[BACK /api/auth/login] bcrypt result: ✓ match
+[BACK /api/auth/login] ✓ session token created, setting cookie
+[BACK /api/auth/login] ◀ response 200 OK
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'admin@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: admin@credilibranzas.com
+[BACK /api/auth/login] DB result: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  status: 'activo',
+  has_hash: true,
+  role: 'admin',
+  full_name: 'Administrador Principal'
+}
+[BACK /api/auth/login] comparing bcrypt...
+[BACK /api/auth/login] bcrypt result: ✓ match
+[BACK /api/auth/login] ✓ session token created, setting cookie
+[BACK /api/auth/login] ◀ response 200 OK
+ ✓ Compiled /api/auth/me/route in 145ms (50 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+ ○ compiling /login/page ...
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ ✓ Compiled /login/page in 8.1s (1381 modules)
+ ✓ Compiled in 1863ms (700 modules)
+ ✓ Compiled /not-found in 1864ms (1371 modules)
+ ✓ Compiled in 753ms (1371 modules)
+ ✓ Compiled /api/auth/me/route in 441ms (716 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+ ✓ Compiled /api/auth/login/route in 244ms (716 modules)
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'admin@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: admin@credilibranzas.com
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/login] DB result: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  status: 'activo',
+  has_hash: true,
+  role: 'admin',
+  full_name: 'Administrador Principal'
+}
+[BACK /api/auth/login] comparing bcrypt...
+[BACK /api/auth/login] bcrypt result: ✓ match
+[BACK /api/auth/login] ✓ session token created, setting cookie
+[BACK /api/auth/login] ◀ response 200 OK
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+ ✓ Compiled /not-found in 515ms (1407 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+ ○ compiling /dashboard/page ...
+ ✓ Compiled /dashboard/page in 7.9s (2682 modules)
+[FRONT Dashboard] render — loading: true session: false profile: null
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+ ✓ Compiled /api/db/[table]/route in 651ms (1357 modules)
+ ✓ Compiled /api/auth/logout/route in 373ms (1359 modules)
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'admin@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: admin@credilibranzas.com
+[BACK /api/auth/login] DB result: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  status: 'activo',
+  has_hash: true,
+  role: 'admin',
+  full_name: 'Administrador Principal'
+}
+[BACK /api/auth/login] comparing bcrypt...
+[BACK /api/auth/login] bcrypt result: ✓ match
+[BACK /api/auth/login] ✓ session token created, setting cookie
+[BACK /api/auth/login] ◀ response 200 OK
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+[FRONT Dashboard] render — loading: true session: false profile: null
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+ ○ compiling /calendario/page ...
+ ✓ Compiled /calendario/page in 7.1s (3874 modules)
+ ✓ Compiled in 4.2s (3875 modules)
+ ✓ Compiled in 749ms (1931 modules)
+ ✓ Compiled /kanban/page in 2.7s (3898 modules)
+ ✓ Compiled in 1425ms (3883 modules)
+ ✓ Compiled in 1677ms (3863 modules)
+ ✓ Compiled in 1179ms (3863 modules)
+ ✓ Compiled in 1443ms (3863 modules)
+ ✓ Compiled in 1002ms (1939 modules)
+ ○ compiling /creditos/[id]/page ...
+ ✓ Compiled /creditos/[id]/page in 3.6s (3887 modules)
+ ✓ Compiled /api/db/[table]/route in 1136ms (1970 modules)
+[FRONT Dashboard] render — loading: true session: false profile: null
+ ✓ Compiled in 3.8s (3885 modules)
+ ✓ Compiled in 2.1s (3885 modules)
+[FRONT Dashboard] render — loading: true session: false profile: null
+ ✓ Compiled /api/db/[table]/route in 1987ms (1970 modules)
+ ✓ Compiled /api/db/[table]/[id]/route in 719ms (1972 modules)
+ ○ compiling /creditos/page ...
+ ✓ Compiled /creditos/page in 3.7s (3934 modules)
+ ✓ Compiled in 1156ms (1954 modules)
+ ✓ Compiled /api/db/[table]/route in 3.7s (3889 modules)
+ ✓ Compiled in 0ms (1967 modules)
+ ✓ Compiled /api/db/[table]/[id]/route in 1091ms (1966 modules)
+ ✓ Compiled /api/db/[table]/route in 472ms (1969 modules)
+ ✓ Compiled /api/auth/me/route in 962ms (1971 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+ ✓ Compiled in 5.4s (3887 modules)
+ ○ compiling /api/db/[table]/[id]/route ...
+ ✓ Compiled /api/db/[table]/[id]/route in 4.2s (1966 modules)
+ ✓ Compiled /api/db/[table]/route in 491ms (1969 modules)
+ ✓ Compiled in 12.6s (3887 modules)
+ ✓ Compiled in 2.4s (3887 modules)
+ ✓ Compiled /api/db/[table]/route in 1621ms (1967 modules)
+ ○ compiling /clientes/page ...
+ ✓ Compiled /clientes/page in 4.1s (3896 modules)
+ ✓ Compiled /api/db/[table]/route in 2.8s (3929 modules)
+ ✓ Compiled /api/db/[table]/[id]/route in 720ms (1427 modules)
+ ○ compiling /creditos/nuevo/page ...
+ ✓ Compiled /creditos/nuevo/page in 4.6s (3394 modules)
+ ✓ Compiled /reportes/page in 2.2s (3905 modules)
+ ✓ Compiled /solicitudes/page in 1878ms (3330 modules)
+ ✓ Compiled /usuarios/page in 2.6s (3347 modules)
+ ✓ Compiled /roles/page in 2.4s (3347 modules)
+ ✓ Compiled /kanban/page in 1012ms (1374 modules)
+ ✓ Compiled /dashboard/page in 1744ms (1413 modules)
+ ✓ Compiled in 3.7s (3383 modules)
+ ✓ Compiled in 1717ms (3349 modules)
+ ✓ Compiled in 1286ms (1986 modules)
+ ✓ Compiled in 1673ms (1986 modules)
+ ✓ Compiled /creditos/page in 1178ms (1371 modules)
+ ✓ Compiled /api/db/[table]/route in 418ms (1405 modules)
+ ✓ Compiled /clientes/page in 1127ms (1411 modules)
+ ✓ Compiled in 8.5s (3349 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 3.9s (3349 modules)
+ ✓ Compiled /api/auth/me/route in 1911ms (1396 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+ ○ compiling /api/db/[table]/route ...
+ ✓ Compiled /api/db/[table]/route in 5s (3385 modules)
+ ✓ Compiled in 2.7s (3385 modules)
+ ✓ Compiled in 1870ms (3385 modules)
+ ✓ Compiled in 967ms (1986 modules)
+ ✓ Compiled in 1527ms (1986 modules)
+ ✓ Compiled /calendario/page in 2.9s (1940 modules)
+ ✓ Compiled /api/db/[table]/route in 627ms (1974 modules)
+ ✓ Compiled /api/auth/me/route in 1442ms (1962 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+ ✓ Compiled /creditos/nuevo/page in 999ms (1967 modules)
+ ○ compiling /clientes/[id]/page ...
+ ✓ Compiled /clientes/[id]/page in 4.3s (3923 modules)
+ ✓ Compiled /api/db/[table]/route in 571ms (1966 modules)
+ ✓ Compiled in 1915ms (3941 modules)
+ ✓ Compiled in 1326ms (1989 modules)
+ ✓ Compiled /reportes/page in 1682ms (1926 modules)
+ ✓ Compiled /api/db/[table]/route in 280ms (1960 modules)
+ ✓ Compiled in 1818ms (3913 modules)
+ ✓ Compiled in 2.1s (3880 modules)
+ ✓ Compiled in 2.9s (3900 modules)
+ ✓ Compiled /api/db/[table]/route in 405ms (1940 modules)
+ ✓ Compiled in 1712ms (3931 modules)
+ ✓ Compiled in 1729ms (3935 modules)
+ ○ compiling /api/auth/me/route ...
+ ✓ Compiled /api/auth/me/route in 4.3s (1941 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+ ✓ Compiled /api/db/[table]/route in 426ms (1944 modules)
+ ✓ Compiled /creditos/nuevo/page in 776ms (1951 modules)
+ ✓ Compiled /kanban/page in 664ms (1965 modules)
+ ✓ Compiled /api/db/[table]/[id]/route in 531ms (1962 modules)
+ ✓ Compiled /api/auth/logout/route in 426ms (1962 modules)
+ ✓ Compiled /login/page in 760ms (1973 modules)
+ ✓ Compiled /api/auth/login/route in 612ms (1976 modules)
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'supervisor@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: supervisor@credilibranzas.com
+[BACK /api/auth/login] DB result: {
+  id: '78a35d45-1f8b-4daf-bf64-9be7f8fcc6e8',
+  email: 'supervisor@credilibranzas.com',
+  status: 'activo',
+  has_hash: true,
+  role: 'supervisor',
+  full_name: 'Supervisor de Ventas'
+}
+[BACK /api/auth/login] comparing bcrypt...
+[BACK /api/auth/login] bcrypt result: ✓ match
+[BACK /api/auth/login] ✓ session token created, setting cookie
+[BACK /api/auth/login] ◀ response 200 OK
+ ✓ Compiled /api/auth/me/route in 396ms (1978 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '78a35d45-1f8b-4daf-bf64-9be7f8fcc6e8',
+  role: 'supervisor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '78a35d45-1f8b-4daf-bf64-9be7f8fcc6e8',
+  email: 'supervisor@credilibranzas.com',
+  role: 'supervisor',
+  permissions_count: 7
+}
+ ✓ Compiled /dashboard/page in 1091ms (1997 modules)
+[FRONT Dashboard] render — loading: true session: false profile: null
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '78a35d45-1f8b-4daf-bf64-9be7f8fcc6e8',
+  role: 'supervisor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '78a35d45-1f8b-4daf-bf64-9be7f8fcc6e8',
+  email: 'supervisor@credilibranzas.com',
+  role: 'supervisor',
+  permissions_count: 7
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '78a35d45-1f8b-4daf-bf64-9be7f8fcc6e8',
+  role: 'supervisor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '78a35d45-1f8b-4daf-bf64-9be7f8fcc6e8',
+  email: 'supervisor@credilibranzas.com',
+  role: 'supervisor',
+  permissions_count: 7
+}
+ ✓ Compiled /creditos/page in 582ms (1409 modules)
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'asesor2@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: asesor2@credilibranzas.com
+[BACK /api/auth/login] DB result: {
+  id: 'a778ecd6-e1dd-43fb-8c39-b2ac04dc018a',
+  email: 'asesor2@credilibranzas.com',
+  status: 'activo',
+  has_hash: true,
+  role: 'asesor',
+  full_name: 'Maria Rodriguez'
+}
+[BACK /api/auth/login] comparing bcrypt...
+[BACK /api/auth/login] bcrypt result: ✓ match
+[BACK /api/auth/login] ✓ session token created, setting cookie
+[BACK /api/auth/login] ◀ response 200 OK
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: 'a778ecd6-e1dd-43fb-8c39-b2ac04dc018a',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: 'a778ecd6-e1dd-43fb-8c39-b2ac04dc018a',
+  email: 'asesor2@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[FRONT Dashboard] render — loading: true session: false profile: null
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: 'a778ecd6-e1dd-43fb-8c39-b2ac04dc018a',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: 'a778ecd6-e1dd-43fb-8c39-b2ac04dc018a',
+  email: 'asesor2@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: 'a778ecd6-e1dd-43fb-8c39-b2ac04dc018a',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: 'a778ecd6-e1dd-43fb-8c39-b2ac04dc018a',
+  email: 'asesor2@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'admin@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: admin@credilibranzas.com
+[BACK /api/auth/login] DB result: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  status: 'activo',
+  has_hash: true,
+  role: 'admin',
+  full_name: 'Administrador Principal'
+}
+[BACK /api/auth/login] comparing bcrypt...
+[BACK /api/auth/login] bcrypt result: ✓ match
+[BACK /api/auth/login] ✓ session token created, setting cookie
+[BACK /api/auth/login] ◀ response 200 OK
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+[FRONT Dashboard] render — loading: true session: false profile: null
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+ ✓ Compiled /roles/page in 718ms (1415 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+ ⚠ ./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+./node_modules/@supabase/realtime-js/dist/main/index.js
+./node_modules/@supabase/supabase-js/dist/main/index.js
+./app/api/roles/[id]/route.ts
+ ○ compiling /api/roles/[id]/route ...
+ X node_modules\@supabase\supabase-js\dist\main\SupabaseClient.js (45:18) @ new SupabaseClient
+ X Error: supabaseKey is required.
+    at new SupabaseClient (webpack-internal:///(rsc)/./node_modules/@supabase/supabase-js/dist/main/SupabaseClient.js:62:33)
+    at createClient (webpack-internal:///(rsc)/./node_modules/@supabase/supabase-js/dist/main/index.js:81:12)
+    at eval (webpack-internal:///(rsc)/./app/api/roles/[id]/route.ts:14:90)
+    at (rsc)/./app/api/roles/[id]/route.ts (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\roles\[id]\route.js:128:1)
+    at __webpack_require__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:33:43)
+    at eval (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Froles%2F%5Bid%5D%2Froute&page=%2Fapi%2Froles%2F%5Bid%5D%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Froles%2F%5Bid%5D%2Froute.ts&appDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!:16:146)
+    at (rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Froles%2F%5Bid%5D%2Froute&page=%2Fapi%2Froles%2F%5Bid%5D%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Froles%2F%5Bid%5D%2Froute.ts&appDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D! (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\roles\[id]\route.js:117:1)
+    at __webpack_require__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:33:43)
+    at __webpack_exec__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\roles\[id]\route.js:138:39)
+    at C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\roles\[id]\route.js:139:192
+    at __webpack_require__.X (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:163:21)
+    at C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\roles\[id]\route.js:139:47
+    at Object.<anonymous> (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\roles\[id]\route.js:142:3)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14)
+    at Object..js (node:internal/modules/cjs/loader:1820:10)
+    at Module.load (node:internal/modules/cjs/loader:1423:32)
+    at Function._load (node:internal/modules/cjs/loader:1246:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1445:12)
+    at mod.require (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\require-hook.js:64:28)
+    at require (node:internal/modules/helpers:135:16)
+    at requirePage (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\require.js:109:84)
+    at C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\load-components.js:59:84
+    at async loadComponentsImpl (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\load-components.js:59:26)
+    at async DevServer.findPageComponentsImpl (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\next-server.js:438:36) {
+  page: '/api/roles/5e8a859f-b64b-4011-98f4-c4d68ae2e4ff'
+}
+null
+ ⚠ ./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+./node_modules/@supabase/realtime-js/dist/main/index.js
+./node_modules/@supabase/supabase-js/dist/main/index.js
+./app/api/roles/[id]/route.ts
+ ⚠ ./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+./node_modules/@supabase/realtime-js/dist/main/index.js
+./node_modules/@supabase/supabase-js/dist/main/index.js
+./app/api/roles/[id]/route.ts
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+ X node_modules\@supabase\supabase-js\dist\main\SupabaseClient.js (45:18) @ new SupabaseClient
+ X Error: supabaseKey is required.
+    at new SupabaseClient (webpack-internal:///(rsc)/./node_modules/@supabase/supabase-js/dist/main/SupabaseClient.js:62:33)
+    at createClient (webpack-internal:///(rsc)/./node_modules/@supabase/supabase-js/dist/main/index.js:81:12)
+    at eval (webpack-internal:///(rsc)/./app/api/roles/[id]/route.ts:14:90)
+    at (rsc)/./app/api/roles/[id]/route.ts (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\roles\[id]\route.js:128:1)
+    at __webpack_require__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:33:43)
+    at eval (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Froles%2F%5Bid%5D%2Froute&page=%2Fapi%2Froles%2F%5Bid%5D%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Froles%2F%5Bid%5D%2Froute.ts&appDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!:16:146)
+    at (rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Froles%2F%5Bid%5D%2Froute&page=%2Fapi%2Froles%2F%5Bid%5D%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Froles%2F%5Bid%5D%2Froute.ts&appDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D! (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\roles\[id]\route.js:117:1)
+    at __webpack_require__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:33:43)
+    at __webpack_exec__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\roles\[id]\route.js:138:39)
+    at C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\roles\[id]\route.js:139:192
+    at __webpack_require__.X (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:163:21)
+    at C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\roles\[id]\route.js:139:47
+    at Object.<anonymous> (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\roles\[id]\route.js:142:3)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14)
+    at Object..js (node:internal/modules/cjs/loader:1820:10)
+    at Module.load (node:internal/modules/cjs/loader:1423:32)
+    at Function._load (node:internal/modules/cjs/loader:1246:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1445:12)
+    at mod.require (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\require-hook.js:64:28)
+    at require (node:internal/modules/helpers:135:16)
+    at requirePage (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\require.js:109:84)
+    at C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\load-components.js:59:84
+    at async loadComponentsImpl (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\load-components.js:59:26)
+    at async DevServer.findPageComponentsImpl (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\next-server.js:438:36) {
+  page: '/api/roles/5e8a859f-b64b-4011-98f4-c4d68ae2e4ff'
+}
+null
+ ⚠ ./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+./node_modules/@supabase/realtime-js/dist/main/index.js
+./node_modules/@supabase/supabase-js/dist/main/index.js
+./app/api/roles/[id]/route.ts
+ ⚠ ./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+./node_modules/@supabase/realtime-js/dist/main/index.js
+./node_modules/@supabase/supabase-js/dist/main/index.js
+./app/api/roles/[id]/route.ts
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+ ✓ Compiled /calendario/page in 11s (4119 modules)
+ ✓ Compiled in 21s (4079 modules)
+ ✓ Compiled /usuarios/page in 1566ms (1978 modules)
+ ✓ Compiled /api/db/[table]/route in 578ms (2012 modules)
+ ✓ Compiled in 4s (4068 modules)
+ ✓ Compiled in 2.8s (4068 modules)
+ ✓ Compiled /clientes/page in 1459ms (1979 modules)
+ ✓ Compiled /api/db/[table]/route in 557ms (2013 modules)
+ ✓ Compiled in 2.4s (4109 modules)
+ ✓ Compiled in 3.1s (4109 modules)
+ ✓ Compiled in 4.9s (4109 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ X components\app-shell.tsx (72:43) @ Building2
+ X ReferenceError: Building2 is not defined
+    at eval (./components/app-shell.tsx:173:91)
+    at (ssr)/./components/app-shell.tsx (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\clientes\page.js:151:1)
+    at __webpack_require__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:33:43)
+    at eval (./components/app-layout.tsx:7:79)
+    at (ssr)/./components/app-layout.tsx (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\clientes\page.js:140:1)
+    at __webpack_require__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:33:43)
+    at eval (./app/clientes/page.tsx:19:80)
+    at (ssr)/./app/clientes/page.tsx (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\clientes\page.js:129:1)
+    at __webpack_require__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:33:43)
+[0m [90m 70 | [39m[0m
+[0m [90m 71 | [39m  [90m// Administración[39m[0m
+[0m[31m[1m>[22m[39m[90m 72 | [39m  { href[33m:[39m [32m'/sedes'[39m[33m,[39m label[33m:[39m [32m'Sedes'[39m[33m,[39m icon[33m:[39m [33m<[39m[33mBuilding2[39m className[33m=[39m[32m"h-4.5 w-4.5"[39m [33m/[39m[33m>[39m[33m,[39m permission[33m:[39m [32m'sedes'[39m[33m,[39m section[33m:[39m [32m'admin'[39m }[33m,[39m[0m
+[0m [90m    | [39m                                          [31m[1m^[22m[39m[0m
+[0m [90m 73 | [39m  { href[33m:[39m [32m'/entidades'[39m[33m,[39m label[33m:[39m [32m'Entidades Financieras'[39m[33m,[39m icon[33m:[39m [33m<[39m[33mLandmark[39m className[33m=[39m[32m"h-4.5 w-4.5"[39m [33m/[39m[33m>[39m[33m,[39m permission[33m:[39m [32m'entidades'[39m[33m,[39m section[33m:[39m [32m'admin'[39m }[33m,[39m[0m
+[0m [90m 74 | [39m  { href[33m:[39m [32m'/solicitudes'[39m[33m,[39m label[33m:[39m [32m'Solicitudes de Acceso'[39m[33m,[39m icon[33m:[39m [33m<[39m[33mUserPlus[39m className[33m=[39m[32m"h-4.5 w-4.5"[39m [33m/[39m[33m>[39m[33m,[39m permission[33m:[39m [32m'solicitudes'[39m[33m,[39m section[33m:[39m [32m'admin'[39m }[33m,[39m[0m
+[0m [90m 75 | [39m  { href[33m:[39m [32m'/usuarios'[39m[33m,[39m label[33m:[39m [32m'Gestión de Usuarios'[39m[33m,[39m icon[33m:[39m [33m<[39m[33mUsers[39m className[33m=[39m[32m"h-4.5 w-4.5"[39m [33m/[39m[33m>[39m[33m,[39m permission[33m:[39m [32m'usuarios'[39m[33m,[39m section[33m:[39m [32m'admin'[39m }[33m,[39m[0m
+ ✓ Compiled in 4.5s (4079 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled /api/auth/me/route in 1520ms (1999 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 10
+}
+ ✓ Compiled /api/db/[table]/route in 581ms (2002 modules)
+ ○ compiling /entidades/page ...
+ ✓ Compiled /entidades/page in 6.8s (4087 modules)
+ ✓ Compiled /api/auth/me/route in 583ms (2013 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /api/db/[table]/route in 870ms (2016 modules)
+ ○ compiling /api/db/[table]/route ...
+ ✓ Compiled /api/db/[table]/route in 7.9s (3549 modules)
+ ✓ Compiled in 7.9s (3549 modules)
+ ✓ Compiled in 4.9s (3549 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled /api/auth/me/route in 1480ms (1432 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 5.2s (3551 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 7.8s (3551 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 2.5s (3551 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ○ compiling /creditos/page ...
+ ✓ Compiled /creditos/page in 15.5s (1401 modules)
+ ✓ Compiled /api/db/[table]/route in 1382ms (1435 modules)
+ ✓ Compiled in 2.5s (2119 modules)
+ ✓ Compiled in 2.1s (2119 modules)
+ ✓ Compiled in 3.7s (3515 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ X app\clientes\page.tsx (354:9) @ Pagination
+ X ReferenceError: Pagination is not defined
+    at ClientesPage (./app/clientes/page.tsx:900:93)
+[0m [90m 352 | [39m        [33m<[39m[33m/[39m[33mCard[39m[33m>[39m[0m
+[0m [90m 353 | [39m[0m
+[0m[31m[1m>[22m[39m[90m 354 | [39m        [33m<[39m[33mPagination[39m[0m
+[0m [90m     | [39m        [31m[1m^[22m[39m[0m
+[0m [90m 355 | [39m          currentPage[33m=[39m{page}[0m
+[0m [90m 356 | [39m          totalPages[33m=[39m{totalPages}[0m
+[0m [90m 357 | [39m          totalItems[33m=[39m{filteredClients[33m.[39mlength}[0m
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 3.8s (3525 modules)
+ ✓ Compiled (3524 modules)
+ ✓ Compiled /api/auth/me/route in 774ms (1433 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /api/db/[table]/route in 1218ms (1436 modules)
+ ✓ Compiled in 4.1s (3559 modules)
+ ✓ Compiled in 998ms (2124 modules)
+ ✓ Compiled in 1283ms (2123 modules)
+ ✓ Compiled in 1480ms (2123 modules)
+ ✓ Compiled in 2.9s (3523 modules)
+ ✓ Compiled in 2.8s (3523 modules)
+ ✓ Compiled in 1822ms (3523 modules)
+ ✓ Compiled in 1702ms (3523 modules)
+ ✓ Compiled in 3.7s (3523 modules)
+ ✓ Compiled in 3.3s (3523 modules)
+ ✓ Compiled in 1248ms (2123 modules)
+ ✓ Compiled in 1128ms (2123 modules)
+ ✓ Compiled in 1554ms (2123 modules)
+ ✓ Compiled in 1534ms (2123 modules)
+ ✓ Compiled in 1914ms (2123 modules)
+ ✓ Compiled in 1184ms (2123 modules)
+ ✓ Compiled in 1461ms (2123 modules)
+ ✓ Compiled in 1671ms (2123 modules)
+ ✓ Compiled in 1621ms (2123 modules)
+ ✓ Compiled in 1503ms (2123 modules)
+ ✓ Compiled in 1284ms (2123 modules)
+ X ./app/solicitudes/page.tsx
+Error: 
+  [31mx[0m Unexpected token `PageTransition`. Expected jsx identifier
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\solicitudes\page.tsx[0m:109:1]
+ [2m109[0m |   }
+ [2m110[0m | 
+ [2m111[0m |   return (
+ [2m112[0m |     <PageTransition>
+     : [31;1m     ^^^^^^^^^^^^^^[0m
+ [2m113[0m |       <PageHeader
+ [2m114[0m |         title="Solicitudes de acceso"
+ [2m114[0m |         description="Asesores pendientes de aprobación."
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/solicitudes/page.tsx
+ X ./app/solicitudes/page.tsx
+Error: 
+  [31mx[0m Unexpected token `PageTransition`. Expected jsx identifier
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\solicitudes\page.tsx[0m:109:1]
+ [2m109[0m |   }
+ [2m110[0m | 
+ [2m111[0m |   return (
+ [2m112[0m |     <PageTransition>
+     : [31;1m     ^^^^^^^^^^^^^^[0m
+ [2m113[0m |       <PageHeader
+ [2m114[0m |         title="Solicitudes de acceso"
+ [2m114[0m |         description="Asesores pendientes de aprobación."
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/solicitudes/page.tsx
+ X ./app/solicitudes/page.tsx
+Error: 
+  [31mx[0m Unexpected token `PageTransition`. Expected jsx identifier
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\solicitudes\page.tsx[0m:109:1]
+ [2m109[0m |   }
+ [2m110[0m | 
+ [2m111[0m |   return (
+ [2m112[0m |     <PageTransition>
+     : [31;1m     ^^^^^^^^^^^^^^[0m
+ [2m113[0m |       <PageHeader
+ [2m114[0m |         title="Solicitudes de acceso"
+ [2m114[0m |         description="Asesores pendientes de aprobación."
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/solicitudes/page.tsx
+ X ./app/solicitudes/page.tsx
+Error: 
+  [31mx[0m Unexpected token `PageTransition`. Expected jsx identifier
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\solicitudes\page.tsx[0m:109:1]
+ [2m109[0m |   }
+ [2m110[0m | 
+ [2m111[0m |   return (
+ [2m112[0m |     <PageTransition>
+     : [31;1m     ^^^^^^^^^^^^^^[0m
+ [2m113[0m |       <PageHeader
+ [2m114[0m |         title="Solicitudes de acceso"
+ [2m114[0m |         description="Asesores pendientes de aprobación."
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/solicitudes/page.tsx
+ X ./app/solicitudes/page.tsx
+Error: 
+  [31mx[0m Unexpected token `PageTransition`. Expected jsx identifier
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\solicitudes\page.tsx[0m:109:1]
+ [2m109[0m |   }
+ [2m110[0m | 
+ [2m111[0m |   return (
+ [2m112[0m |     <PageTransition>
+     : [31;1m     ^^^^^^^^^^^^^^[0m
+ [2m113[0m |       <PageHeader
+ [2m114[0m |         title="Solicitudes de acceso"
+ [2m114[0m |         description="Asesores pendientes de aprobación."
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/solicitudes/page.tsx
+ X ./app/solicitudes/page.tsx
+Error: 
+  [31mx[0m Unexpected token `PageTransition`. Expected jsx identifier
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\solicitudes\page.tsx[0m:109:1]
+ [2m109[0m |   }
+ [2m110[0m | 
+ [2m111[0m |   return (
+ [2m112[0m |     <PageTransition>
+     : [31;1m     ^^^^^^^^^^^^^^[0m
+ [2m113[0m |       <PageHeader
+ [2m114[0m |         title="Solicitudes de acceso"
+ [2m114[0m |         description="Asesores pendientes de aprobación."
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/solicitudes/page.tsx
+ X ./app/solicitudes/page.tsx
+Error: 
+  [31mx[0m Unexpected token `PageTransition`. Expected jsx identifier
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\solicitudes\page.tsx[0m:109:1]
+ [2m109[0m |   }
+ [2m110[0m | 
+ [2m111[0m |   return (
+ [2m112[0m |     <PageTransition>
+     : [31;1m     ^^^^^^^^^^^^^^[0m
+ [2m113[0m |       <PageHeader
+ [2m114[0m |         title="Solicitudes de acceso"
+ [2m114[0m |         description="Asesores pendientes de aprobación."
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/solicitudes/page.tsx
+ ✓ Compiled /_error in 5.7s (3508 modules)
+ ✓ Compiled /api/auth/me/route in 1164ms (1434 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /api/db/[table]/route in 705ms (1437 modules)
+ ✓ Compiled in 2.4s (3544 modules)
+ ✓ Compiled /creditos/page in 1214ms (1443 modules)
+ ✓ Compiled /solicitudes/page in 2.1s (3557 modules)
+ ✓ Compiled /calendario/page in 1815ms (1978 modules)
+ ✓ Compiled /api/db/[table]/route in 488ms (2012 modules)
+ ✓ Compiled /creditos/page in 435ms (2003 modules)
+ ✓ Compiled /reportes/page in 836ms (1992 modules)
+ ✓ Compiled /sedes/page in 882ms (1989 modules)
+ ✓ Compiled /usuarios/page in 404ms (1992 modules)
+ ✓ Compiled in 2.6s (4110 modules)
+ X ./app/reportes/page.tsx
+Error: 
+  [31mx[0m the name `loading` is defined multiple times
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\reportes\page.tsx[0m:45:1]
+ [2m 45[0m |   const [asesorPage, setAsesorPage] = useState(0);
+ [2m 46[0m |   const [asesorPageSize, setAsesorPageSize] = useState(10);
+ [2m 47[0m |   const [entities, setEntities] = useState<{ id: string; name: string }[]>([]);
+ [2m 48[0m |   const [loading, setLoading] = useState(true);
+     : [31;1m         ^^^|^^^[0m
+     :             [31;1m`-- [31;1mprevious definition of `loading` here[0m[0m
+ [2m 49[0m | 
+ [2m 50[0m |   // ==== Filtro de fechas ====
+ [2m 51[0m |   const [dateFrom, setDateFrom] = useState<string>('');
+ [2m 52[0m |   const [dateTo, setDateTo] = useState<string>('');
+ [2m 53[0m |   const [activeRange, setActiveRange] = useState<string>('all');
+ [2m 54[0m | 
+ [2m 55[0m |   const filteredCredits = useMemo(() => {
+ [2m 56[0m |     if (!dateFrom && !dateTo) return credits;
+ [2m 57[0m |     return credits.filter((c) => {
+ [2m 58[0m |       const d = new Date(c.created_at);
+ [2m 59[0m |       if (dateFrom && d < new Date(dateFrom)) return false;
+ [2m 60[0m |       if (dateTo) {
+ [2m 61[0m |         const endDate = new Date(dateTo);
+ [2m 62[0m |         endDate.setHours(23, 59, 59, 999);
+ [2m 63[0m |         if (d > endDate) return false;
+ [2m 64[0m |       }
+ [2m 65[0m |       return true;
+ [2m 66[0m |     });
+ [2m 67[0m |   }, [credits, dateFrom, dateTo]);
+ [2m 68[0m | 
+ [2m 69[0m |   function applyRange(range: string) {
+ [2m 70[0m |     setActiveRange(range);
+ [2m 71[0m |     const today = new Date();
+ [2m 72[0m |     today.setHours(0, 0, 0, 0);
+ [2m 73[0m |     const fmt = (d: Date) => d.toISOString().split('T')[0];
+ [2m 74[0m | 
+ [2m 75[0m |     if (range === 'all') {
+ [2m 76[0m |       setDateFrom('');
+ [2m 77[0m |       setDateTo('');
+ [2m 78[0m |     } else if (range === 'today') {
+ [2m 79[0m |       setDateFrom(fmt(today));
+ [2m 80[0m |       setDateTo(fmt(today));
+ [2m 81[0m |     } else if (range === 'week') {
+ [2m 82[0m |       const start = new Date(today);
+ [2m 83[0m |       start.setDate(today.getDate() - 7);
+ [2m 84[0m |       setDateFrom(fmt(start));
+ [2m 85[0m |       setDateTo(fmt(today));
+ [2m 86[0m |     } else if (range === 'month') {
+ [2m 87[0m |       const start = new Date(today.getFullYear(), today.getMonth(), 1);
+ [2m 88[0m |       const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+ [2m 89[0m |       setDateFrom(fmt(start));
+ [2m 90[0m |       setDateTo(fmt(end));
+ [2m 91[0m |     } else if (range === 'quarter') {
+ [2m 92[0m |       const q = Math.floor(today.getMonth() / 3);
+ [2m 93[0m |       const start = new Date(today.getFullYear(), q * 3, 1);
+ [2m 94[0m |       const end = new Date(today.getFullYear(), q * 3 + 3, 0);
+ [2m 95[0m |       setDateFrom(fmt(start));
+ [2m 96[0m |       setDateTo(fmt(end));
+ [2m 97[0m |     } else if (range === 'year') {
+ [2m 98[0m |       const start = new Date(today.getFullYear(), 0, 1);
+ [2m 99[0m |       const end = new Date(today.getFullYear() + 1, 0, 0);
+ [2m100[0m |       setDateFrom(fmt(start));
+ [2m101[0m |       setDateTo(fmt(end));
+ [2m102[0m |     } else if (range === 'custom') {
+ [2m103[0m |       // No aplicar, dejar que el usuario edite los inputs
+ [2m104[0m |     }
+ [2m105[0m |   }
+ [2m106[0m | 
+ [2m107[0m |   function resetFilters() {
+ [2m108[0m |     applyRange('all');
+ [2m109[0m |   }
+ [2m110[0m |   const [loading, setLoading] = useState(true);
+     : [33;1m         ^^^|^^^[0m
+     :             [33;1m`-- [33;1m`loading` redefined here[0m[0m
+ [2m111[0m | 
+ [2m112[0m |   useEffect(() => {
+ [2m113[0m |     loadData();
+     `----
+
+  [31mx[0m the name `setLoading` is defined multiple times
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\reportes\page.tsx[0m:45:1]
+ [2m 45[0m |   const [asesorPage, setAsesorPage] = useState(0);
+ [2m 46[0m |   const [asesorPageSize, setAsesorPageSize] = useState(10);
+ [2m 47[0m |   const [entities, setEntities] = useState<{ id: string; name: string }[]>([]);
+ [2m 48[0m |   const [loading, setLoading] = useState(true);
+     : [31;1m                  ^^^^^|^^^^[0m
+     :                        [31;1m`-- [31;1mprevious definition of `setLoading` here[0m[0m
+ [2m 49[0m | 
+ [2m 50[0m |   // ==== Filtro de fechas ====
+ [2m 51[0m |   const [dateFrom, setDateFrom] = useState<string>('');
+ [2m 52[0m |   const [dateTo, setDateTo] = useState<string>('');
+ [2m 53[0m |   const [activeRange, setActiveRange] = useState<string>('all');
+ [2m 54[0m | 
+ [2m 55[0m |   const filteredCredits = useMemo(() => {
+ [2m 56[0m |     if (!dateFrom && !dateTo) return credits;
+ [2m 57[0m |     return credits.filter((c) => {
+ [2m 58[0m |       const d = new Date(c.created_at);
+ [2m 59[0m |       if (dateFrom && d < new Date(dateFrom)) return false;
+ [2m 60[0m |       if (dateTo) {
+ [2m 61[0m |         const endDate = new Date(dateTo);
+ [2m 62[0m |         endDate.setHours(23, 59, 59, 999);
+ [2m 63[0m |         if (d > endDate) return false;
+ [2m 64[0m |       }
+ [2m 65[0m |       return true;
+ [2m 66[0m |     });
+ [2m 67[0m |   }, [credits, dateFrom, dateTo]);
+ [2m 68[0m | 
+ [2m 69[0m |   function applyRange(range: string) {
+ [2m 70[0m |     setActiveRange(range);
+ [2m 71[0m |     const today = new Date();
+ [2m 72[0m |     today.setHours(0, 0, 0, 0);
+ [2m 73[0m |     const fmt = (d: Date) => d.toISOString().split('T')[0];
+ [2m 74[0m | 
+ [2m 75[0m |     if (range === 'all') {
+ [2m 76[0m |       setDateFrom('');
+ [2m 77[0m |       setDateTo('');
+ [2m 78[0m |     } else if (range === 'today') {
+ [2m 79[0m |       setDateFrom(fmt(today));
+ [2m 80[0m |       setDateTo(fmt(today));
+ [2m 81[0m |     } else if (range === 'week') {
+ [2m 82[0m |       const start = new Date(today);
+ [2m 83[0m |       start.setDate(today.getDate() - 7);
+ [2m 84[0m |       setDateFrom(fmt(start));
+ [2m 85[0m |       setDateTo(fmt(today));
+ [2m 86[0m |     } else if (range === 'month') {
+ [2m 87[0m |       const start = new Date(today.getFullYear(), today.getMonth(), 1);
+ [2m 88[0m |       const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+ [2m 89[0m |       setDateFrom(fmt(start));
+ [2m 90[0m |       setDateTo(fmt(end));
+ [2m 91[0m |     } else if (range === 'quarter') {
+ [2m 92[0m |       const q = Math.floor(today.getMonth() / 3);
+ [2m 93[0m |       const start = new Date(today.getFullYear(), q * 3, 1);
+ [2m 94[0m |       const end = new Date(today.getFullYear(), q * 3 + 3, 0);
+ [2m 95[0m |       setDateFrom(fmt(start));
+ [2m 96[0m |       setDateTo(fmt(end));
+ [2m 97[0m |     } else if (range === 'year') {
+ [2m 98[0m |       const start = new Date(today.getFullYear(), 0, 1);
+ [2m 99[0m |       const end = new Date(today.getFullYear() + 1, 0, 0);
+ [2m100[0m |       setDateFrom(fmt(start));
+ [2m101[0m |       setDateTo(fmt(end));
+ [2m102[0m |     } else if (range === 'custom') {
+ [2m103[0m |       // No aplicar, dejar que el usuario edite los inputs
+ [2m104[0m |     }
+ [2m105[0m |   }
+ [2m106[0m | 
+ [2m107[0m |   function resetFilters() {
+ [2m108[0m |     applyRange('all');
+ [2m109[0m |   }
+ [2m110[0m |   const [loading, setLoading] = useState(true);
+     : [33;1m                  ^^^^^|^^^^[0m
+     :                        [33;1m`-- [33;1m`setLoading` redefined here[0m[0m
+ [2m111[0m | 
+ [2m112[0m |   useEffect(() => {
+ [2m113[0m |     loadData();
+     `----
+
+Import trace for requested module:
+./app/reportes/page.tsx
+ X ./app/reportes/page.tsx
+Error: 
+  [31mx[0m the name `loading` is defined multiple times
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\reportes\page.tsx[0m:45:1]
+ [2m 45[0m |   const [asesorPage, setAsesorPage] = useState(0);
+ [2m 46[0m |   const [asesorPageSize, setAsesorPageSize] = useState(10);
+ [2m 47[0m |   const [entities, setEntities] = useState<{ id: string; name: string }[]>([]);
+ [2m 48[0m |   const [loading, setLoading] = useState(true);
+     : [31;1m         ^^^|^^^[0m
+     :             [31;1m`-- [31;1mprevious definition of `loading` here[0m[0m
+ [2m 49[0m | 
+ [2m 50[0m |   // ==== Filtro de fechas ====
+ [2m 51[0m |   const [dateFrom, setDateFrom] = useState<string>('');
+ [2m 52[0m |   const [dateTo, setDateTo] = useState<string>('');
+ [2m 53[0m |   const [activeRange, setActiveRange] = useState<string>('all');
+ [2m 54[0m | 
+ [2m 55[0m |   const filteredCredits = useMemo(() => {
+ [2m 56[0m |     if (!dateFrom && !dateTo) return credits;
+ [2m 57[0m |     return credits.filter((c) => {
+ [2m 58[0m |       const d = new Date(c.created_at);
+ [2m 59[0m |       if (dateFrom && d < new Date(dateFrom)) return false;
+ [2m 60[0m |       if (dateTo) {
+ [2m 61[0m |         const endDate = new Date(dateTo);
+ [2m 62[0m |         endDate.setHours(23, 59, 59, 999);
+ [2m 63[0m |         if (d > endDate) return false;
+ [2m 64[0m |       }
+ [2m 65[0m |       return true;
+ [2m 66[0m |     });
+ [2m 67[0m |   }, [credits, dateFrom, dateTo]);
+ [2m 68[0m | 
+ [2m 69[0m |   function applyRange(range: string) {
+ [2m 70[0m |     setActiveRange(range);
+ [2m 71[0m |     const today = new Date();
+ [2m 72[0m |     today.setHours(0, 0, 0, 0);
+ [2m 73[0m |     const fmt = (d: Date) => d.toISOString().split('T')[0];
+ [2m 74[0m | 
+ [2m 75[0m |     if (range === 'all') {
+ [2m 76[0m |       setDateFrom('');
+ [2m 77[0m |       setDateTo('');
+ [2m 78[0m |     } else if (range === 'today') {
+ [2m 79[0m |       setDateFrom(fmt(today));
+ [2m 80[0m |       setDateTo(fmt(today));
+ [2m 81[0m |     } else if (range === 'week') {
+ [2m 82[0m |       const start = new Date(today);
+ [2m 83[0m |       start.setDate(today.getDate() - 7);
+ [2m 84[0m |       setDateFrom(fmt(start));
+ [2m 85[0m |       setDateTo(fmt(today));
+ [2m 86[0m |     } else if (range === 'month') {
+ [2m 87[0m |       const start = new Date(today.getFullYear(), today.getMonth(), 1);
+ [2m 88[0m |       const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+ [2m 89[0m |       setDateFrom(fmt(start));
+ [2m 90[0m |       setDateTo(fmt(end));
+ [2m 91[0m |     } else if (range === 'quarter') {
+ [2m 92[0m |       const q = Math.floor(today.getMonth() / 3);
+ [2m 93[0m |       const start = new Date(today.getFullYear(), q * 3, 1);
+ [2m 94[0m |       const end = new Date(today.getFullYear(), q * 3 + 3, 0);
+ [2m 95[0m |       setDateFrom(fmt(start));
+ [2m 96[0m |       setDateTo(fmt(end));
+ [2m 97[0m |     } else if (range === 'year') {
+ [2m 98[0m |       const start = new Date(today.getFullYear(), 0, 1);
+ [2m 99[0m |       const end = new Date(today.getFullYear() + 1, 0, 0);
+ [2m100[0m |       setDateFrom(fmt(start));
+ [2m101[0m |       setDateTo(fmt(end));
+ [2m102[0m |     } else if (range === 'custom') {
+ [2m103[0m |       // No aplicar, dejar que el usuario edite los inputs
+ [2m104[0m |     }
+ [2m105[0m |   }
+ [2m106[0m | 
+ [2m107[0m |   function resetFilters() {
+ [2m108[0m |     applyRange('all');
+ [2m109[0m |   }
+ [2m110[0m |   const [loading, setLoading] = useState(true);
+     : [33;1m         ^^^|^^^[0m
+     :             [33;1m`-- [33;1m`loading` redefined here[0m[0m
+ [2m111[0m | 
+ [2m112[0m |   useEffect(() => {
+ [2m113[0m |     loadData();
+     `----
+
+  [31mx[0m the name `setLoading` is defined multiple times
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\reportes\page.tsx[0m:45:1]
+ [2m 45[0m |   const [asesorPage, setAsesorPage] = useState(0);
+ [2m 46[0m |   const [asesorPageSize, setAsesorPageSize] = useState(10);
+ [2m 47[0m |   const [entities, setEntities] = useState<{ id: string; name: string }[]>([]);
+ [2m 48[0m |   const [loading, setLoading] = useState(true);
+     : [31;1m                  ^^^^^|^^^^[0m
+     :                        [31;1m`-- [31;1mprevious definition of `setLoading` here[0m[0m
+ [2m 49[0m | 
+ [2m 50[0m |   // ==== Filtro de fechas ====
+ [2m 51[0m |   const [dateFrom, setDateFrom] = useState<string>('');
+ [2m 52[0m |   const [dateTo, setDateTo] = useState<string>('');
+ [2m 53[0m |   const [activeRange, setActiveRange] = useState<string>('all');
+ [2m 54[0m | 
+ [2m 55[0m |   const filteredCredits = useMemo(() => {
+ [2m 56[0m |     if (!dateFrom && !dateTo) return credits;
+ [2m 57[0m |     return credits.filter((c) => {
+ [2m 58[0m |       const d = new Date(c.created_at);
+ [2m 59[0m |       if (dateFrom && d < new Date(dateFrom)) return false;
+ [2m 60[0m |       if (dateTo) {
+ [2m 61[0m |         const endDate = new Date(dateTo);
+ [2m 62[0m |         endDate.setHours(23, 59, 59, 999);
+ [2m 63[0m |         if (d > endDate) return false;
+ [2m 64[0m |       }
+ [2m 65[0m |       return true;
+ [2m 66[0m |     });
+ [2m 67[0m |   }, [credits, dateFrom, dateTo]);
+ [2m 68[0m | 
+ [2m 69[0m |   function applyRange(range: string) {
+ [2m 70[0m |     setActiveRange(range);
+ [2m 71[0m |     const today = new Date();
+ [2m 72[0m |     today.setHours(0, 0, 0, 0);
+ [2m 73[0m |     const fmt = (d: Date) => d.toISOString().split('T')[0];
+ [2m 74[0m | 
+ [2m 75[0m |     if (range === 'all') {
+ [2m 76[0m |       setDateFrom('');
+ [2m 77[0m |       setDateTo('');
+ [2m 78[0m |     } else if (range === 'today') {
+ [2m 79[0m |       setDateFrom(fmt(today));
+ [2m 80[0m |       setDateTo(fmt(today));
+ [2m 81[0m |     } else if (range === 'week') {
+ [2m 82[0m |       const start = new Date(today);
+ [2m 83[0m |       start.setDate(today.getDate() - 7);
+ [2m 84[0m |       setDateFrom(fmt(start));
+ [2m 85[0m |       setDateTo(fmt(today));
+ [2m 86[0m |     } else if (range === 'month') {
+ [2m 87[0m |       const start = new Date(today.getFullYear(), today.getMonth(), 1);
+ [2m 88[0m |       const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+ [2m 89[0m |       setDateFrom(fmt(start));
+ [2m 90[0m |       setDateTo(fmt(end));
+ [2m 91[0m |     } else if (range === 'quarter') {
+ [2m 92[0m |       const q = Math.floor(today.getMonth() / 3);
+ [2m 93[0m |       const start = new Date(today.getFullYear(), q * 3, 1);
+ [2m 94[0m |       const end = new Date(today.getFullYear(), q * 3 + 3, 0);
+ [2m 95[0m |       setDateFrom(fmt(start));
+ [2m 96[0m |       setDateTo(fmt(end));
+ [2m 97[0m |     } else if (range === 'year') {
+ [2m 98[0m |       const start = new Date(today.getFullYear(), 0, 1);
+ [2m 99[0m |       const end = new Date(today.getFullYear() + 1, 0, 0);
+ [2m100[0m |       setDateFrom(fmt(start));
+ [2m101[0m |       setDateTo(fmt(end));
+ [2m102[0m |     } else if (range === 'custom') {
+ [2m103[0m |       // No aplicar, dejar que el usuario edite los inputs
+ [2m104[0m |     }
+ [2m105[0m |   }
+ [2m106[0m | 
+ [2m107[0m |   function resetFilters() {
+ [2m108[0m |     applyRange('all');
+ [2m109[0m |   }
+ [2m110[0m |   const [loading, setLoading] = useState(true);
+     : [33;1m                  ^^^^^|^^^^[0m
+     :                        [33;1m`-- [33;1m`setLoading` redefined here[0m[0m
+ [2m111[0m | 
+ [2m112[0m |   useEffect(() => {
+ [2m113[0m |     loadData();
+     `----
+
+Import trace for requested module:
+./app/reportes/page.tsx
+ ○ compiling /_error ...
+ X ./app/reportes/page.tsx
+Error: 
+  [31mx[0m the name `loading` is defined multiple times
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\reportes\page.tsx[0m:45:1]
+ [2m 45[0m |   const [asesorPage, setAsesorPage] = useState(0);
+ [2m 46[0m |   const [asesorPageSize, setAsesorPageSize] = useState(10);
+ [2m 47[0m |   const [entities, setEntities] = useState<{ id: string; name: string }[]>([]);
+ [2m 48[0m |   const [loading, setLoading] = useState(true);
+     : [31;1m         ^^^|^^^[0m
+     :             [31;1m`-- [31;1mprevious definition of `loading` here[0m[0m
+ [2m 49[0m | 
+ [2m 50[0m |   // ==== Filtro de fechas ====
+ [2m 51[0m |   const [dateFrom, setDateFrom] = useState<string>('');
+ [2m 52[0m |   const [dateTo, setDateTo] = useState<string>('');
+ [2m 53[0m |   const [activeRange, setActiveRange] = useState<string>('all');
+ [2m 54[0m | 
+ [2m 55[0m |   const filteredCredits = useMemo(() => {
+ [2m 56[0m |     if (!dateFrom && !dateTo) return credits;
+ [2m 57[0m |     return credits.filter((c) => {
+ [2m 58[0m |       const d = new Date(c.created_at);
+ [2m 59[0m |       if (dateFrom && d < new Date(dateFrom)) return false;
+ [2m 60[0m |       if (dateTo) {
+ [2m 61[0m |         const endDate = new Date(dateTo);
+ [2m 62[0m |         endDate.setHours(23, 59, 59, 999);
+ [2m 63[0m |         if (d > endDate) return false;
+ [2m 64[0m |       }
+ [2m 65[0m |       return true;
+ [2m 66[0m |     });
+ [2m 67[0m |   }, [credits, dateFrom, dateTo]);
+ [2m 68[0m | 
+ [2m 69[0m |   function applyRange(range: string) {
+ [2m 70[0m |     setActiveRange(range);
+ [2m 71[0m |     const today = new Date();
+ [2m 72[0m |     today.setHours(0, 0, 0, 0);
+ [2m 73[0m |     const fmt = (d: Date) => d.toISOString().split('T')[0];
+ [2m 74[0m | 
+ [2m 75[0m |     if (range === 'all') {
+ [2m 76[0m |       setDateFrom('');
+ [2m 77[0m |       setDateTo('');
+ [2m 78[0m |     } else if (range === 'today') {
+ [2m 79[0m |       setDateFrom(fmt(today));
+ [2m 80[0m |       setDateTo(fmt(today));
+ [2m 81[0m |     } else if (range === 'week') {
+ [2m 82[0m |       const start = new Date(today);
+ [2m 83[0m |       start.setDate(today.getDate() - 7);
+ [2m 84[0m |       setDateFrom(fmt(start));
+ [2m 85[0m |       setDateTo(fmt(today));
+ [2m 86[0m |     } else if (range === 'month') {
+ [2m 87[0m |       const start = new Date(today.getFullYear(), today.getMonth(), 1);
+ [2m 88[0m |       const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+ [2m 89[0m |       setDateFrom(fmt(start));
+ [2m 90[0m |       setDateTo(fmt(end));
+ [2m 91[0m |     } else if (range === 'quarter') {
+ [2m 92[0m |       const q = Math.floor(today.getMonth() / 3);
+ [2m 93[0m |       const start = new Date(today.getFullYear(), q * 3, 1);
+ [2m 94[0m |       const end = new Date(today.getFullYear(), q * 3 + 3, 0);
+ [2m 95[0m |       setDateFrom(fmt(start));
+ [2m 96[0m |       setDateTo(fmt(end));
+ [2m 97[0m |     } else if (range === 'year') {
+ [2m 98[0m |       const start = new Date(today.getFullYear(), 0, 1);
+ [2m 99[0m |       const end = new Date(today.getFullYear() + 1, 0, 0);
+ [2m100[0m |       setDateFrom(fmt(start));
+ [2m101[0m |       setDateTo(fmt(end));
+ [2m102[0m |     } else if (range === 'custom') {
+ [2m103[0m |       // No aplicar, dejar que el usuario edite los inputs
+ [2m104[0m |     }
+ [2m105[0m |   }
+ [2m106[0m | 
+ [2m107[0m |   function resetFilters() {
+ [2m108[0m |     applyRange('all');
+ [2m109[0m |   }
+ [2m110[0m |   const [loading, setLoading] = useState(true);
+     : [33;1m         ^^^|^^^[0m
+     :             [33;1m`-- [33;1m`loading` redefined here[0m[0m
+ [2m111[0m | 
+ [2m112[0m |   useEffect(() => {
+ [2m113[0m |     loadData();
+     `----
+
+  [31mx[0m the name `setLoading` is defined multiple times
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\reportes\page.tsx[0m:45:1]
+ [2m 45[0m |   const [asesorPage, setAsesorPage] = useState(0);
+ [2m 46[0m |   const [asesorPageSize, setAsesorPageSize] = useState(10);
+ [2m 47[0m |   const [entities, setEntities] = useState<{ id: string; name: string }[]>([]);
+ [2m 48[0m |   const [loading, setLoading] = useState(true);
+     : [31;1m                  ^^^^^|^^^^[0m
+     :                        [31;1m`-- [31;1mprevious definition of `setLoading` here[0m[0m
+ [2m 49[0m | 
+ [2m 50[0m |   // ==== Filtro de fechas ====
+ [2m 51[0m |   const [dateFrom, setDateFrom] = useState<string>('');
+ [2m 52[0m |   const [dateTo, setDateTo] = useState<string>('');
+ [2m 53[0m |   const [activeRange, setActiveRange] = useState<string>('all');
+ [2m 54[0m | 
+ [2m 55[0m |   const filteredCredits = useMemo(() => {
+ [2m 56[0m |     if (!dateFrom && !dateTo) return credits;
+ [2m 57[0m |     return credits.filter((c) => {
+ [2m 58[0m |       const d = new Date(c.created_at);
+ [2m 59[0m |       if (dateFrom && d < new Date(dateFrom)) return false;
+ [2m 60[0m |       if (dateTo) {
+ [2m 61[0m |         const endDate = new Date(dateTo);
+ [2m 62[0m |         endDate.setHours(23, 59, 59, 999);
+ [2m 63[0m |         if (d > endDate) return false;
+ [2m 64[0m |       }
+ [2m 65[0m |       return true;
+ [2m 66[0m |     });
+ [2m 67[0m |   }, [credits, dateFrom, dateTo]);
+ [2m 68[0m | 
+ [2m 69[0m |   function applyRange(range: string) {
+ [2m 70[0m |     setActiveRange(range);
+ [2m 71[0m |     const today = new Date();
+ [2m 72[0m |     today.setHours(0, 0, 0, 0);
+ [2m 73[0m |     const fmt = (d: Date) => d.toISOString().split('T')[0];
+ [2m 74[0m | 
+ [2m 75[0m |     if (range === 'all') {
+ [2m 76[0m |       setDateFrom('');
+ [2m 77[0m |       setDateTo('');
+ [2m 78[0m |     } else if (range === 'today') {
+ [2m 79[0m |       setDateFrom(fmt(today));
+ [2m 80[0m |       setDateTo(fmt(today));
+ [2m 81[0m |     } else if (range === 'week') {
+ [2m 82[0m |       const start = new Date(today);
+ [2m 83[0m |       start.setDate(today.getDate() - 7);
+ [2m 84[0m |       setDateFrom(fmt(start));
+ [2m 85[0m |       setDateTo(fmt(today));
+ [2m 86[0m |     } else if (range === 'month') {
+ [2m 87[0m |       const start = new Date(today.getFullYear(), today.getMonth(), 1);
+ [2m 88[0m |       const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+ [2m 89[0m |       setDateFrom(fmt(start));
+ [2m 90[0m |       setDateTo(fmt(end));
+ [2m 91[0m |     } else if (range === 'quarter') {
+ [2m 92[0m |       const q = Math.floor(today.getMonth() / 3);
+ [2m 93[0m |       const start = new Date(today.getFullYear(), q * 3, 1);
+ [2m 94[0m |       const end = new Date(today.getFullYear(), q * 3 + 3, 0);
+ [2m 95[0m |       setDateFrom(fmt(start));
+ [2m 96[0m |       setDateTo(fmt(end));
+ [2m 97[0m |     } else if (range === 'year') {
+ [2m 98[0m |       const start = new Date(today.getFullYear(), 0, 1);
+ [2m 99[0m |       const end = new Date(today.getFullYear() + 1, 0, 0);
+ [2m100[0m |       setDateFrom(fmt(start));
+ [2m101[0m |       setDateTo(fmt(end));
+ [2m102[0m |     } else if (range === 'custom') {
+ [2m103[0m |       // No aplicar, dejar que el usuario edite los inputs
+ [2m104[0m |     }
+ [2m105[0m |   }
+ [2m106[0m | 
+ [2m107[0m |   function resetFilters() {
+ [2m108[0m |     applyRange('all');
+ [2m109[0m |   }
+ [2m110[0m |   const [loading, setLoading] = useState(true);
+     : [33;1m                  ^^^^^|^^^^[0m
+     :                        [33;1m`-- [33;1m`setLoading` redefined here[0m[0m
+ [2m111[0m | 
+ [2m112[0m |   useEffect(() => {
+ [2m113[0m |     loadData();
+     `----
+
+Import trace for requested module:
+./app/reportes/page.tsx
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ X ./app/reportes/page.tsx
+Error: 
+  [31mx[0m the name `loading` is defined multiple times
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\reportes\page.tsx[0m:45:1]
+ [2m 45[0m |   const [asesorPage, setAsesorPage] = useState(0);
+ [2m 46[0m |   const [asesorPageSize, setAsesorPageSize] = useState(10);
+ [2m 47[0m |   const [entities, setEntities] = useState<{ id: string; name: string }[]>([]);
+ [2m 48[0m |   const [loading, setLoading] = useState(true);
+     : [31;1m         ^^^|^^^[0m
+     :             [31;1m`-- [31;1mprevious definition of `loading` here[0m[0m
+ [2m 49[0m | 
+ [2m 50[0m |   // ==== Filtro de fechas ====
+ [2m 51[0m |   const [dateFrom, setDateFrom] = useState<string>('');
+ [2m 52[0m |   const [dateTo, setDateTo] = useState<string>('');
+ [2m 53[0m |   const [activeRange, setActiveRange] = useState<string>('all');
+ [2m 54[0m | 
+ [2m 55[0m |   const filteredCredits = useMemo(() => {
+ [2m 56[0m |     if (!dateFrom && !dateTo) return credits;
+ [2m 57[0m |     return credits.filter((c) => {
+ [2m 58[0m |       const d = new Date(c.created_at);
+ [2m 59[0m |       if (dateFrom && d < new Date(dateFrom)) return false;
+ [2m 60[0m |       if (dateTo) {
+ [2m 61[0m |         const endDate = new Date(dateTo);
+ [2m 62[0m |         endDate.setHours(23, 59, 59, 999);
+ [2m 63[0m |         if (d > endDate) return false;
+ [2m 64[0m |       }
+ [2m 65[0m |       return true;
+ [2m 66[0m |     });
+ [2m 67[0m |   }, [credits, dateFrom, dateTo]);
+ [2m 68[0m | 
+ [2m 69[0m |   function applyRange(range: string) {
+ [2m 70[0m |     setActiveRange(range);
+ [2m 71[0m |     const today = new Date();
+ [2m 72[0m |     today.setHours(0, 0, 0, 0);
+ [2m 73[0m |     const fmt = (d: Date) => d.toISOString().split('T')[0];
+ [2m 74[0m | 
+ [2m 75[0m |     if (range === 'all') {
+ [2m 76[0m |       setDateFrom('');
+ [2m 77[0m |       setDateTo('');
+ [2m 78[0m |     } else if (range === 'today') {
+ [2m 79[0m |       setDateFrom(fmt(today));
+ [2m 80[0m |       setDateTo(fmt(today));
+ [2m 81[0m |     } else if (range === 'week') {
+ [2m 82[0m |       const start = new Date(today);
+ [2m 83[0m |       start.setDate(today.getDate() - 7);
+ [2m 84[0m |       setDateFrom(fmt(start));
+ [2m 85[0m |       setDateTo(fmt(today));
+ [2m 86[0m |     } else if (range === 'month') {
+ [2m 87[0m |       const start = new Date(today.getFullYear(), today.getMonth(), 1);
+ [2m 88[0m |       const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+ [2m 89[0m |       setDateFrom(fmt(start));
+ [2m 90[0m |       setDateTo(fmt(end));
+ [2m 91[0m |     } else if (range === 'quarter') {
+ [2m 92[0m |       const q = Math.floor(today.getMonth() / 3);
+ [2m 93[0m |       const start = new Date(today.getFullYear(), q * 3, 1);
+ [2m 94[0m |       const end = new Date(today.getFullYear(), q * 3 + 3, 0);
+ [2m 95[0m |       setDateFrom(fmt(start));
+ [2m 96[0m |       setDateTo(fmt(end));
+ [2m 97[0m |     } else if (range === 'year') {
+ [2m 98[0m |       const start = new Date(today.getFullYear(), 0, 1);
+ [2m 99[0m |       const end = new Date(today.getFullYear() + 1, 0, 0);
+ [2m100[0m |       setDateFrom(fmt(start));
+ [2m101[0m |       setDateTo(fmt(end));
+ [2m102[0m |     } else if (range === 'custom') {
+ [2m103[0m |       // No aplicar, dejar que el usuario edite los inputs
+ [2m104[0m |     }
+ [2m105[0m |   }
+ [2m106[0m | 
+ [2m107[0m |   function resetFilters() {
+ [2m108[0m |     applyRange('all');
+ [2m109[0m |   }
+ [2m110[0m |   const [loading, setLoading] = useState(true);
+     : [33;1m         ^^^|^^^[0m
+     :             [33;1m`-- [33;1m`loading` redefined here[0m[0m
+ [2m111[0m | 
+ [2m112[0m |   useEffect(() => {
+ [2m113[0m |     loadData();
+     `----
+
+  [31mx[0m the name `setLoading` is defined multiple times
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\reportes\page.tsx[0m:45:1]
+ [2m 45[0m |   const [asesorPage, setAsesorPage] = useState(0);
+ [2m 46[0m |   const [asesorPageSize, setAsesorPageSize] = useState(10);
+ [2m 47[0m |   const [entities, setEntities] = useState<{ id: string; name: string }[]>([]);
+ [2m 48[0m |   const [loading, setLoading] = useState(true);
+     : [31;1m                  ^^^^^|^^^^[0m
+     :                        [31;1m`-- [31;1mprevious definition of `setLoading` here[0m[0m
+ [2m 49[0m | 
+ [2m 50[0m |   // ==== Filtro de fechas ====
+ [2m 51[0m |   const [dateFrom, setDateFrom] = useState<string>('');
+ [2m 52[0m |   const [dateTo, setDateTo] = useState<string>('');
+ [2m 53[0m |   const [activeRange, setActiveRange] = useState<string>('all');
+ [2m 54[0m | 
+ [2m 55[0m |   const filteredCredits = useMemo(() => {
+ [2m 56[0m |     if (!dateFrom && !dateTo) return credits;
+ [2m 57[0m |     return credits.filter((c) => {
+ [2m 58[0m |       const d = new Date(c.created_at);
+ [2m 59[0m |       if (dateFrom && d < new Date(dateFrom)) return false;
+ [2m 60[0m |       if (dateTo) {
+ [2m 61[0m |         const endDate = new Date(dateTo);
+ [2m 62[0m |         endDate.setHours(23, 59, 59, 999);
+ [2m 63[0m |         if (d > endDate) return false;
+ [2m 64[0m |       }
+ [2m 65[0m |       return true;
+ [2m 66[0m |     });
+ [2m 67[0m |   }, [credits, dateFrom, dateTo]);
+ [2m 68[0m | 
+ [2m 69[0m |   function applyRange(range: string) {
+ [2m 70[0m |     setActiveRange(range);
+ [2m 71[0m |     const today = new Date();
+ [2m 72[0m |     today.setHours(0, 0, 0, 0);
+ [2m 73[0m |     const fmt = (d: Date) => d.toISOString().split('T')[0];
+ [2m 74[0m | 
+ [2m 75[0m |     if (range === 'all') {
+ [2m 76[0m |       setDateFrom('');
+ [2m 77[0m |       setDateTo('');
+ [2m 78[0m |     } else if (range === 'today') {
+ [2m 79[0m |       setDateFrom(fmt(today));
+ [2m 80[0m |       setDateTo(fmt(today));
+ [2m 81[0m |     } else if (range === 'week') {
+ [2m 82[0m |       const start = new Date(today);
+ [2m 83[0m |       start.setDate(today.getDate() - 7);
+ [2m 84[0m |       setDateFrom(fmt(start));
+ [2m 85[0m |       setDateTo(fmt(today));
+ [2m 86[0m |     } else if (range === 'month') {
+ [2m 87[0m |       const start = new Date(today.getFullYear(), today.getMonth(), 1);
+ [2m 88[0m |       const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+ [2m 89[0m |       setDateFrom(fmt(start));
+ [2m 90[0m |       setDateTo(fmt(end));
+ [2m 91[0m |     } else if (range === 'quarter') {
+ [2m 92[0m |       const q = Math.floor(today.getMonth() / 3);
+ [2m 93[0m |       const start = new Date(today.getFullYear(), q * 3, 1);
+ [2m 94[0m |       const end = new Date(today.getFullYear(), q * 3 + 3, 0);
+ [2m 95[0m |       setDateFrom(fmt(start));
+ [2m 96[0m |       setDateTo(fmt(end));
+ [2m 97[0m |     } else if (range === 'year') {
+ [2m 98[0m |       const start = new Date(today.getFullYear(), 0, 1);
+ [2m 99[0m |       const end = new Date(today.getFullYear() + 1, 0, 0);
+ [2m100[0m |       setDateFrom(fmt(start));
+ [2m101[0m |       setDateTo(fmt(end));
+ [2m102[0m |     } else if (range === 'custom') {
+ [2m103[0m |       // No aplicar, dejar que el usuario edite los inputs
+ [2m104[0m |     }
+ [2m105[0m |   }
+ [2m106[0m | 
+ [2m107[0m |   function resetFilters() {
+ [2m108[0m |     applyRange('all');
+ [2m109[0m |   }
+ [2m110[0m |   const [loading, setLoading] = useState(true);
+     : [33;1m                  ^^^^^|^^^^[0m
+     :                        [33;1m`-- [33;1m`setLoading` redefined here[0m[0m
+ [2m111[0m | 
+ [2m112[0m |   useEffect(() => {
+ [2m113[0m |     loadData();
+     `----
+
+Import trace for requested module:
+./app/reportes/page.tsx
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ X ./app/reportes/page.tsx
+Error: 
+  [31mx[0m the name `loading` is defined multiple times
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\reportes\page.tsx[0m:45:1]
+ [2m 45[0m |   const [asesorPage, setAsesorPage] = useState(0);
+ [2m 46[0m |   const [asesorPageSize, setAsesorPageSize] = useState(10);
+ [2m 47[0m |   const [entities, setEntities] = useState<{ id: string; name: string }[]>([]);
+ [2m 48[0m |   const [loading, setLoading] = useState(true);
+     : [31;1m         ^^^|^^^[0m
+     :             [31;1m`-- [31;1mprevious definition of `loading` here[0m[0m
+ [2m 49[0m | 
+ [2m 50[0m |   // ==== Filtro de fechas ====
+ [2m 51[0m |   const [dateFrom, setDateFrom] = useState<string>('');
+ [2m 52[0m |   const [dateTo, setDateTo] = useState<string>('');
+ [2m 53[0m |   const [activeRange, setActiveRange] = useState<string>('all');
+ [2m 54[0m | 
+ [2m 55[0m |   const filteredCredits = useMemo(() => {
+ [2m 56[0m |     if (!dateFrom && !dateTo) return credits;
+ [2m 57[0m |     return credits.filter((c) => {
+ [2m 58[0m |       const d = new Date(c.created_at);
+ [2m 59[0m |       if (dateFrom && d < new Date(dateFrom)) return false;
+ [2m 60[0m |       if (dateTo) {
+ [2m 61[0m |         const endDate = new Date(dateTo);
+ [2m 62[0m |         endDate.setHours(23, 59, 59, 999);
+ [2m 63[0m |         if (d > endDate) return false;
+ [2m 64[0m |       }
+ [2m 65[0m |       return true;
+ [2m 66[0m |     });
+ [2m 67[0m |   }, [credits, dateFrom, dateTo]);
+ [2m 68[0m | 
+ [2m 69[0m |   function applyRange(range: string) {
+ [2m 70[0m |     setActiveRange(range);
+ [2m 71[0m |     const today = new Date();
+ [2m 72[0m |     today.setHours(0, 0, 0, 0);
+ [2m 73[0m |     const fmt = (d: Date) => d.toISOString().split('T')[0];
+ [2m 74[0m | 
+ [2m 75[0m |     if (range === 'all') {
+ [2m 76[0m |       setDateFrom('');
+ [2m 77[0m |       setDateTo('');
+ [2m 78[0m |     } else if (range === 'today') {
+ [2m 79[0m |       setDateFrom(fmt(today));
+ [2m 80[0m |       setDateTo(fmt(today));
+ [2m 81[0m |     } else if (range === 'week') {
+ [2m 82[0m |       const start = new Date(today);
+ [2m 83[0m |       start.setDate(today.getDate() - 7);
+ [2m 84[0m |       setDateFrom(fmt(start));
+ [2m 85[0m |       setDateTo(fmt(today));
+ [2m 86[0m |     } else if (range === 'month') {
+ [2m 87[0m |       const start = new Date(today.getFullYear(), today.getMonth(), 1);
+ [2m 88[0m |       const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+ [2m 89[0m |       setDateFrom(fmt(start));
+ [2m 90[0m |       setDateTo(fmt(end));
+ [2m 91[0m |     } else if (range === 'quarter') {
+ [2m 92[0m |       const q = Math.floor(today.getMonth() / 3);
+ [2m 93[0m |       const start = new Date(today.getFullYear(), q * 3, 1);
+ [2m 94[0m |       const end = new Date(today.getFullYear(), q * 3 + 3, 0);
+ [2m 95[0m |       setDateFrom(fmt(start));
+ [2m 96[0m |       setDateTo(fmt(end));
+ [2m 97[0m |     } else if (range === 'year') {
+ [2m 98[0m |       const start = new Date(today.getFullYear(), 0, 1);
+ [2m 99[0m |       const end = new Date(today.getFullYear() + 1, 0, 0);
+ [2m100[0m |       setDateFrom(fmt(start));
+ [2m101[0m |       setDateTo(fmt(end));
+ [2m102[0m |     } else if (range === 'custom') {
+ [2m103[0m |       // No aplicar, dejar que el usuario edite los inputs
+ [2m104[0m |     }
+ [2m105[0m |   }
+ [2m106[0m | 
+ [2m107[0m |   function resetFilters() {
+ [2m108[0m |     applyRange('all');
+ [2m109[0m |   }
+ [2m110[0m |   const [loading, setLoading] = useState(true);
+     : [33;1m         ^^^|^^^[0m
+     :             [33;1m`-- [33;1m`loading` redefined here[0m[0m
+ [2m111[0m | 
+ [2m112[0m |   useEffect(() => {
+ [2m113[0m |     loadData();
+     `----
+
+  [31mx[0m the name `setLoading` is defined multiple times
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\reportes\page.tsx[0m:45:1]
+ [2m 45[0m |   const [asesorPage, setAsesorPage] = useState(0);
+ [2m 46[0m |   const [asesorPageSize, setAsesorPageSize] = useState(10);
+ [2m 47[0m |   const [entities, setEntities] = useState<{ id: string; name: string }[]>([]);
+ [2m 48[0m |   const [loading, setLoading] = useState(true);
+     : [31;1m                  ^^^^^|^^^^[0m
+     :                        [31;1m`-- [31;1mprevious definition of `setLoading` here[0m[0m
+ [2m 49[0m | 
+ [2m 50[0m |   // ==== Filtro de fechas ====
+ [2m 51[0m |   const [dateFrom, setDateFrom] = useState<string>('');
+ [2m 52[0m |   const [dateTo, setDateTo] = useState<string>('');
+ [2m 53[0m |   const [activeRange, setActiveRange] = useState<string>('all');
+ [2m 54[0m | 
+ [2m 55[0m |   const filteredCredits = useMemo(() => {
+ [2m 56[0m |     if (!dateFrom && !dateTo) return credits;
+ [2m 57[0m |     return credits.filter((c) => {
+ [2m 58[0m |       const d = new Date(c.created_at);
+ [2m 59[0m |       if (dateFrom && d < new Date(dateFrom)) return false;
+ [2m 60[0m |       if (dateTo) {
+ [2m 61[0m |         const endDate = new Date(dateTo);
+ [2m 62[0m |         endDate.setHours(23, 59, 59, 999);
+ [2m 63[0m |         if (d > endDate) return false;
+ [2m 64[0m |       }
+ [2m 65[0m |       return true;
+ [2m 66[0m |     });
+ [2m 67[0m |   }, [credits, dateFrom, dateTo]);
+ [2m 68[0m | 
+ [2m 69[0m |   function applyRange(range: string) {
+ [2m 70[0m |     setActiveRange(range);
+ [2m 71[0m |     const today = new Date();
+ [2m 72[0m |     today.setHours(0, 0, 0, 0);
+ [2m 73[0m |     const fmt = (d: Date) => d.toISOString().split('T')[0];
+ [2m 74[0m | 
+ [2m 75[0m |     if (range === 'all') {
+ [2m 76[0m |       setDateFrom('');
+ [2m 77[0m |       setDateTo('');
+ [2m 78[0m |     } else if (range === 'today') {
+ [2m 79[0m |       setDateFrom(fmt(today));
+ [2m 80[0m |       setDateTo(fmt(today));
+ [2m 81[0m |     } else if (range === 'week') {
+ [2m 82[0m |       const start = new Date(today);
+ [2m 83[0m |       start.setDate(today.getDate() - 7);
+ [2m 84[0m |       setDateFrom(fmt(start));
+ [2m 85[0m |       setDateTo(fmt(today));
+ [2m 86[0m |     } else if (range === 'month') {
+ [2m 87[0m |       const start = new Date(today.getFullYear(), today.getMonth(), 1);
+ [2m 88[0m |       const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+ [2m 89[0m |       setDateFrom(fmt(start));
+ [2m 90[0m |       setDateTo(fmt(end));
+ [2m 91[0m |     } else if (range === 'quarter') {
+ [2m 92[0m |       const q = Math.floor(today.getMonth() / 3);
+ [2m 93[0m |       const start = new Date(today.getFullYear(), q * 3, 1);
+ [2m 94[0m |       const end = new Date(today.getFullYear(), q * 3 + 3, 0);
+ [2m 95[0m |       setDateFrom(fmt(start));
+ [2m 96[0m |       setDateTo(fmt(end));
+ [2m 97[0m |     } else if (range === 'year') {
+ [2m 98[0m |       const start = new Date(today.getFullYear(), 0, 1);
+ [2m 99[0m |       const end = new Date(today.getFullYear() + 1, 0, 0);
+ [2m100[0m |       setDateFrom(fmt(start));
+ [2m101[0m |       setDateTo(fmt(end));
+ [2m102[0m |     } else if (range === 'custom') {
+ [2m103[0m |       // No aplicar, dejar que el usuario edite los inputs
+ [2m104[0m |     }
+ [2m105[0m |   }
+ [2m106[0m | 
+ [2m107[0m |   function resetFilters() {
+ [2m108[0m |     applyRange('all');
+ [2m109[0m |   }
+ [2m110[0m |   const [loading, setLoading] = useState(true);
+     : [33;1m                  ^^^^^|^^^^[0m
+     :                        [33;1m`-- [33;1m`setLoading` redefined here[0m[0m
+ [2m111[0m | 
+ [2m112[0m |   useEffect(() => {
+ [2m113[0m |     loadData();
+     `----
+
+Import trace for requested module:
+./app/reportes/page.tsx
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ X ./app/reportes/page.tsx
+Error: 
+  [31mx[0m the name `loading` is defined multiple times
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\reportes\page.tsx[0m:45:1]
+ [2m 45[0m |   const [asesorPage, setAsesorPage] = useState(0);
+ [2m 46[0m |   const [asesorPageSize, setAsesorPageSize] = useState(10);
+ [2m 47[0m |   const [entities, setEntities] = useState<{ id: string; name: string }[]>([]);
+ [2m 48[0m |   const [loading, setLoading] = useState(true);
+     : [31;1m         ^^^|^^^[0m
+     :             [31;1m`-- [31;1mprevious definition of `loading` here[0m[0m
+ [2m 49[0m | 
+ [2m 50[0m |   // ==== Filtro de fechas ====
+ [2m 51[0m |   const [dateFrom, setDateFrom] = useState<string>('');
+ [2m 52[0m |   const [dateTo, setDateTo] = useState<string>('');
+ [2m 53[0m |   const [activeRange, setActiveRange] = useState<string>('all');
+ [2m 54[0m | 
+ [2m 55[0m |   const filteredCredits = useMemo(() => {
+ [2m 56[0m |     if (!dateFrom && !dateTo) return credits;
+ [2m 57[0m |     return credits.filter((c) => {
+ [2m 58[0m |       const d = new Date(c.created_at);
+ [2m 59[0m |       if (dateFrom && d < new Date(dateFrom)) return false;
+ [2m 60[0m |       if (dateTo) {
+ [2m 61[0m |         const endDate = new Date(dateTo);
+ [2m 62[0m |         endDate.setHours(23, 59, 59, 999);
+ [2m 63[0m |         if (d > endDate) return false;
+ [2m 64[0m |       }
+ [2m 65[0m |       return true;
+ [2m 66[0m |     });
+ [2m 67[0m |   }, [credits, dateFrom, dateTo]);
+ [2m 68[0m | 
+ [2m 69[0m |   function applyRange(range: string) {
+ [2m 70[0m |     setActiveRange(range);
+ [2m 71[0m |     const today = new Date();
+ [2m 72[0m |     today.setHours(0, 0, 0, 0);
+ [2m 73[0m |     const fmt = (d: Date) => d.toISOString().split('T')[0];
+ [2m 74[0m | 
+ [2m 75[0m |     if (range === 'all') {
+ [2m 76[0m |       setDateFrom('');
+ [2m 77[0m |       setDateTo('');
+ [2m 78[0m |     } else if (range === 'today') {
+ [2m 79[0m |       setDateFrom(fmt(today));
+ [2m 80[0m |       setDateTo(fmt(today));
+ [2m 81[0m |     } else if (range === 'week') {
+ [2m 82[0m |       const start = new Date(today);
+ [2m 83[0m |       start.setDate(today.getDate() - 7);
+ [2m 84[0m |       setDateFrom(fmt(start));
+ [2m 85[0m |       setDateTo(fmt(today));
+ [2m 86[0m |     } else if (range === 'month') {
+ [2m 87[0m |       const start = new Date(today.getFullYear(), today.getMonth(), 1);
+ [2m 88[0m |       const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+ [2m 89[0m |       setDateFrom(fmt(start));
+ [2m 90[0m |       setDateTo(fmt(end));
+ [2m 91[0m |     } else if (range === 'quarter') {
+ [2m 92[0m |       const q = Math.floor(today.getMonth() / 3);
+ [2m 93[0m |       const start = new Date(today.getFullYear(), q * 3, 1);
+ [2m 94[0m |       const end = new Date(today.getFullYear(), q * 3 + 3, 0);
+ [2m 95[0m |       setDateFrom(fmt(start));
+ [2m 96[0m |       setDateTo(fmt(end));
+ [2m 97[0m |     } else if (range === 'year') {
+ [2m 98[0m |       const start = new Date(today.getFullYear(), 0, 1);
+ [2m 99[0m |       const end = new Date(today.getFullYear() + 1, 0, 0);
+ [2m100[0m |       setDateFrom(fmt(start));
+ [2m101[0m |       setDateTo(fmt(end));
+ [2m102[0m |     } else if (range === 'custom') {
+ [2m103[0m |       // No aplicar, dejar que el usuario edite los inputs
+ [2m104[0m |     }
+ [2m105[0m |   }
+ [2m106[0m | 
+ [2m107[0m |   function resetFilters() {
+ [2m108[0m |     applyRange('all');
+ [2m109[0m |   }
+ [2m110[0m |   const [loading, setLoading] = useState(true);
+     : [33;1m         ^^^|^^^[0m
+     :             [33;1m`-- [33;1m`loading` redefined here[0m[0m
+ [2m111[0m | 
+ [2m112[0m |   useEffect(() => {
+ [2m113[0m |     loadData();
+     `----
+
+  [31mx[0m the name `setLoading` is defined multiple times
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\reportes\page.tsx[0m:45:1]
+ [2m 45[0m |   const [asesorPage, setAsesorPage] = useState(0);
+ [2m 46[0m |   const [asesorPageSize, setAsesorPageSize] = useState(10);
+ [2m 47[0m |   const [entities, setEntities] = useState<{ id: string; name: string }[]>([]);
+ [2m 48[0m |   const [loading, setLoading] = useState(true);
+     : [31;1m                  ^^^^^|^^^^[0m
+     :                        [31;1m`-- [31;1mprevious definition of `setLoading` here[0m[0m
+ [2m 49[0m | 
+ [2m 50[0m |   // ==== Filtro de fechas ====
+ [2m 51[0m |   const [dateFrom, setDateFrom] = useState<string>('');
+ [2m 52[0m |   const [dateTo, setDateTo] = useState<string>('');
+ [2m 53[0m |   const [activeRange, setActiveRange] = useState<string>('all');
+ [2m 54[0m | 
+ [2m 55[0m |   const filteredCredits = useMemo(() => {
+ [2m 56[0m |     if (!dateFrom && !dateTo) return credits;
+ [2m 57[0m |     return credits.filter((c) => {
+ [2m 58[0m |       const d = new Date(c.created_at);
+ [2m 59[0m |       if (dateFrom && d < new Date(dateFrom)) return false;
+ [2m 60[0m |       if (dateTo) {
+ [2m 61[0m |         const endDate = new Date(dateTo);
+ [2m 62[0m |         endDate.setHours(23, 59, 59, 999);
+ [2m 63[0m |         if (d > endDate) return false;
+ [2m 64[0m |       }
+ [2m 65[0m |       return true;
+ [2m 66[0m |     });
+ [2m 67[0m |   }, [credits, dateFrom, dateTo]);
+ [2m 68[0m | 
+ [2m 69[0m |   function applyRange(range: string) {
+ [2m 70[0m |     setActiveRange(range);
+ [2m 71[0m |     const today = new Date();
+ [2m 72[0m |     today.setHours(0, 0, 0, 0);
+ [2m 73[0m |     const fmt = (d: Date) => d.toISOString().split('T')[0];
+ [2m 74[0m | 
+ [2m 75[0m |     if (range === 'all') {
+ [2m 76[0m |       setDateFrom('');
+ [2m 77[0m |       setDateTo('');
+ [2m 78[0m |     } else if (range === 'today') {
+ [2m 79[0m |       setDateFrom(fmt(today));
+ [2m 80[0m |       setDateTo(fmt(today));
+ [2m 81[0m |     } else if (range === 'week') {
+ [2m 82[0m |       const start = new Date(today);
+ [2m 83[0m |       start.setDate(today.getDate() - 7);
+ [2m 84[0m |       setDateFrom(fmt(start));
+ [2m 85[0m |       setDateTo(fmt(today));
+ [2m 86[0m |     } else if (range === 'month') {
+ [2m 87[0m |       const start = new Date(today.getFullYear(), today.getMonth(), 1);
+ [2m 88[0m |       const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+ [2m 89[0m |       setDateFrom(fmt(start));
+ [2m 90[0m |       setDateTo(fmt(end));
+ [2m 91[0m |     } else if (range === 'quarter') {
+ [2m 92[0m |       const q = Math.floor(today.getMonth() / 3);
+ [2m 93[0m |       const start = new Date(today.getFullYear(), q * 3, 1);
+ [2m 94[0m |       const end = new Date(today.getFullYear(), q * 3 + 3, 0);
+ [2m 95[0m |       setDateFrom(fmt(start));
+ [2m 96[0m |       setDateTo(fmt(end));
+ [2m 97[0m |     } else if (range === 'year') {
+ [2m 98[0m |       const start = new Date(today.getFullYear(), 0, 1);
+ [2m 99[0m |       const end = new Date(today.getFullYear() + 1, 0, 0);
+ [2m100[0m |       setDateFrom(fmt(start));
+ [2m101[0m |       setDateTo(fmt(end));
+ [2m102[0m |     } else if (range === 'custom') {
+ [2m103[0m |       // No aplicar, dejar que el usuario edite los inputs
+ [2m104[0m |     }
+ [2m105[0m |   }
+ [2m106[0m | 
+ [2m107[0m |   function resetFilters() {
+ [2m108[0m |     applyRange('all');
+ [2m109[0m |   }
+ [2m110[0m |   const [loading, setLoading] = useState(true);
+     : [33;1m                  ^^^^^|^^^^[0m
+     :                        [33;1m`-- [33;1m`setLoading` redefined here[0m[0m
+ [2m111[0m | 
+ [2m112[0m |   useEffect(() => {
+ [2m113[0m |     loadData();
+     `----
+
+Import trace for requested module:
+./app/reportes/page.tsx
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ X ./app/reportes/page.tsx
+Error: 
+  [31mx[0m the name `loading` is defined multiple times
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\reportes\page.tsx[0m:45:1]
+ [2m 45[0m |   const [asesorPage, setAsesorPage] = useState(0);
+ [2m 46[0m |   const [asesorPageSize, setAsesorPageSize] = useState(10);
+ [2m 47[0m |   const [entities, setEntities] = useState<{ id: string; name: string }[]>([]);
+ [2m 48[0m |   const [loading, setLoading] = useState(true);
+     : [31;1m         ^^^|^^^[0m
+     :             [31;1m`-- [31;1mprevious definition of `loading` here[0m[0m
+ [2m 49[0m | 
+ [2m 50[0m |   // ==== Filtro de fechas ====
+ [2m 51[0m |   const [dateFrom, setDateFrom] = useState<string>('');
+ [2m 52[0m |   const [dateTo, setDateTo] = useState<string>('');
+ [2m 53[0m |   const [activeRange, setActiveRange] = useState<string>('all');
+ [2m 54[0m | 
+ [2m 55[0m |   const filteredCredits = useMemo(() => {
+ [2m 56[0m |     if (!dateFrom && !dateTo) return credits;
+ [2m 57[0m |     return credits.filter((c) => {
+ [2m 58[0m |       const d = new Date(c.created_at);
+ [2m 59[0m |       if (dateFrom && d < new Date(dateFrom)) return false;
+ [2m 60[0m |       if (dateTo) {
+ [2m 61[0m |         const endDate = new Date(dateTo);
+ [2m 62[0m |         endDate.setHours(23, 59, 59, 999);
+ [2m 63[0m |         if (d > endDate) return false;
+ [2m 64[0m |       }
+ [2m 65[0m |       return true;
+ [2m 66[0m |     });
+ [2m 67[0m |   }, [credits, dateFrom, dateTo]);
+ [2m 68[0m | 
+ [2m 69[0m |   function applyRange(range: string) {
+ [2m 70[0m |     setActiveRange(range);
+ [2m 71[0m |     const today = new Date();
+ [2m 72[0m |     today.setHours(0, 0, 0, 0);
+ [2m 73[0m |     const fmt = (d: Date) => d.toISOString().split('T')[0];
+ [2m 74[0m | 
+ [2m 75[0m |     if (range === 'all') {
+ [2m 76[0m |       setDateFrom('');
+ [2m 77[0m |       setDateTo('');
+ [2m 78[0m |     } else if (range === 'today') {
+ [2m 79[0m |       setDateFrom(fmt(today));
+ [2m 80[0m |       setDateTo(fmt(today));
+ [2m 81[0m |     } else if (range === 'week') {
+ [2m 82[0m |       const start = new Date(today);
+ [2m 83[0m |       start.setDate(today.getDate() - 7);
+ [2m 84[0m |       setDateFrom(fmt(start));
+ [2m 85[0m |       setDateTo(fmt(today));
+ [2m 86[0m |     } else if (range === 'month') {
+ [2m 87[0m |       const start = new Date(today.getFullYear(), today.getMonth(), 1);
+ [2m 88[0m |       const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+ [2m 89[0m |       setDateFrom(fmt(start));
+ [2m 90[0m |       setDateTo(fmt(end));
+ [2m 91[0m |     } else if (range === 'quarter') {
+ [2m 92[0m |       const q = Math.floor(today.getMonth() / 3);
+ [2m 93[0m |       const start = new Date(today.getFullYear(), q * 3, 1);
+ [2m 94[0m |       const end = new Date(today.getFullYear(), q * 3 + 3, 0);
+ [2m 95[0m |       setDateFrom(fmt(start));
+ [2m 96[0m |       setDateTo(fmt(end));
+ [2m 97[0m |     } else if (range === 'year') {
+ [2m 98[0m |       const start = new Date(today.getFullYear(), 0, 1);
+ [2m 99[0m |       const end = new Date(today.getFullYear() + 1, 0, 0);
+ [2m100[0m |       setDateFrom(fmt(start));
+ [2m101[0m |       setDateTo(fmt(end));
+ [2m102[0m |     } else if (range === 'custom') {
+ [2m103[0m |       // No aplicar, dejar que el usuario edite los inputs
+ [2m104[0m |     }
+ [2m105[0m |   }
+ [2m106[0m | 
+ [2m107[0m |   function resetFilters() {
+ [2m108[0m |     applyRange('all');
+ [2m109[0m |   }
+ [2m110[0m |   const [loading, setLoading] = useState(true);
+     : [33;1m         ^^^|^^^[0m
+     :             [33;1m`-- [33;1m`loading` redefined here[0m[0m
+ [2m111[0m | 
+ [2m112[0m |   useEffect(() => {
+ [2m113[0m |     loadData();
+     `----
+
+  [31mx[0m the name `setLoading` is defined multiple times
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\reportes\page.tsx[0m:45:1]
+ [2m 45[0m |   const [asesorPage, setAsesorPage] = useState(0);
+ [2m 46[0m |   const [asesorPageSize, setAsesorPageSize] = useState(10);
+ [2m 47[0m |   const [entities, setEntities] = useState<{ id: string; name: string }[]>([]);
+ [2m 48[0m |   const [loading, setLoading] = useState(true);
+     : [31;1m                  ^^^^^|^^^^[0m
+     :                        [31;1m`-- [31;1mprevious definition of `setLoading` here[0m[0m
+ [2m 49[0m | 
+ [2m 50[0m |   // ==== Filtro de fechas ====
+ [2m 51[0m |   const [dateFrom, setDateFrom] = useState<string>('');
+ [2m 52[0m |   const [dateTo, setDateTo] = useState<string>('');
+ [2m 53[0m |   const [activeRange, setActiveRange] = useState<string>('all');
+ [2m 54[0m | 
+ [2m 55[0m |   const filteredCredits = useMemo(() => {
+ [2m 56[0m |     if (!dateFrom && !dateTo) return credits;
+ [2m 57[0m |     return credits.filter((c) => {
+ [2m 58[0m |       const d = new Date(c.created_at);
+ [2m 59[0m |       if (dateFrom && d < new Date(dateFrom)) return false;
+ [2m 60[0m |       if (dateTo) {
+ [2m 61[0m |         const endDate = new Date(dateTo);
+ [2m 62[0m |         endDate.setHours(23, 59, 59, 999);
+ [2m 63[0m |         if (d > endDate) return false;
+ [2m 64[0m |       }
+ [2m 65[0m |       return true;
+ [2m 66[0m |     });
+ [2m 67[0m |   }, [credits, dateFrom, dateTo]);
+ [2m 68[0m | 
+ [2m 69[0m |   function applyRange(range: string) {
+ [2m 70[0m |     setActiveRange(range);
+ [2m 71[0m |     const today = new Date();
+ [2m 72[0m |     today.setHours(0, 0, 0, 0);
+ [2m 73[0m |     const fmt = (d: Date) => d.toISOString().split('T')[0];
+ [2m 74[0m | 
+ [2m 75[0m |     if (range === 'all') {
+ [2m 76[0m |       setDateFrom('');
+ [2m 77[0m |       setDateTo('');
+ [2m 78[0m |     } else if (range === 'today') {
+ [2m 79[0m |       setDateFrom(fmt(today));
+ [2m 80[0m |       setDateTo(fmt(today));
+ [2m 81[0m |     } else if (range === 'week') {
+ [2m 82[0m |       const start = new Date(today);
+ [2m 83[0m |       start.setDate(today.getDate() - 7);
+ [2m 84[0m |       setDateFrom(fmt(start));
+ [2m 85[0m |       setDateTo(fmt(today));
+ [2m 86[0m |     } else if (range === 'month') {
+ [2m 87[0m |       const start = new Date(today.getFullYear(), today.getMonth(), 1);
+ [2m 88[0m |       const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+ [2m 89[0m |       setDateFrom(fmt(start));
+ [2m 90[0m |       setDateTo(fmt(end));
+ [2m 91[0m |     } else if (range === 'quarter') {
+ [2m 92[0m |       const q = Math.floor(today.getMonth() / 3);
+ [2m 93[0m |       const start = new Date(today.getFullYear(), q * 3, 1);
+ [2m 94[0m |       const end = new Date(today.getFullYear(), q * 3 + 3, 0);
+ [2m 95[0m |       setDateFrom(fmt(start));
+ [2m 96[0m |       setDateTo(fmt(end));
+ [2m 97[0m |     } else if (range === 'year') {
+ [2m 98[0m |       const start = new Date(today.getFullYear(), 0, 1);
+ [2m 99[0m |       const end = new Date(today.getFullYear() + 1, 0, 0);
+ [2m100[0m |       setDateFrom(fmt(start));
+ [2m101[0m |       setDateTo(fmt(end));
+ [2m102[0m |     } else if (range === 'custom') {
+ [2m103[0m |       // No aplicar, dejar que el usuario edite los inputs
+ [2m104[0m |     }
+ [2m105[0m |   }
+ [2m106[0m | 
+ [2m107[0m |   function resetFilters() {
+ [2m108[0m |     applyRange('all');
+ [2m109[0m |   }
+ [2m110[0m |   const [loading, setLoading] = useState(true);
+     : [33;1m                  ^^^^^|^^^^[0m
+     :                        [33;1m`-- [33;1m`setLoading` redefined here[0m[0m
+ [2m111[0m | 
+ [2m112[0m |   useEffect(() => {
+ [2m113[0m |     loadData();
+     `----
+
+Import trace for requested module:
+./app/reportes/page.tsx
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ X ./app/reportes/page.tsx
+Error: 
+  [31mx[0m the name `loading` is defined multiple times
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\reportes\page.tsx[0m:45:1]
+ [2m 45[0m |   const [asesorPage, setAsesorPage] = useState(0);
+ [2m 46[0m |   const [asesorPageSize, setAsesorPageSize] = useState(10);
+ [2m 47[0m |   const [entities, setEntities] = useState<{ id: string; name: string }[]>([]);
+ [2m 48[0m |   const [loading, setLoading] = useState(true);
+     : [31;1m         ^^^|^^^[0m
+     :             [31;1m`-- [31;1mprevious definition of `loading` here[0m[0m
+ [2m 49[0m | 
+ [2m 50[0m |   // ==== Filtro de fechas ====
+ [2m 51[0m |   const [dateFrom, setDateFrom] = useState<string>('');
+ [2m 52[0m |   const [dateTo, setDateTo] = useState<string>('');
+ [2m 53[0m |   const [activeRange, setActiveRange] = useState<string>('all');
+ [2m 54[0m | 
+ [2m 55[0m |   const filteredCredits = useMemo(() => {
+ [2m 56[0m |     if (!dateFrom && !dateTo) return credits;
+ [2m 57[0m |     return credits.filter((c) => {
+ [2m 58[0m |       const d = new Date(c.created_at);
+ [2m 59[0m |       if (dateFrom && d < new Date(dateFrom)) return false;
+ [2m 60[0m |       if (dateTo) {
+ [2m 61[0m |         const endDate = new Date(dateTo);
+ [2m 62[0m |         endDate.setHours(23, 59, 59, 999);
+ [2m 63[0m |         if (d > endDate) return false;
+ [2m 64[0m |       }
+ [2m 65[0m |       return true;
+ [2m 66[0m |     });
+ [2m 67[0m |   }, [credits, dateFrom, dateTo]);
+ [2m 68[0m | 
+ [2m 69[0m |   function applyRange(range: string) {
+ [2m 70[0m |     setActiveRange(range);
+ [2m 71[0m |     const today = new Date();
+ [2m 72[0m |     today.setHours(0, 0, 0, 0);
+ [2m 73[0m |     const fmt = (d: Date) => d.toISOString().split('T')[0];
+ [2m 74[0m | 
+ [2m 75[0m |     if (range === 'all') {
+ [2m 76[0m |       setDateFrom('');
+ [2m 77[0m |       setDateTo('');
+ [2m 78[0m |     } else if (range === 'today') {
+ [2m 79[0m |       setDateFrom(fmt(today));
+ [2m 80[0m |       setDateTo(fmt(today));
+ [2m 81[0m |     } else if (range === 'week') {
+ [2m 82[0m |       const start = new Date(today);
+ [2m 83[0m |       start.setDate(today.getDate() - 7);
+ [2m 84[0m |       setDateFrom(fmt(start));
+ [2m 85[0m |       setDateTo(fmt(today));
+ [2m 86[0m |     } else if (range === 'month') {
+ [2m 87[0m |       const start = new Date(today.getFullYear(), today.getMonth(), 1);
+ [2m 88[0m |       const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+ [2m 89[0m |       setDateFrom(fmt(start));
+ [2m 90[0m |       setDateTo(fmt(end));
+ [2m 91[0m |     } else if (range === 'quarter') {
+ [2m 92[0m |       const q = Math.floor(today.getMonth() / 3);
+ [2m 93[0m |       const start = new Date(today.getFullYear(), q * 3, 1);
+ [2m 94[0m |       const end = new Date(today.getFullYear(), q * 3 + 3, 0);
+ [2m 95[0m |       setDateFrom(fmt(start));
+ [2m 96[0m |       setDateTo(fmt(end));
+ [2m 97[0m |     } else if (range === 'year') {
+ [2m 98[0m |       const start = new Date(today.getFullYear(), 0, 1);
+ [2m 99[0m |       const end = new Date(today.getFullYear() + 1, 0, 0);
+ [2m100[0m |       setDateFrom(fmt(start));
+ [2m101[0m |       setDateTo(fmt(end));
+ [2m102[0m |     } else if (range === 'custom') {
+ [2m103[0m |       // No aplicar, dejar que el usuario edite los inputs
+ [2m104[0m |     }
+ [2m105[0m |   }
+ [2m106[0m | 
+ [2m107[0m |   function resetFilters() {
+ [2m108[0m |     applyRange('all');
+ [2m109[0m |   }
+ [2m110[0m |   const [loading, setLoading] = useState(true);
+     : [33;1m         ^^^|^^^[0m
+     :             [33;1m`-- [33;1m`loading` redefined here[0m[0m
+ [2m111[0m | 
+ [2m112[0m |   useEffect(() => {
+ [2m113[0m |     loadData();
+     `----
+
+  [31mx[0m the name `setLoading` is defined multiple times
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\reportes\page.tsx[0m:45:1]
+ [2m 45[0m |   const [asesorPage, setAsesorPage] = useState(0);
+ [2m 46[0m |   const [asesorPageSize, setAsesorPageSize] = useState(10);
+ [2m 47[0m |   const [entities, setEntities] = useState<{ id: string; name: string }[]>([]);
+ [2m 48[0m |   const [loading, setLoading] = useState(true);
+     : [31;1m                  ^^^^^|^^^^[0m
+     :                        [31;1m`-- [31;1mprevious definition of `setLoading` here[0m[0m
+ [2m 49[0m | 
+ [2m 50[0m |   // ==== Filtro de fechas ====
+ [2m 51[0m |   const [dateFrom, setDateFrom] = useState<string>('');
+ [2m 52[0m |   const [dateTo, setDateTo] = useState<string>('');
+ [2m 53[0m |   const [activeRange, setActiveRange] = useState<string>('all');
+ [2m 54[0m | 
+ [2m 55[0m |   const filteredCredits = useMemo(() => {
+ [2m 56[0m |     if (!dateFrom && !dateTo) return credits;
+ [2m 57[0m |     return credits.filter((c) => {
+ [2m 58[0m |       const d = new Date(c.created_at);
+ [2m 59[0m |       if (dateFrom && d < new Date(dateFrom)) return false;
+ [2m 60[0m |       if (dateTo) {
+ [2m 61[0m |         const endDate = new Date(dateTo);
+ [2m 62[0m |         endDate.setHours(23, 59, 59, 999);
+ [2m 63[0m |         if (d > endDate) return false;
+ [2m 64[0m |       }
+ [2m 65[0m |       return true;
+ [2m 66[0m |     });
+ [2m 67[0m |   }, [credits, dateFrom, dateTo]);
+ [2m 68[0m | 
+ [2m 69[0m |   function applyRange(range: string) {
+ [2m 70[0m |     setActiveRange(range);
+ [2m 71[0m |     const today = new Date();
+ [2m 72[0m |     today.setHours(0, 0, 0, 0);
+ [2m 73[0m |     const fmt = (d: Date) => d.toISOString().split('T')[0];
+ [2m 74[0m | 
+ [2m 75[0m |     if (range === 'all') {
+ [2m 76[0m |       setDateFrom('');
+ [2m 77[0m |       setDateTo('');
+ [2m 78[0m |     } else if (range === 'today') {
+ [2m 79[0m |       setDateFrom(fmt(today));
+ [2m 80[0m |       setDateTo(fmt(today));
+ [2m 81[0m |     } else if (range === 'week') {
+ [2m 82[0m |       const start = new Date(today);
+ [2m 83[0m |       start.setDate(today.getDate() - 7);
+ [2m 84[0m |       setDateFrom(fmt(start));
+ [2m 85[0m |       setDateTo(fmt(today));
+ [2m 86[0m |     } else if (range === 'month') {
+ [2m 87[0m |       const start = new Date(today.getFullYear(), today.getMonth(), 1);
+ [2m 88[0m |       const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+ [2m 89[0m |       setDateFrom(fmt(start));
+ [2m 90[0m |       setDateTo(fmt(end));
+ [2m 91[0m |     } else if (range === 'quarter') {
+ [2m 92[0m |       const q = Math.floor(today.getMonth() / 3);
+ [2m 93[0m |       const start = new Date(today.getFullYear(), q * 3, 1);
+ [2m 94[0m |       const end = new Date(today.getFullYear(), q * 3 + 3, 0);
+ [2m 95[0m |       setDateFrom(fmt(start));
+ [2m 96[0m |       setDateTo(fmt(end));
+ [2m 97[0m |     } else if (range === 'year') {
+ [2m 98[0m |       const start = new Date(today.getFullYear(), 0, 1);
+ [2m 99[0m |       const end = new Date(today.getFullYear() + 1, 0, 0);
+ [2m100[0m |       setDateFrom(fmt(start));
+ [2m101[0m |       setDateTo(fmt(end));
+ [2m102[0m |     } else if (range === 'custom') {
+ [2m103[0m |       // No aplicar, dejar que el usuario edite los inputs
+ [2m104[0m |     }
+ [2m105[0m |   }
+ [2m106[0m | 
+ [2m107[0m |   function resetFilters() {
+ [2m108[0m |     applyRange('all');
+ [2m109[0m |   }
+ [2m110[0m |   const [loading, setLoading] = useState(true);
+     : [33;1m                  ^^^^^|^^^^[0m
+     :                        [33;1m`-- [33;1m`setLoading` redefined here[0m[0m
+ [2m111[0m | 
+ [2m112[0m |   useEffect(() => {
+ [2m113[0m |     loadData();
+     `----
+
+Import trace for requested module:
+./app/reportes/page.tsx
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled /not-found in 11.5s (4069 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled /api/auth/me/route in 1223ms (1990 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /api/db/[table]/route in 751ms (1993 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /api/auth/logout/route in 1957ms (1992 modules)
+ ✓ Compiled /login/page in 1082ms (2001 modules)
+ ✓ Compiled /registro/page in 2.6s (3559 modules)
+ ✓ Compiled in 1054ms (2127 modules)
+ ✓ Compiled /api/auth/login/route in 558ms (1418 modules)
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'admin@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: admin@credilibranzas.com
+[BACK /api/auth/login] DB result: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  status: 'activo',
+  has_hash: true,
+  role: 'admin',
+  full_name: 'Administrador Principal'
+}
+[BACK /api/auth/login] comparing bcrypt...
+[BACK /api/auth/login] bcrypt result: ✓ match
+[BACK /api/auth/login] ✓ session token created, setting cookie
+[BACK /api/auth/login] ◀ response 200 OK
+ ✓ Compiled /api/auth/me/route in 330ms (1420 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /dashboard/page in 840ms (1442 modules)
+[FRONT Dashboard] render — loading: true session: false profile: null
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /api/db/[table]/route in 464ms (1445 modules)
+ ✓ Compiled /api/auth/logout/route in 517ms (1437 modules)
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'asesor1@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: asesor1@credilibranzas.com
+[BACK /api/auth/login] DB result: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  status: 'activo',
+  has_hash: true,
+  role: 'asesor',
+  full_name: 'Juan Perez'
+}
+[BACK /api/auth/login] comparing bcrypt...
+[BACK /api/auth/login] bcrypt result: ✓ match
+[BACK /api/auth/login] ✓ session token created, setting cookie
+[BACK /api/auth/login] ◀ response 200 OK
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[FRONT Dashboard] render — loading: true session: false profile: null
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'admin@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: admin@credilibranzas.com
+[BACK /api/auth/login] DB result: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  status: 'activo',
+  has_hash: true,
+  role: 'admin',
+  full_name: 'Administrador Principal'
+}
+[BACK /api/auth/login] comparing bcrypt...
+[BACK /api/auth/login] bcrypt result: ✓ match
+[BACK /api/auth/login] ✓ session token created, setting cookie
+[BACK /api/auth/login] ◀ response 200 OK
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[FRONT Dashboard] render — loading: true session: false profile: null
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /roles/page in 922ms (1450 modules)
+ ✓ Compiled /calendario/page in 922ms (2021 modules)
+ ✓ Compiled /sedes/page in 732ms (2013 modules)
+ ✓ Compiled /api/auth/logout/route in 430ms (2015 modules)
+ ✓ Compiled /api/auth/login/route in 396ms (2018 modules)
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'admin@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: admin@credilibranzas.com
+[BACK /api/auth/login] DB result: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  status: 'activo',
+  has_hash: true,
+  role: 'admin',
+  full_name: 'Administrador Principal'
+}
+[BACK /api/auth/login] comparing bcrypt...
+[BACK /api/auth/login] bcrypt result: ✓ match
+[BACK /api/auth/login] ✓ session token created, setting cookie
+[BACK /api/auth/login] ◀ response 200 OK
+ ✓ Compiled /api/auth/me/route in 422ms (2020 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[FRONT Dashboard] render — loading: true session: false profile: null
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /solicitudes/page in 964ms (2018 modules)
+ ✓ Compiled /kanban/page in 1161ms (2032 modules)
+ ✓ Compiled /api/db/[table]/[id]/route in 715ms (1468 modules)
+ ✓ Compiled /clientes/page in 1025ms (1474 modules)
+ ✓ Compiled /clientes/nuevo/page in 2.4s (3611 modules)
+ ✓ Compiled /creditos/page in 755ms (1476 modules)
+ ✓ Compiled /creditos/nuevo/page in 686ms (1483 modules)
+ ✓ Compiled /api/auth/logout/route in 427ms (1468 modules)
+ ✓ Compiled /login/page in 425ms (1479 modules)
+ ✓ Compiled /api/auth/login/route in 698ms (1482 modules)
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'asesor1@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: asesor1@credilibranzas.com
+[BACK /api/auth/login] DB result: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  status: 'activo',
+  has_hash: true,
+  role: 'asesor',
+  full_name: 'Juan Perez'
+}
+[BACK /api/auth/login] comparing bcrypt...
+[BACK /api/auth/login] bcrypt result: ✓ match
+[BACK /api/auth/login] ✓ session token created, setting cookie
+[BACK /api/auth/login] ◀ response 200 OK
+ ✓ Compiled /api/auth/me/route in 434ms (1484 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+ ✓ Compiled /dashboard/page in 2.1s (2031 modules)
+[FRONT Dashboard] render — loading: true session: false profile: null
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'admin@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: admin@credilibranzas.com
+[BACK /api/auth/login] DB result: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  status: 'activo',
+  has_hash: true,
+  role: 'admin',
+  full_name: 'Administrador Principal'
+}
+[BACK /api/auth/login] comparing bcrypt...
+[BACK /api/auth/login] bcrypt result: ✓ match
+[BACK /api/auth/login] ✓ session token created, setting cookie
+[BACK /api/auth/login] ◀ response 200 OK
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[FRONT Dashboard] render — loading: true session: false profile: null
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /sedes/page in 887ms (1444 modules)
+ ✓ Compiled /entidades/page in 885ms (1449 modules)
+ ✓ Compiled /creditos/[id]/page in 1112ms (1440 modules)
+ ✓ Compiled /api/auth/logout/route in 417ms (1442 modules)
+ ✓ Compiled /api/auth/login/route in 420ms (1445 modules)
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'asesor1@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: asesor1@credilibranzas.com
+[BACK /api/auth/login] DB result: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  status: 'activo',
+  has_hash: true,
+  role: 'asesor',
+  full_name: 'Juan Perez'
+}
+[BACK /api/auth/login] comparing bcrypt...
+[BACK /api/auth/login] bcrypt result: ✓ match
+[BACK /api/auth/login] ✓ session token created, setting cookie
+[BACK /api/auth/login] ◀ response 200 OK
+ ✓ Compiled /api/auth/me/route in 470ms (1447 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[FRONT Dashboard] render — loading: true session: false profile: null
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+ ✓ Compiled /api/db/[table]/[id]/route in 729ms (1449 modules)
+ ✓ Compiled /reportes/page in 1030ms (1459 modules)
+ ✓ Compiled /kanban/page in 1183ms (1473 modules)
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'admin@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: admin@credilibranzas.com
+[BACK /api/auth/login] DB result: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  status: 'activo',
+  has_hash: true,
+  role: 'admin',
+  full_name: 'Administrador Principal'
+}
+[BACK /api/auth/login] comparing bcrypt...
+[BACK /api/auth/login] bcrypt result: ✓ match
+[BACK /api/auth/login] ✓ session token created, setting cookie
+[BACK /api/auth/login] ◀ response 200 OK
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[FRONT Dashboard] render — loading: true session: false profile: null
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /sedes/page in 1333ms (1462 modules)
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'asesor3@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: asesor3@credilibranzas.com
+[BACK /api/auth/login] DB result: {
+  id: 'b2105828-fcf3-46d1-84d7-b54465c8afe7',
+  email: 'asesor3@credilibranzas.com',
+  status: 'pendiente_aprobacion',
+  has_hash: true,
+  role: 'asesor',
+  full_name: 'Asesor Pendiente'
+}
+[BACK /api/auth/login] ✕ user not active: pendiente_aprobacion
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'admin@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: admin@credilibranzas.com
+[BACK /api/auth/login] DB result: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  status: 'activo',
+  has_hash: true,
+  role: 'admin',
+  full_name: 'Administrador Principal'
+}
+[BACK /api/auth/login] comparing bcrypt...
+[BACK /api/auth/login] bcrypt result: ✓ match
+[BACK /api/auth/login] ✓ session token created, setting cookie
+[BACK /api/auth/login] ◀ response 200 OK
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[FRONT Dashboard] render — loading: true session: false profile: null
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ○ compiling /api/db/[table]/[id]/route ...
+ ✓ Compiled /api/db/[table]/[id]/route in 3.8s (1445 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ○ compiling /calendario/page ...
+ ✓ Compiled /calendario/page in 7.9s (2020 modules)
+ ✓ Compiled /api/db/[table]/[id]/route in 1064ms (2010 modules)
+ ✓ Compiled in 4.9s (4102 modules)
+ ✓ Compiled in 2s (2130 modules)
+ ✓ Compiled in 1618ms (2130 modules)
+ ✓ Compiled in 2.3s (2130 modules)
+ ✓ Compiled in 1365ms (2130 modules)
+ ✓ Compiled in 1415ms (2130 modules)
+ ✓ Compiled in 2s (2130 modules)
+ ✓ Compiled in 3.5s (2131 modules)
+ ✓ Compiled in 2.3s (2130 modules)
+ ✓ Compiled /creditos/nuevo/page in 2.2s (1981 modules)
+ ✓ Compiled /entidades/page in 1930ms (1988 modules)
+ ○ compiling /api/db/[table]/route ...
+ ✓ Compiled /api/db/[table]/route in 6.2s (2005 modules)
+ ✓ Compiled (2008 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /api/auth/logout/route in 1229ms (2010 modules)
+ ✓ Compiled /api/auth/login/route in 915ms (2013 modules)
+[BACK /api/auth/login] ▶ request received
+[BACK /api/auth/login] body parsed: { email: 'asesor1@credilibranzas.com', hasPassword: true }
+[BACK /api/auth/login] querying DB for: asesor1@credilibranzas.com
+[BACK /api/auth/login] DB result: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  status: 'activo',
+  has_hash: true,
+  role: 'asesor',
+  full_name: 'Juan Perez'
+}
+[BACK /api/auth/login] comparing bcrypt...
+[BACK /api/auth/login] bcrypt result: ✓ match
+[BACK /api/auth/login] ✓ session token created, setting cookie
+[BACK /api/auth/login] ◀ response 200 OK
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[FRONT Dashboard] render — loading: true session: false profile: null
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+ ✓ Compiled /creditos/nuevo/page in 1348ms (2021 modules)
+ ✓ Compiled /creditos/[id]/page in 1159ms (2030 modules)
+ ✓ Compiled in 5.2s (4100 modules)
+ ✓ Compiled in 3.7s (4104 modules)
+ ○ compiling /api/db/[table]/route ...
+ ✓ Compiled /api/db/[table]/route in 6.6s (2004 modules)
+ ✓ Compiled (2007 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+ ○ compiling /kanban/page ...
+ ✓ Compiled /kanban/page in 9.8s (1985 modules)
+ ○ compiling /clientes/page ...
+ ✓ Compiled /clientes/page in 20.6s (1990 modules)
+ ✓ Compiled /api/db/[table]/route in 649ms (2024 modules)

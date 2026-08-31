@@ -54,14 +54,16 @@ export const FOLLOW_UP_CHANNELS = [
   { value: 'email', label: 'Email' },
 ];
 
-export function formatCurrency(amount: number | null | undefined): string {
-  if (amount === null || amount === undefined) return '—';
+export function formatCurrency(amount: number | string | null | undefined): string {
+  if (amount === null || amount === undefined || amount === '') return '—';
+  const num = typeof amount === 'string' ? Number(amount) : amount;
+  if (Number.isNaN(num)) return '—';
   return new Intl.NumberFormat('es-CO', {
     style: 'currency',
     currency: 'COP',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(amount);
+  }).format(num);
 }
 
 export function formatDate(date: string | null | undefined): string {
@@ -73,6 +75,15 @@ export function formatDate(date: string | null | undefined): string {
   }).format(new Date(date));
 }
 
+export function formatDateShort(date: string | null | undefined): string {
+  if (!date) return '—';
+  const d = new Date(date);
+  const day = d.getDate().toString().padStart(2, '0');
+  const month = d.toLocaleDateString('es-CO', { month: 'short' }).replace(/\./g, '');
+  const year = d.getFullYear().toString().slice(-2);
+  return `${day} ${month} ${year}`;
+}
+
 export function formatDateTime(date: string | null | undefined): string {
   if (!date) return '—';
   return new Intl.DateTimeFormat('es-CO', {
@@ -81,6 +92,15 @@ export function formatDateTime(date: string | null | undefined): string {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
+  }).format(new Date(date));
+}
+
+export function formatTime(date: string | null | undefined): string {
+  if (!date) return '—';
+  return new Intl.DateTimeFormat('es-CO', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
   }).format(new Date(date));
 }
 

@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   DndContext, DragOverlay, PointerSensor, useSensor, useSensors,
-  type DragEndEvent, type DragStartEvent,
+  type DragEndEvent, type DragStartEvent, type DragOverEvent,
 } from '@dnd-kit/core';
 import { useDroppable } from '@dnd-kit/core';
 import { useSortable, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -12,14 +12,18 @@ import { CSS } from '@dnd-kit/utilities';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/app-layout';
 import { PageTransition } from '@/components/transitions';
+import { PageHeader } from '@/components/page-header';
 import { StatusBadge } from '@/components/status-badge';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/providers/auth-provider';
 import { CREDIT_STATUSES, PIPELINE_ORDER, formatCurrency, formatDate, daysSince } from '@/lib/constants';
 import type { Credit, CreditStatus } from '@/lib/types';
 import { useRouter } from 'next/navigation';
-import { Plus, GripVertical } from 'lucide-react';
+import { Plus, GripVertical, Building2, User, Clock, Layers, ArrowRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 export default function KanbanPage() {
   const { profile } = useAuth();
@@ -28,6 +32,8 @@ export default function KanbanPage() {
   const [loading, setLoading] = useState(true);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeCredit, setActiveCredit] = useState<Credit | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const columnRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -57,7 +63,7 @@ export default function KanbanPage() {
         .from('profiles')
         .select('id')
         .eq('supervisor_id', profile.id);
-      const teamIds = (team || []).map((t) => t.id);
+      const teamIds = (team || []).map((t: { id: string }) => t.id);
       if (teamIds.length > 0) {
         query = query.in('asesor_id', teamIds);
       }
@@ -68,155 +74,245 @@ export default function KanbanPage() {
     setLoading(false);
   }
 
+  function scrollColumnIntoView(status: CreditStatus) {
+    const el = columnRefs.current[status];
+    const container = scrollRef.current;
+    if (!el || !container) return;
+    el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+
   function handleDragStart(event: DragStartEvent) {
-    const id = event.active.id as string;
-    const credit = credits.find((c) => c.id === id);
-    setActiveId(id);
-    setActiveCredit(credit || null);
+    const { active } = event;
+    const credit = credits.find((c) => c.id === active.id);
+    if (credit) setActiveCredit(credit);
+  }
+
+  function handleDragOver(event: DragOverEvent) {
+    const { active, over } = event;
+    if (!over) return;
+    const activeId = active.id as string;
+    const overId = over.id as string;
+    if (activeId === overId) return;
   }
 
   async function handleDragEnd(event: DragEndEvent) {
-    setActiveId(null);
+    const { active, over } = event;
     setActiveCredit(null);
 
-    const { active, over } = event;
     if (!over) return;
 
     const creditId = active.id as string;
-    const newStatus = over.id as CreditStatus;
+    let targetStatus: CreditStatus | null = null;
 
-    const credit = credits.find((c) => c.id === creditId);
-    if (!credit || credit.status === newStatus) return;
+    if (CREDIT_STATUSES.some((s) => s.value === over.id)) {
+      targetStatus = over.id as CreditStatus;
+    } else {
+      const overCredit = credits.find((c) => c.id === over.id);
+      if (overCredit) {
+        targetStatus = overCredit.status;
+      }
+    }
 
-    const oldStatus = credit.status;
+    if (!targetStatus) return;
 
-    // Optimistic update
+    const currentCredit = credits.find((c) => c.id === creditId);
+    if (!currentCredit || currentCredit.status === targetStatus) return;
+
+    const oldStatus = currentCredit.status;
+    const newStatus = targetStatus;
+
     setCredits((prev) =>
       prev.map((c) => (c.id === creditId ? { ...c, status: newStatus } : c))
     );
 
-    // Update in DB
     const { error } = await supabase
       .from('credits')
       .update({ status: newStatus })
       .eq('id', creditId);
 
     if (error) {
-      // Revert on error
+      toast.error('Error al mover crédito', { description: error.message });
       setCredits((prev) =>
         prev.map((c) => (c.id === creditId ? { ...c, status: oldStatus } : c))
       );
-      toast.error('Error al cambiar estado');
       return;
     }
 
-    // Insert history
-    await supabase.from('credit_status_history').insert({
-      credit_id: creditId,
-      previous_status: oldStatus,
-      new_status: newStatus,
-      changed_by: profile!.id,
-      comment: `Cambió de ${oldStatus} a ${newStatus}`,
-    });
+    if (profile) {
+      await supabase.from('credit_status_history').insert({
+        credit_id: creditId,
+        previous_status: oldStatus,
+        new_status: newStatus,
+        changed_by: profile.id,
+        comment: `Movido en tablero Kanban de ${CREDIT_STATUSES.find((s) => s.value === oldStatus)?.label} a ${CREDIT_STATUSES.find((s) => s.value === newStatus)?.label}`,
+      });
+    }
 
     toast.success('Estado actualizado', {
-      description: `El crédito ahora está en "${CREDIT_STATUSES.find((s) => s.value === newStatus)?.label}"`,
+      description: `Ahora en "${CREDIT_STATUSES.find((s) => s.value === newStatus)?.label}"`,
     });
   }
 
   const activeColumns = PIPELINE_ORDER;
-  const creditsByStatus = activeColumns.map((status) => ({
-    status,
-    items: credits.filter((c) => c.status === status),
-  }));
+  const creditsByStatus = activeColumns.map((status) => {
+    const items = credits.filter((c) => c.status === status);
+    const totalAmount = items.reduce((sum, c) => sum + Number(c.requested_amount || 0), 0);
+    return {
+      status,
+      items,
+      totalAmount,
+    };
+  });
+
+  const totalPipelineAmount = credits.reduce((sum, c) => sum + Number(c.requested_amount || 0), 0);
 
   return (
     <AppLayout>
       <PageTransition>
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Kanban de créditos</h1>
-            <p className="text-sm text-muted-foreground">Arrastra las tarjetas para cambiar el estado.</p>
+        <div className="flex h-full min-h-0 flex-col">
+          {/* Header Bar */}
+          <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="flex items-center gap-2.5">
+                <h1 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+                  Tablero Kanban
+                </h1>
+                <span className="rounded-full bg-primary/10 border border-primary/20 px-2.5 py-0.5 text-xs font-bold text-primary">
+                  {credits.length} créditos
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Mueve tarjetas entre columnas para actualizar el estado operativo de cada solicitud.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="hidden rounded-2xl border border-border/80 bg-card/80 px-3.5 py-2 sm:flex items-center gap-2 text-xs shadow-2xs">
+                <span className="text-muted-foreground font-medium">Volumen en Pipeline:</span>
+                <span className="font-display font-bold text-foreground tabular-nums">{formatCurrency(totalPipelineAmount)}</span>
+              </div>
+
+              <Link href="/creditos/nuevo">
+                <Button className="rounded-xl bg-primary text-xs font-bold shadow-sm shadow-primary/25">
+                  <Plus className="mr-1.5 h-4 w-4" />
+                  Nuevo Crédito
+                </Button>
+              </Link>
+            </div>
           </div>
+
+          {credits.length === 0 && !loading ? (
+            <motion.div
+              animate={{ scale: [1, 1.02, 1] }}
+              transition={{ duration: 3, repeat: Infinity }}
+              className="flex flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-border/80 p-12 text-center"
+            >
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <Layers className="h-8 w-8" />
+              </div>
+              <p className="font-display text-lg font-bold text-foreground">No hay créditos registrados</p>
+              <p className="mt-1 text-xs text-muted-foreground">Comienza radicando tu primera solicitud de crédito.</p>
+              <Link href="/creditos/nuevo" className="mt-4">
+                <Button size="sm" className="rounded-xl">
+                  <Plus className="mr-1.5 h-4 w-4" />
+                  Radicar Crédito
+                </Button>
+              </Link>
+            </motion.div>
+          ) : (
+            <DndContext
+              sensors={sensors}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+            >
+              <div
+                ref={scrollRef}
+                className="grid flex-1 gap-4 overflow-y-auto pb-4"
+                style={{
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                  gridAutoRows: 'minmax(300px, auto)',
+                }}
+              >
+                {creditsByStatus.map(({ status, items, totalAmount }) => (
+                  <KanbanColumn
+                    key={status}
+                    status={status}
+                    items={items}
+                    totalAmount={totalAmount}
+                    onCardClick={(id) => router.push(`/creditos/${id}`)}
+                    registerRef={(el) => { columnRefs.current[status] = el; }}
+                  />
+                ))}
+              </div>
+
+              <DragOverlay>
+                {activeCredit ? (
+                  <KanbanCard credit={activeCredit} isDragOverlay />
+                ) : null}
+              </DragOverlay>
+            </DndContext>
+          )}
         </div>
-
-        {loading ? (
-          <div className="flex h-96 items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          </div>
-        ) : credits.length === 0 ? (
-          <motion.div
-            animate={{ scale: [1, 1.02, 1] }}
-            transition={{ duration: 3, repeat: Infinity }}
-            className="flex flex-col items-center justify-center py-20 text-center"
-          >
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
-              <Plus className="h-7 w-7 text-muted-foreground" />
-            </div>
-            <p className="text-lg font-medium">No hay créditos para mostrar</p>
-            <p className="text-sm text-muted-foreground">Crea un nuevo crédito para verlo aquí.</p>
-          </motion.div>
-        ) : (
-          <DndContext
-            sensors={sensors}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-          >
-            <div className="kanban-scroll flex gap-3 overflow-x-auto pb-4">
-              {creditsByStatus.map(({ status, items }) => (
-                <KanbanColumn
-                  key={status}
-                  status={status}
-                  items={items}
-                  onCardClick={(id) => router.push(`/creditos/${id}`)}
-                />
-              ))}
-            </div>
-
-            <DragOverlay>
-              {activeCredit ? (
-                <KanbanCard credit={activeCredit} isDragOverlay />
-              ) : null}
-            </DragOverlay>
-          </DndContext>
-        )}
       </PageTransition>
     </AppLayout>
   );
 }
 
-function KanbanColumn({ status, items, onCardClick }: { status: CreditStatus; items: Credit[]; onCardClick: (id: string) => void }) {
+function KanbanColumn({
+  status,
+  items,
+  totalAmount,
+  onCardClick,
+  registerRef,
+}: {
+  status: CreditStatus;
+  items: Credit[];
+  totalAmount: number;
+  onCardClick: (id: string) => void;
+  registerRef: (el: HTMLDivElement | null) => void;
+}) {
   const config = CREDIT_STATUSES.find((s) => s.value === status)!;
   const { setNodeRef, isOver } = useDroppable({ id: status });
 
   return (
-    <div className="flex w-72 shrink-0 flex-col">
-      <div className="mb-2 flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2">
+    <div
+      ref={(el) => {
+        setNodeRef(el);
+        registerRef(el);
+      }}
+      className="flex h-full min-h-[320px] flex-col rounded-3xl border border-border/80 bg-card/80 shadow-xs backdrop-blur-sm transition-all"
+    >
+      {/* Column Header */}
+      <div className="flex items-center justify-between border-b border-border/70 p-3.5 bg-accent/20 rounded-t-3xl">
         <div className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: config.color }} />
-          <span className="text-sm font-medium">{config.label}</span>
+          <span className="h-2.5 w-2.5 rounded-full ring-2 ring-background" style={{ backgroundColor: config.color }} />
+          <span className="font-display text-xs font-bold text-foreground">{config.label}</span>
         </div>
-        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
-          {items.length}
-        </span>
+        <div className="flex items-center gap-1.5">
+          <span className="font-display text-[11px] font-bold text-muted-foreground tabular-nums">
+            {formatCurrency(totalAmount)}
+          </span>
+          <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-background border border-border px-1.5 text-[10px] font-bold text-foreground">
+            {items.length}
+          </span>
+        </div>
       </div>
 
+      {/* Cards Drop Area */}
       <div
-        ref={setNodeRef}
-        className={`flex-1 space-y-2 rounded-lg border-2 border-dashed p-2 transition-colors min-h-[200px] ${
-          isOver ? 'border-primary bg-primary/5' : 'border-transparent bg-muted/30'
-        }`}
+        className={cn(
+          'flex-1 space-y-2.5 p-2.5 transition-colors rounded-b-3xl',
+          isOver ? 'bg-primary/10 ring-2 ring-primary/30 ring-inset' : 'bg-transparent'
+        )}
       >
         <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
-          <AnimatePresence>
-            {items.map((credit) => (
-              <SortableCard key={credit.id} credit={credit} onCardClick={onCardClick} />
-            ))}
-          </AnimatePresence>
+          {items.map((credit) => (
+            <SortableCard key={credit.id} credit={credit} onCardClick={onCardClick} />
+          ))}
         </SortableContext>
 
         {items.length === 0 && (
-          <div className="flex h-24 items-center justify-center text-xs text-muted-foreground">
+          <div className="flex h-32 items-center justify-center rounded-2xl border border-dashed border-border/60 text-xs font-medium text-muted-foreground/60">
             Sin créditos
           </div>
         )}
@@ -231,7 +327,7 @@ function SortableCard({ credit, onCardClick }: { credit: Credit; onCardClick: (i
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.4 : 1,
+    opacity: isDragging ? 0.3 : 1,
   };
 
   return (
@@ -245,62 +341,88 @@ function SortableCard({ credit, onCardClick }: { credit: Credit; onCardClick: (i
       className="cursor-pointer"
       onClick={() => !isDragging && onCardClick(credit.id)}
     >
-      <Card className="group relative overflow-hidden border-border bg-card p-3 shadow-sm transition-shadow hover:shadow-md">
+      <div className="group relative overflow-hidden rounded-2xl border border-border/80 bg-background/90 p-3.5 shadow-2xs transition-all hover:border-primary/40 hover:shadow-md">
+        {/* Grip Handle */}
         <button
           {...attributes}
           {...listeners}
-          className="absolute right-2 top-2 cursor-grab text-muted-foreground/40 opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
+          className="absolute right-2.5 top-2.5 rounded-lg p-1 text-muted-foreground/40 opacity-0 transition-opacity hover:bg-accent hover:text-foreground group-hover:opacity-100 active:cursor-grabbing"
           onClick={(e) => e.stopPropagation()}
+          aria-label="Arrastrar tarjeta"
         >
           <GripVertical className="h-4 w-4" />
         </button>
 
-        <div className="mb-2">
-          <p className="text-sm font-semibold">
+        {/* Client Name & ID */}
+        <div className="mb-2 pr-6">
+          <p className="truncate font-display text-xs font-bold text-foreground">
             {credit.client?.first_name} {credit.client?.last_name}
           </p>
-          <p className="text-xs text-muted-foreground">{credit.client?.document_number}</p>
+          <p className="text-[11px] text-muted-foreground font-medium">CC {credit.client?.document_number}</p>
         </div>
 
-        <div className="mb-2 flex items-center justify-between">
-          <span className="text-sm font-bold text-primary">{formatCurrency(credit.requested_amount)}</span>
+        {/* Amount */}
+        <div className="mb-2.5 flex items-center justify-between">
+          <span className="font-display text-sm font-extrabold text-primary tabular-nums">
+            {formatCurrency(credit.requested_amount)}
+          </span>
+          {credit.term_months && (
+            <span className="text-[10px] font-bold text-muted-foreground">
+              {credit.term_months} meses
+            </span>
+          )}
         </div>
 
+        {/* Entity Tag */}
         {credit.entity && (
-          <p className="mb-2 text-xs text-muted-foreground">{credit.entity.name}</p>
+          <div className="mb-2.5 flex items-center gap-1.5 rounded-lg bg-accent/40 px-2 py-1 text-[11px] font-medium text-foreground">
+            <Building2 className="h-3 w-3 text-muted-foreground" />
+            <span className="truncate">{credit.entity.name}</span>
+          </div>
         )}
 
-        <div className="flex items-center justify-between">
-          <StatusBadge status={credit.status} />
-          <span className="text-xs text-muted-foreground">
-            {daysSince(credit.status_changed_at || credit.created_at)}d
-          </span>
+        {/* Footer Status & Age */}
+        <div className="flex items-center justify-between border-t border-border/60 pt-2 text-[10px]">
+          <div className="flex items-center gap-1 text-muted-foreground">
+            <Clock className="h-3 w-3" />
+            <span>{daysSince(credit.status_changed_at || credit.created_at)}d en etapa</span>
+          </div>
+          {credit.asesor && (
+            <span className="truncate max-w-[100px] text-muted-foreground font-medium">
+              {credit.asesor.full_name?.split(' ')[0]}
+            </span>
+          )}
         </div>
-      </Card>
+      </div>
     </motion.div>
   );
 }
 
 function KanbanCard({ credit, isDragOverlay }: { credit: Credit; isDragOverlay?: boolean }) {
   return (
-    <Card
-      className={`border-primary/20 bg-card p-3 shadow-lg ${
-        isDragOverlay ? 'rotate-2' : ''
-      }`}
+    <div
+      className={cn(
+        'rounded-2xl border border-primary bg-card p-3.5 shadow-2xl backdrop-blur-md',
+        isDragOverlay ? 'rotate-2 scale-105' : ''
+      )}
     >
       <div className="mb-2">
-        <p className="text-sm font-semibold">
+        <p className="truncate font-display text-xs font-bold text-foreground">
           {credit.client?.first_name} {credit.client?.last_name}
         </p>
-        <p className="text-xs text-muted-foreground">{credit.client?.document_number}</p>
+        <p className="text-[11px] text-muted-foreground">CC {credit.client?.document_number}</p>
       </div>
-      <div className="mb-2 flex items-center justify-between">
-        <span className="text-sm font-bold text-primary">{formatCurrency(credit.requested_amount)}</span>
+      <div className="mb-2">
+        <span className="font-display text-sm font-extrabold text-primary tabular-nums">
+          {formatCurrency(credit.requested_amount)}
+        </span>
       </div>
       {credit.entity && (
-        <p className="mb-2 text-xs text-muted-foreground">{credit.entity.name}</p>
+        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <Building2 className="h-3 w-3" />
+          <span>{credit.entity.name}</span>
+        </div>
       )}
-      <StatusBadge status={credit.status} />
-    </Card>
+    </div>
   );
 }

@@ -7,6 +7,9 @@ import { Check, X, Clock, UserPlus, Mail, Phone } from 'lucide-react';
 import { AppLayout } from '@/components/app-layout';
 import { RouteGuard } from '@/components/providers/route-guard';
 import { PageTransition, StaggerList, StaggerItem } from '@/components/transitions';
+import { PageHeader } from '@/components/page-header';
+import { Pagination } from '@/components/pagination';
+import { UserAvatar } from '@/components/user-avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +41,8 @@ function PendingRequests() {
   const [assignModal, setAssignModal] = useState<Profile | null>(null);
   const [selectedSupervisor, setSelectedSupervisor] = useState<string>('');
   const [processing, setProcessing] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(9);
 
   useEffect(() => {
     loadData();
@@ -73,7 +78,7 @@ function PendingRequests() {
       .eq('id', user.id);
 
     if (error) {
-      toast.error('Error al aprobar usuario');
+      toast.error('Error al aprobar usuario', { description: error.message });
       setProcessing(null);
       return;
     }
@@ -83,17 +88,18 @@ function PendingRequests() {
     setSelectedSupervisor('');
     setProcessing(null);
     loadData();
+    await refreshProfile();
   }
 
   async function reject(user: Profile) {
     setProcessing(user.id);
     const { error } = await supabase
       .from('profiles')
-      .update({ status: 'rechazado' as UserStatus })
+      .update({ status: 'rechazado' })
       .eq('id', user.id);
 
     if (error) {
-      toast.error('Error al rechazar usuario');
+      toast.error('Error al rechazar usuario', { description: error.message });
       setProcessing(null);
       return;
     }
@@ -105,10 +111,10 @@ function PendingRequests() {
 
   return (
     <PageTransition>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight">Solicitudes de acceso</h1>
-        <p className="text-sm text-muted-foreground">Asesores pendientes de aprobación.</p>
-      </div>
+      <PageHeader
+        title="Solicitudes de Acceso y Registro"
+        description="Gestión y aprobación de nuevos asesores comerciales pendientes de activación."
+      />
 
       {loading ? (
         <div className="flex h-64 items-center justify-center">
@@ -120,86 +126,102 @@ function PendingRequests() {
           transition={{ duration: 3, repeat: Infinity }}
           className="flex flex-col items-center justify-center py-20 text-center"
         >
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-            <Check className="h-8 w-8 text-green-600" />
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+            <Check className="h-8 w-8" />
           </div>
-          <p className="text-lg font-medium">No hay solicitudes pendientes</p>
-          <p className="text-sm text-muted-foreground">Todos los registros han sido revisados.</p>
+          <p className="font-display text-lg font-bold text-foreground">No hay solicitudes pendientes</p>
+          <p className="text-xs text-muted-foreground mt-1">Todos los registros han sido evaluados y procesados.</p>
         </motion.div>
       ) : (
-        <StaggerList className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {pending.map((user) => (
-            <StaggerItem key={user.id}>
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-start gap-4">
-                    <Avatar className="h-12 w-12">
-                      <AvatarFallback className="bg-primary/10 text-primary">
-                        {user.full_name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <p className="font-semibold">{user.full_name}</p>
-                      <div className="mt-1 space-y-1 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <Mail className="h-3.5 w-3.5" />
-                          {/* We don't have email in profiles, show phone */}
-                          <Phone className="h-3.5 w-3.5" />
-                          <span>{user.phone || 'Sin teléfono'}</span>
+        <>
+          <StaggerList className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {pending.slice(page * pageSize, (page + 1) * pageSize).map((user) => (
+              <StaggerItem key={user.id}>
+                <Card className="border border-border/80 bg-card/90 shadow-xs backdrop-blur-sm">
+                  <CardContent className="p-5">
+                    <div className="flex items-start gap-3.5">
+                      <UserAvatar name={user.full_name} size="lg" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-display text-sm font-bold text-foreground truncate">{user.full_name}</p>
+                        <div className="mt-1 space-y-1 text-xs text-muted-foreground">
+                          <div className="flex items-center gap-1.5 font-medium">
+                            <Phone className="h-3 w-3 shrink-0" />
+                            <span>{user.phone || 'Sin teléfono registrado'}</span>
+                          </div>
                         </div>
+                        <Badge className="mt-2.5 bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/20 text-[10px] font-bold shadow-none">
+                          <Clock className="mr-1 h-3 w-3" />
+                          {STATUS_LABELS[user.status]}
+                        </Badge>
                       </div>
-                      <Badge className="mt-2 bg-amber-100 text-amber-700 hover:bg-amber-100">
-                        <Clock className="mr-1 h-3 w-3" />
-                        {STATUS_LABELS[user.status]}
-                      </Badge>
                     </div>
-                  </div>
 
-                  {/* Assign supervisor + approve */}
-                  {assignModal?.id === user.id ? (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      className="mt-4 space-y-3 border-t pt-4"
-                    >
-                      <div className="space-y-1.5">
-                        <Label className="text-xs">Asignar a supervisor (opcional)</Label>
-                        <Select value={selectedSupervisor} onValueChange={setSelectedSupervisor}>
-                          <SelectTrigger><SelectValue placeholder="Sin supervisor" /></SelectTrigger>
-                          <SelectContent>
-                            {supervisors.map((s) => (
-                              <SelectItem key={s.id} value={s.id}>{s.full_name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button size="sm" onClick={() => approve(user)} disabled={processing === user.id}>
-                          {processing === user.id ? <div className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <Check className="mr-1 h-3.5 w-3.5" />}
-                          Confirmar aprobación
+                    {/* Assign supervisor + approve */}
+                    {assignModal?.id === user.id ? (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        className="mt-4 space-y-3 border-t border-border/70 pt-4"
+                      >
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Asignar Supervisor</Label>
+                          <Select value={selectedSupervisor} onValueChange={setSelectedSupervisor}>
+                            <SelectTrigger className="h-10 rounded-xl bg-background text-xs"><SelectValue placeholder="Sin supervisor" /></SelectTrigger>
+                            <SelectContent>
+                              {supervisors.map((s) => (
+                                <SelectItem key={s.id} value={s.id}>{s.full_name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button size="sm" onClick={() => approve(user)} disabled={processing === user.id} className="rounded-xl text-xs font-bold">
+                            {processing === user.id ? (
+                              <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                            ) : (
+                              <Check className="mr-1.5 h-3.5 w-3.5" />
+                            )}
+                            Confirmar Aprobación
+                          </Button>
+                          <Button size="sm" variant="ghost" onClick={() => { setAssignModal(null); setSelectedSupervisor(''); }} className="rounded-xl text-xs font-bold">
+                            Cancelar
+                          </Button>
+                        </div>
+                      </motion.div>
+                    ) : (
+                      <div className="mt-4 flex gap-2 border-t border-border/60 pt-3">
+                        <Button size="sm" onClick={() => setAssignModal(user)} className="rounded-xl text-xs font-bold">
+                          <Check className="mr-1.5 h-3.5 w-3.5" />
+                          Aprobar
                         </Button>
-                        <Button size="sm" variant="ghost" onClick={() => { setAssignModal(null); setSelectedSupervisor(''); }}>
-                          Cancelar
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="rounded-xl text-xs font-bold text-red-600 dark:text-red-400 border-red-500/30 hover:bg-red-500/10"
+                          onClick={() => reject(user)}
+                          disabled={processing === user.id}
+                        >
+                          <X className="mr-1.5 h-3.5 w-3.5" />
+                          Rechazar
                         </Button>
                       </div>
-                    </motion.div>
-                  ) : (
-                    <div className="mt-4 flex gap-2">
-                      <Button size="sm" onClick={() => setAssignModal(user)}>
-                        <Check className="mr-1 h-3.5 w-3.5" />
-                        Aprobar
-                      </Button>
-                      <Button size="sm" variant="outline" className="text-red-600" onClick={() => reject(user)} disabled={processing === user.id}>
-                        <X className="mr-1 h-3.5 w-3.5" />
-                        Rechazar
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </StaggerItem>
-          ))}
-        </StaggerList>
+                    )}
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            ))}
+          </StaggerList>
+          <Pagination
+            currentPage={page}
+            totalPages={Math.max(1, Math.ceil(pending.length / pageSize))}
+            totalItems={pending.length}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            onPageSizeChange={(s) => { setPageSize(s); setPage(0); }}
+            itemLabel="solicitudes"
+            className="mt-5"
+          />
+        </>
       )}
     </PageTransition>
   );

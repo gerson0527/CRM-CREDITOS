@@ -10,15 +10,28 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        brand: ['Playfair Display', 'Georgia', 'serif'],
+        sans: ['var(--font-sans)', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        display: ['var(--font-display)', 'var(--font-sans)', 'sans-serif'],
+        brand: ['var(--font-display)', 'var(--font-sans)', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'gradient-mesh': 'radial-gradient(at 0% 0%, hsla(215, 90%, 55%, 0.15) 0px, transparent 50%), radial-gradient(at 100% 0%, hsla(160, 80%, 45%, 0.12) 0px, transparent 50%), radial-gradient(at 100% 100%, hsla(220, 85%, 60%, 0.15) 0px, transparent 50%), radial-gradient(at 0% 100%, hsla(280, 80%, 60%, 0.1) 0px, transparent 50%)',
+        'gradient-mesh-dark': 'radial-gradient(at 0% 0%, hsla(215, 90%, 50%, 0.18) 0px, transparent 50%), radial-gradient(at 100% 0%, hsla(160, 80%, 40%, 0.12) 0px, transparent 50%), radial-gradient(at 100% 100%, hsla(220, 85%, 55%, 0.18) 0px, transparent 50%), radial-gradient(at 0% 100%, hsla(280, 80%, 55%, 0.12) 0px, transparent 50%)',
+      },
+      boxShadow: {
+        'xs': '0 1px 2px 0 rgba(0, 0, 0, 0.04)',
+        'sm': '0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04)',
+        'md': '0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
+        'lg': '0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04)',
+        'xl': '0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.03)',
+        'glow': '0 0 20px -3px hsla(var(--primary), 0.35)',
+        'glow-success': '0 0 20px -3px hsla(var(--success), 0.35)',
       },
       borderRadius: {
+        '2xl': '1rem',
+        '3xl': '1.5rem',
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
@@ -69,6 +82,7 @@ const config: Config = {
           DEFAULT: 'hsl(var(--sidebar))',
           foreground: 'hsl(var(--sidebar-foreground))',
           active: 'hsl(var(--sidebar-active))',
+          border: 'hsl(var(--sidebar-border))',
         },
         chart: {
           '1': 'hsl(var(--chart-1))',
@@ -100,8 +114,12 @@ const config: Config = {
           to: { opacity: '1', transform: 'scale(1)' },
         },
         'breathing': {
-          '0%, 100%': { transform: 'scale(1)', opacity: '0.6' },
-          '50%': { transform: 'scale(1.05)', opacity: '1' },
+          '0%, 100%': { transform: 'scale(1)', opacity: '0.7' },
+          '50%': { transform: 'scale(1.08)', opacity: '1' },
+        },
+        'pulse-subtle': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.6' },
         },
       },
       animation: {
@@ -111,6 +129,7 @@ const config: Config = {
         'fade-in-up': 'fade-in-up 0.4s ease-out',
         'scale-in': 'scale-in 0.2s ease-out',
         'breathing': 'breathing 3s ease-in-out infinite',
+        'pulse-subtle': 'pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
     },
   },
