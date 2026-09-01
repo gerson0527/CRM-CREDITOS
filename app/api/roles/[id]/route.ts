@@ -1,41 +1,36 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { query, queryOne } from '@/lib/db/pg';
+import { getSessionUser, getSessionUserFromRequest, type SessionUser } from '@/lib/auth/session';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
-  auth: { persistSession: false, autoRefreshToken: false },
-});
-const supabaseAuth = createClient(supabaseUrl, anonKey, {
-  auth: { persistSession: false, autoRefreshToken: false },
-});
-
-async function requireAdmin(request: Request) {
-  if (!serviceRoleKey) {
-    return NextResponse.json(
-      { error: 'SUPABASE_SERVICE_ROLE_KEY no está configurada.' },
-      { status: 500 }
-    );
+async function requireAdmin(req: Request) {
+  let user = await getSessionUser();
+  if (!user) {
+    const userId = getSessionUserFromRequest(req);
+    if (userId) {
+      user = await queryOne<SessionUser>(
+        `SELECT u.id, u.email, u.status, p.role, p.full_name
+         FROM public.users u
+         LEFT JOIN public.profiles p ON p.user_id = u.id OR p.id = u.id
+         WHERE u.id = $1 OR p.id = $1`,
+        [userId]
+      );
+    }
   }
-  const authHeader = request.headers.get('Authorization');
-  const token = authHeader?.replace(/^Bearer\s+/i, '');
-  if (!token) {
+
+  if (!user) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
   }
-  const { data: { user }, error } = await supabaseAuth.auth.getUser(token);
-  if (error || !user) {
-    return NextResponse.json({ error: 'Sesión inválida' }, { status: 401 });
+
+  if (user.role !== 'admin') {
+    const prof = await queryOne<{ role: string }>(
+      `SELECT role FROM public.profiles WHERE id = $1 OR user_id = $1 OR email = $2`,
+      [user.id, user.email]
+    );
+    if (prof?.role !== 'admin') {
+      return NextResponse.json({ error: 'Solo administradores' }, { status: 403 });
+    }
   }
-  const { data: profile } = await supabaseAuth
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-  if (profile?.role !== 'admin') {
-    return NextResponse.json({ error: 'Solo administradores' }, { status: 403 });
-  }
+
   return null;
 }
 
@@ -46,43 +41,58 @@ export async function PATCH(
   const guard = await requireAdmin(request);
   if (guard) return guard;
 
-  const body = await request.json();
+  const body = await request.json().catch(() => ({}));
   const { name, description, permissions, is_default } = body;
 
-  const { data: existing, error: fetchError } = await supabaseAdmin
-    .from('roles')
-    .select('*')
-    .eq('id', params.id)
-    .maybeSingle();
+  const existing = await queryOne<{ id: string; is_default: boolean }>(
+    `SELECT id, is_default FROM public.roles WHERE id = $1`,
+    [params.id]
+  );
 
-  if (fetchError || !existing) {
+  if (!existing) {
     return NextResponse.json({ error: 'Rol no encontrado' }, { status: 404 });
   }
 
-  if (is_default && !existing.is_default) {
-    await supabaseAdmin
-      .from('roles')
-      .update({ is_default: false })
-      .neq('id', params.id);
+  try {
+    if (is_default && !existing.is_default) {
+      await query(`UPDATE public.roles SET is_default = false WHERE id != $1`, [params.id]);
+    }
+
+    const sets: string[] = [];
+    const values: unknown[] = [];
+    let i = 1;
+
+    if (typeof name === 'string' && name.trim()) {
+      sets.push(`name = $${i++}`);
+      values.push(name.trim());
+    }
+    if (typeof description === 'string') {
+      sets.push(`description = $${i++}`);
+      values.push(description.trim() || null);
+    }
+    if (Array.isArray(permissions)) {
+      sets.push(`permissions = $${i++}::jsonb`);
+      values.push(JSON.stringify(permissions));
+    }
+    if (typeof is_default === 'boolean') {
+      sets.push(`is_default = $${i++}`);
+      values.push(is_default);
+    }
+
+    if (sets.length === 0) {
+      return NextResponse.json({ error: 'Sin cambios para actualizar' }, { status: 400 });
+    }
+
+    values.push(params.id);
+    const updated = await queryOne(
+      `UPDATE public.roles SET ${sets.join(', ')} WHERE id = $${i} RETURNING *`,
+      values
+    );
+
+    return NextResponse.json({ role: updated });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 400 });
   }
-
-  const update: Record<string, unknown> = {};
-  if (typeof name === 'string' && name.trim()) update.name = name.trim();
-  if (typeof description === 'string') update.description = description || null;
-  if (Array.isArray(permissions)) update.permissions = permissions;
-  if (typeof is_default === 'boolean') update.is_default = is_default;
-
-  const { data, error } = await supabaseAdmin
-    .from('roles')
-    .update(update)
-    .eq('id', params.id)
-    .select()
-    .single();
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
-  }
-  return NextResponse.json({ role: data });
 }
 
 export async function DELETE(
@@ -92,13 +102,12 @@ export async function DELETE(
   const guard = await requireAdmin(request);
   if (guard) return guard;
 
-  const { data: existing, error: fetchError } = await supabaseAdmin
-    .from('roles')
-    .select('*')
-    .eq('id', params.id)
-    .maybeSingle();
+  const existing = await queryOne<{ id: string; is_system: boolean }>(
+    `SELECT id, is_system FROM public.roles WHERE id = $1`,
+    [params.id]
+  );
 
-  if (fetchError || !existing) {
+  if (!existing) {
     return NextResponse.json({ error: 'Rol no encontrado' }, { status: 404 });
   }
 
@@ -109,21 +118,23 @@ export async function DELETE(
     );
   }
 
-  const { count: usersCount } = await supabaseAdmin
-    .from('profiles')
-    .select('id', { count: 'exact', head: true })
-    .eq('role_id', params.id);
+  const usersCountRow = await queryOne<{ count: string }>(
+    `SELECT COUNT(*)::text AS count FROM public.profiles WHERE role_id = $1`,
+    [params.id]
+  );
+  const usersCount = parseInt(usersCountRow?.count ?? '0', 10);
 
-  if ((usersCount ?? 0) > 0) {
+  if (usersCount > 0) {
     return NextResponse.json(
       { error: `No se puede eliminar: ${usersCount} usuario(s) tienen este rol. Reasígnalos primero.` },
       { status: 400 }
     );
   }
 
-  const { error } = await supabaseAdmin.from('roles').delete().eq('id', params.id);
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+  try {
+    await query(`DELETE FROM public.roles WHERE id = $1`, [params.id]);
+    return NextResponse.json({ success: true });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 400 });
   }
-  return NextResponse.json({ success: true });
 }

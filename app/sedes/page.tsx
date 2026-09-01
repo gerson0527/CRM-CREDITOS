@@ -45,12 +45,21 @@ function SedesManagement() {
 
   async function loadSedes() {
     setLoading(true);
-    const { data } = await supabase
-      .from('sedes')
-      .select('*')
-      .order('name', { ascending: true });
-    setSedes((data as Sede[]) || []);
-    setLoading(false);
+    try {
+      const res = await fetch('/api/sedes', { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setSedes(data.rows || []);
+      } else {
+        const { data } = await supabase.from('sedes').select('*').order('name', { ascending: true });
+        setSedes((data as Sede[]) || []);
+      }
+    } catch {
+      const { data } = await supabase.from('sedes').select('*').order('name', { ascending: true });
+      setSedes((data as Sede[]) || []);
+    } finally {
+      setLoading(false);
+    }
   }
 
   function openCreate() {

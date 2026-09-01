@@ -1,7 +1,9 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import type { Profile } from '@/lib/types';
+import { ChangePasswordDialog } from '@/components/change-password-dialog';
 
 interface AuthContextValue {
   session: { access_token: string } | null;
@@ -23,43 +25,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<{ access_token: string } | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   const loadProfile = useCallback(async () => {
-    console.log('[FRONT AuthProvider] loadProfile ▶');
     try {
       const res = await fetch('/api/auth/me', { credentials: 'include' });
-      console.log('[FRONT AuthProvider] /me status:', res.status);
       const data = await res.json();
-      console.log('[FRONT AuthProvider] /me data:', data);
       if (data.user) {
-        console.log('[FRONT AuthProvider] ✓ user loaded:', { id: data.user.id, role: data.user.role });
         setProfile(data.user as Profile);
         setSession({ access_token: 'cookie' });
       } else {
-        console.log('[FRONT AuthProvider] ✕ no user in response');
         setProfile(null);
         setSession(null);
       }
     } catch (err) {
-      console.error('[FRONT AuthProvider] ✕ error loading profile:', err);
       setProfile(null);
       setSession(null);
     }
   }, []);
 
   const refreshProfile = useCallback(async () => {
-    console.log('[FRONT AuthProvider] refreshProfile ▶');
     await loadProfile();
   }, [loadProfile]);
 
   useEffect(() => {
-    console.log('[FRONT AuthProvider] useEffect ▶ mount, calling loadProfile');
     let mounted = true;
     loadProfile().finally(() => {
-      if (mounted) {
-        console.log('[FRONT AuthProvider] useEffect ▶ setting loading=false');
-        setLoading(false);
-      }
+      if (mounted) setLoading(false);
     });
     return () => { mounted = false; };
   }, [loadProfile]);
@@ -68,11 +60,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
     setSession(null);
     setProfile(null);
-  }, []);
+    router.push('/login');
+  }, [router]);
+
+  const mustChangePassword = !!profile?.must_change_password;
+  const showPasswordDialog = !!session && !loading && mustChangePassword;
 
   return (
     <AuthContext.Provider value={{ session, profile, loading, signOut, refreshProfile }}>
       {children}
+      <ChangePasswordDialog
+        open={showPasswordDialog}
+        onSuccess={() => {
+          // El backend ya puso must_change_password=false; el siguiente refreshProfile ya no la mostrará
+        }}
+        onLogout={() => {
+          signOut();
+        }}
+      />
     </AuthContext.Provider>
   );
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { Search, UserCog, Shield, Users as UsersIcon, Plus, Eye, EyeOff, Copy, Check } from 'lucide-react';
+import { Search, UserCog, Shield, Users as UsersIcon, Plus, Eye, EyeOff, Copy, Check, Pencil } from 'lucide-react';
 import { AppLayout } from '@/components/app-layout';
 import { RouteGuard } from '@/components/providers/route-guard';
 import { PageTransition, StaggerList, StaggerItem } from '@/components/transitions';
@@ -17,18 +17,19 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
-import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Textarea } from '@/components/ui/textarea';
+import { EditUserDialog } from '@/components/edit-user-dialog';
 import { supabase } from '@/lib/supabase/client';
 import { ROLE_LABELS, STATUS_LABELS, STATUS_STYLES, formatDateShort, formatCurrency } from '@/lib/constants';
-import type { Profile, Role, UserRole, UserStatus } from '@/lib/types';
+import type { Profile, Role, UserRole, UserStatus, Sede } from '@/lib/types';
 
 export default function UsersPage() {
   return (
@@ -69,7 +70,9 @@ function UserManagement() {
     phone: '',
     sede_id: '',
   });
-  const [sedes, setSedes] = useState<{ id: string; name: string }[]>([]);
+  const [sedes, setSedes] = useState<Sede[]>([]);
+  const [editingUser, setEditingUser] = useState<Profile | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -87,7 +90,7 @@ function UserManagement() {
     setUsers(usersRes.data as Profile[] || []);
     setSupervisors(supsRes.data as Profile[] || []);
     setRoles(roleList);
-    setSedes((sedesRes.data as { id: string; name: string }[]) || []);
+    setSedes((sedesRes.data as Sede[]) || []);
     setDefaultRole(roleList.find((r) => r.is_default) || roleList.find((r) => r.slug === 'admin') || null);
     setLoading(false);
   }
@@ -168,16 +171,12 @@ function UserManagement() {
 
     setCreating(true);
     try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData.session?.access_token;
-      if (!token) throw new Error('No hay sesión activa');
-
       const res = await fetch('/api/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
+        credentials: 'include',
         body: JSON.stringify({
           email: form.email,
           password: form.password,
@@ -385,19 +384,33 @@ function UserManagement() {
                         <TableCell className="text-xs text-foreground font-semibold tabular-nums">{user.commission_rate}%</TableCell>
                         <TableCell className="whitespace-nowrap text-xs text-muted-foreground">{formatDateShort(user.created_at)}</TableCell>
                         <TableCell>
-                          {user.status === 'activo' ? (
-                            <Button size="sm" variant="outline" className="h-7 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 border-red-500/30 hover:bg-red-500/10" onClick={() => updateStatus(user, 'inactivo')}>
-                              Desactivar
+                          <div className="flex items-center gap-1">
+                            <Button
+                              size="icon"
+                              variant="outline"
+                              className="h-7 w-7 rounded-xl"
+                              onClick={() => {
+                                setEditingUser(user);
+                                setEditOpen(true);
+                              }}
+                              title="Editar usuario completo"
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
                             </Button>
-                          ) : user.status === 'inactivo' || user.status === 'rechazado' ? (
-                            <Button size="sm" variant="outline" className="h-7 rounded-xl text-xs font-bold text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/10" onClick={() => updateStatus(user, 'activo')}>
-                              Activar
-                            </Button>
-                          ) : user.status === 'pendiente_aprobacion' ? (
-                            <Button size="sm" className="h-7 rounded-xl text-xs font-bold" onClick={() => updateStatus(user, 'activo')}>
-                              Aprobar
-                            </Button>
-                          ) : null}
+                            {user.status === 'activo' ? (
+                              <Button size="sm" variant="outline" className="h-7 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 border-red-500/30 hover:bg-red-500/10" onClick={() => updateStatus(user, 'inactivo')}>
+                                Desactivar
+                              </Button>
+                            ) : user.status === 'inactivo' || user.status === 'rechazado' ? (
+                              <Button size="sm" variant="outline" className="h-7 rounded-xl text-xs font-bold text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/10" onClick={() => updateStatus(user, 'activo')}>
+                                Activar
+                              </Button>
+                            ) : user.status === 'pendiente_aprobacion' ? (
+                              <Button size="sm" className="h-7 rounded-xl text-xs font-bold" onClick={() => updateStatus(user, 'activo')}>
+                                Aprobar
+                              </Button>
+                            ) : null}
+                          </div>
                         </TableCell>
                         </TableRow>
                   ))}
@@ -416,6 +429,21 @@ function UserManagement() {
         onPageSizeChange={(s) => { setUserPageSize(s); setUserPage(0); }}
         itemLabel="usuarios"
         className="mt-5"
+      />
+
+      {/* Dialog: editar usuario */}
+      <EditUserDialog
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        user={editingUser}
+        roles={roles}
+        sedes={sedes}
+        supervisors={supervisors}
+        onSaved={() => {
+          setEditingUser(null);
+          setEditOpen(false);
+          loadData();
+        }}
       />
 
       {/* Dialog: crear usuario */}

@@ -27,6 +27,7 @@ export interface Profile {
   monthly_goal: number | string;
   commission_rate: number | string;
   sede_id: string | null;
+  must_change_password: boolean;
   created_at: string;
   updated_at: string;
   permissions?: string[];

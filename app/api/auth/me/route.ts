@@ -25,9 +25,11 @@ export async function GET() {
     monthly_goal: number;
     commission_rate: number;
     permissions: string[];
+    must_change_password: boolean;
   }>(
     `SELECT p.id, p.user_id, u.email, p.full_name, p.phone, p.role, p.role_id, u.status,
             p.supervisor_id, p.monthly_goal, p.commission_rate,
+            p.must_change_password,
             COALESCE(r.permissions, '[]'::jsonb) AS permissions
      FROM public.profiles p
      JOIN public.users u ON u.id = p.user_id

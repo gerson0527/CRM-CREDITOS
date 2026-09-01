@@ -1,37 +1,37 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { query, queryOne } from '@/lib/db/pg';
-import { getSessionUserId, getSessionUserFromRequest } from '@/lib/auth/session';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-const supabaseAuth = createClient(supabaseUrl, anonKey, {
-  auth: { persistSession: false, autoRefreshToken: false },
-});
+import { getSessionUser, getSessionUserFromRequest, type SessionUser } from '@/lib/auth/session';
 
 async function requireAdmin(req: Request) {
-  const authHeader = req.headers.get('Authorization');
-  const token = authHeader?.replace(/^Bearer\s+/i, '');
-  const cookieHeader = req.headers.get('cookie') ?? '';
-  let userId: string | null = null;
-  if (token) {
-    const { data } = await supabaseAuth.auth.getUser(token);
-    userId = data.user?.id ?? null;
-  } else if (cookieHeader) {
-    userId = getSessionUserFromRequest(req);
+  let user = await getSessionUser();
+  if (!user) {
+    const userId = getSessionUserFromRequest(req);
+    if (userId) {
+      user = await queryOne<SessionUser>(
+        `SELECT u.id, u.email, u.status, p.role, p.full_name
+         FROM public.users u
+         LEFT JOIN public.profiles p ON p.user_id = u.id OR p.id = u.id
+         WHERE u.id = $1 OR p.id = $1`,
+        [userId]
+      );
+    }
   }
-  if (!userId) {
-    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+
+  if (!user) {
+    return NextResponse.json({ error: 'No autorizado: Sesión no encontrada' }, { status: 401 });
   }
-  const { data: profile } = await supabaseAuth
-    .from('profiles')
-    .select('role')
-    .eq('id', userId)
-    .single();
-  if (profile?.role !== 'admin') {
-    return NextResponse.json({ error: 'Solo administradores' }, { status: 403 });
+
+  // Verificar rol admin en sesión o directamente en profiles
+  if (user.role !== 'admin') {
+    const prof = await queryOne<{ role: string }>(
+      `SELECT role FROM public.profiles WHERE id = $1 OR user_id = $1 OR email = $2`,
+      [user.id, user.email]
+    );
+    if (prof?.role !== 'admin') {
+      return NextResponse.json({ error: 'Solo administradores' }, { status: 403 });
+    }
   }
+
   return null;
 }
 

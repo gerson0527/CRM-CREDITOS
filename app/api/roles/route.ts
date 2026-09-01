@@ -1,41 +1,36 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { query, queryOne } from '@/lib/db/pg';
+import { getSessionUser, getSessionUserFromRequest, type SessionUser } from '@/lib/auth/session';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
-  auth: { persistSession: false, autoRefreshToken: false },
-});
-const supabaseAuth = createClient(supabaseUrl, anonKey, {
-  auth: { persistSession: false, autoRefreshToken: false },
-});
-
-async function requireAdmin(request: Request) {
-  if (!serviceRoleKey) {
-    return NextResponse.json(
-      { error: 'SUPABASE_SERVICE_ROLE_KEY no está configurada.' },
-      { status: 500 }
-    );
+async function requireAdmin(req: Request) {
+  let user = await getSessionUser();
+  if (!user) {
+    const userId = getSessionUserFromRequest(req);
+    if (userId) {
+      user = await queryOne<SessionUser>(
+        `SELECT u.id, u.email, u.status, p.role, p.full_name
+         FROM public.users u
+         LEFT JOIN public.profiles p ON p.user_id = u.id OR p.id = u.id
+         WHERE u.id = $1 OR p.id = $1`,
+        [userId]
+      );
+    }
   }
-  const authHeader = request.headers.get('Authorization');
-  const token = authHeader?.replace(/^Bearer\s+/i, '');
-  if (!token) {
+
+  if (!user) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
   }
-  const { data: { user }, error } = await supabaseAuth.auth.getUser(token);
-  if (error || !user) {
-    return NextResponse.json({ error: 'Sesión inválida' }, { status: 401 });
+
+  if (user.role !== 'admin') {
+    const prof = await queryOne<{ role: string }>(
+      `SELECT role FROM public.profiles WHERE id = $1 OR user_id = $1 OR email = $2`,
+      [user.id, user.email]
+    );
+    if (prof?.role !== 'admin') {
+      return NextResponse.json({ error: 'Solo administradores' }, { status: 403 });
+    }
   }
-  const { data: profile } = await supabaseAuth
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-  if (profile?.role !== 'admin') {
-    return NextResponse.json({ error: 'Solo administradores' }, { status: 403 });
-  }
+
   return null;
 }
 
@@ -43,51 +38,41 @@ export async function GET(request: Request) {
   const guard = await requireAdmin(request);
   if (guard) return guard;
 
-  const { data, error } = await supabaseAdmin
-    .from('roles')
-    .select('*')
-    .order('name', { ascending: true });
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+  try {
+    const rows = await query('SELECT * FROM public.roles ORDER BY name ASC');
+    return NextResponse.json({ roles: rows });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 400 });
   }
-  return NextResponse.json({ roles: data || [] });
 }
 
 export async function POST(request: Request) {
   const guard = await requireAdmin(request);
   if (guard) return guard;
 
-  const body = await request.json();
+  const body = await request.json().catch(() => ({}));
   const { slug, name, description, permissions, is_default } = body;
 
   if (!slug || !name) {
     return NextResponse.json({ error: 'slug y name son requeridos' }, { status: 400 });
   }
 
-  const validPerms = Array.isArray(permissions) ? permissions : [];
-  if (is_default) {
-    await supabaseAdmin
-      .from('roles')
-      .update({ is_default: false })
-      .neq('id', '00000000-0000-0000-0000-000000000000');
-  }
+  const validPerms = JSON.stringify(Array.isArray(permissions) ? permissions : []);
+  
+  try {
+    if (is_default) {
+      await query(`UPDATE public.roles SET is_default = false`);
+    }
 
-  const { data, error } = await supabaseAdmin
-    .from('roles')
-    .insert({
-      slug: slug.toLowerCase().trim(),
-      name: name.trim(),
-      description: description || null,
-      permissions: validPerms,
-      is_system: false,
-      is_default: !!is_default,
-    })
-    .select()
-    .single();
+    const created = await queryOne(
+      `INSERT INTO public.roles (slug, name, description, permissions, is_system, is_default)
+       VALUES ($1, $2, $3, $4::jsonb, false, $5)
+       RETURNING *`,
+      [slug.toLowerCase().trim(), name.trim(), description || null, validPerms, !!is_default]
+    );
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ role: created });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 400 });
   }
-  return NextResponse.json({ role: data });
 }

@@ -3190,3 +3190,1338 @@ Import trace for requested module:
  ○ compiling /clientes/page ...
  ✓ Compiled /clientes/page in 20.6s (1990 modules)
  ✓ Compiled /api/db/[table]/route in 649ms (2024 modules)
+ ✓ Compiled in 4.1s (2131 modules)
+ ✓ Compiled in 1188ms (2131 modules)
+ ✓ Compiled in 3.8s (4120 modules)
+ ✓ Compiled in 2.6s (4102 modules)
+ ✓ Compiled in 3.7s (4102 modules)
+ ✓ Compiled in 2.8s (4102 modules)
+ ✓ Compiled in 2s (4102 modules)
+ ✓ Compiled in 2.8s (4102 modules)
+ ✓ Compiled in 3s (4102 modules)
+ ✓ Compiled in 1964ms (4102 modules)
+ ✓ Compiled in 7.4s (4106 modules)
+ X ./components/chat-widget.tsx
+Error: 
+  [31mx[0m Unexpected token `{`. Expected identifier, string literal, numeric literal or [ for the computed key
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\components\chat-widget.tsx[0m:98:1]
+ [2m 98[0m |   };
+ [2m 99[0m | 
+ [2m100[0m |   return (
+ [2m101[0m |         transition={{ delay: 0.5, type: 'spring', stiffness: 260, damping: 20 }}
+     : [31;1m                    ^[0m
+ [2m102[0m |         className="fixed bottom-6 right-6 z-50"
+ [2m103[0m |       >
+ [2m103[0m |         <AnimatePresence>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/chat-widget.tsx
+./app/layout.tsx
+ X ./components/chat-widget.tsx
+Error: 
+  [31mx[0m Unexpected token `div`. Expected jsx identifier
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\components\chat-widget.tsx[0m:98:1]
+ [2m 98[0m |   };
+ [2m 99[0m | 
+ [2m100[0m |   return (
+ [2m101[0m |     <div className="fixed bottom-6 right-6 z-50 select-none">
+     : [31;1m     ^^^[0m
+ [2m102[0m |       {/* Chat Window */}
+ [2m103[0m |       <AnimatePresence>
+ [2m103[0m |         {open && (
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/chat-widget.tsx
+./app/layout.tsx
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ○ compiling /not-found ...
+ ✓ Compiled /not-found in 3.2s (4091 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled /api/auth/me/route in 1223ms (2006 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+ ✓ Compiled /api/db/[table]/route in 1104ms (2009 modules)
+ X ./app/login/page.tsx
+Error: 
+  [31mx[0m Expected '}', got '<eof>'
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\login\page.tsx[0m:329:1]
+ [2m329[0m |         </motion.div>
+ [2m330[0m |       </div>
+ [2m331[0m |     </div>
+ [2m332[0m |   );
+     : [31;1m   ^[0m
+ [2m333[0m | 
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/login/page.tsx
+ ✓ Compiled in 2s (2129 modules)
+ ○ compiling /not-found ...
+ X ./app/login/page.tsx
+Error: 
+  [31mx[0m Expected '}', got '<eof>'
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\login\page.tsx[0m:329:1]
+ [2m329[0m |         </motion.div>
+ [2m330[0m |       </div>
+ [2m331[0m |     </div>
+ [2m332[0m |   );
+     : [31;1m   ^[0m
+ [2m333[0m | 
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/login/page.tsx
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ X ./app/login/page.tsx
+Error: 
+  [31mx[0m Expected '}', got '<eof>'
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\login\page.tsx[0m:329:1]
+ [2m329[0m |         </motion.div>
+ [2m330[0m |       </div>
+ [2m331[0m |     </div>
+ [2m332[0m |   );
+     : [31;1m   ^[0m
+ [2m333[0m | 
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/login/page.tsx
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ X ./app/login/page.tsx
+Error: 
+  [31mx[0m Expected '}', got '<eof>'
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\login\page.tsx[0m:329:1]
+ [2m329[0m |         </motion.div>
+ [2m330[0m |       </div>
+ [2m331[0m |     </div>
+ [2m332[0m |   );
+     : [31;1m   ^[0m
+ [2m333[0m | 
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/login/page.tsx
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled /not-found in 2.3s (2130 modules)
+ ✓ Compiled in 1546ms (2131 modules)
+ X ./app/login/page.tsx
+Error: 
+  [31mx[0m Expected '}', got '<eof>'
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\login\page.tsx[0m:329:1]
+ [2m329[0m |         </motion.div>
+ [2m330[0m |       </div>
+ [2m331[0m |     </div>
+ [2m332[0m |   );
+     : [31;1m   ^[0m
+ [2m333[0m | 
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/login/page.tsx
+ ○ compiling /not-found ...
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ X ./app/login/page.tsx
+Error: 
+  [31mx[0m Expected '}', got '<eof>'
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\login\page.tsx[0m:329:1]
+ [2m329[0m |         </motion.div>
+ [2m330[0m |       </div>
+ [2m331[0m |     </div>
+ [2m332[0m |   );
+     : [31;1m   ^[0m
+ [2m333[0m | 
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/login/page.tsx
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled /not-found in 1653ms (2129 modules)
+ ○ compiling /not-found ...
+ ✓ Compiled /not-found in 4.8s (4110 modules)
+ ✓ Compiled (4095 modules)
+ ✓ Compiled /api/auth/me/route in 1546ms (2007 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+ ✓ Compiled /api/db/[table]/route in 2s (2010 modules)
+ ✓ Compiled in 2.5s (4144 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+ ✓ Compiled in 1497ms (2134 modules)
+ ✓ Compiled in 1853ms (4144 modules)
+ ✓ Compiled in 2.1s (4144 modules)
+ ✓ Compiled in 2.1s (4144 modules)
+ ✓ Compiled in 3.5s (4144 modules)
+ ✓ Compiled in 4.7s (4141 modules)
+ ✓ Compiled /kanban/page in 2.9s (4153 modules)
+ ✓ Compiled in 1855ms (4152 modules)
+ ✓ Compiled in 1271ms (2132 modules)
+ ✓ Compiled in 1252ms (2132 modules)
+ ✓ Compiled in 1180ms (2132 modules)
+ ✓ Compiled in 1347ms (2132 modules)
+ ✓ Compiled in 2.4s (2133 modules)
+ ✓ Compiled in 3.3s (4141 modules)
+ ✓ Compiled /creditos/page in 2.3s (4147 modules)
+ ○ compiling /clientes/nuevo/page ...
+ ✓ Compiled /clientes/nuevo/page in 7.7s (1441 modules)
+ X ./app/clientes/page.tsx
+Error: 
+  [31mx[0m Unexpected token `AppLayout`. Expected jsx identifier
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\clientes\page.tsx[0m:133:1]
+ [2m133[0m |   const totalPlaced = clients.reduce((s, c) => s + (c.total_placed ?? 0), 0);
+ [2m134[0m | 
+ [2m135[0m |   return (
+ [2m136[0m |     <AppLayout>
+     : [31;1m     ^^^^^^^^^[0m
+ [2m137[0m |       <PageTransition>
+ [2m138[0m |         <PageHeader
+ [2m139[0m |           title="Directorio de Clientes"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/clientes/page.tsx
+ ○ compiling /not-found ...
+ ✓ Compiled /not-found in 7s (2985 modules)
+ ✓ Compiled /api/auth/me/route in 724ms (898 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+ X ./app/creditos/page.tsx
+Error: 
+  [31mx[0m Unexpected token `AppLayout`. Expected jsx identifier
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\creditos\page.tsx[0m:109:1]
+ [2m109[0m |   const totalPages = Math.ceil(filteredCredits.length / pageSize);
+ [2m110[0m | 
+ [2m111[0m |   return (
+ [2m112[0m |     <AppLayout>
+     : [31;1m     ^^^^^^^^^[0m
+ [2m113[0m |       <PageTransition>
+ [2m114[0m |         <PageHeader
+ [2m114[0m |           title="Directorio de Créditos"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/creditos/page.tsx
+ ✓ Compiled in 2.8s (3018 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+ X ./app/usuarios/page.tsx
+Error: 
+  [31mx[0m Unexpected token `PageTransition`. Expected jsx identifier
+     ,-[[36;1;4mC:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\app\usuarios\page.tsx[0m:219:1]
+ [2m219[0m |   const pagedUsers = filtered.slice(userPage * userPageSize, (userPage + 1) * userPageSize);
+ [2m220[0m | 
+ [2m221[0m |   return (
+ [2m222[0m |     <PageTransition>
+     : [31;1m     ^^^^^^^^^^^^^^[0m
+ [2m223[0m |       <PageHeader
+ [2m224[0m |         title="Administración de Usuarios"
+ [2m224[0m |         description={`${filtered.length} usuarios registrados en la plataforma.`}
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/usuarios/page.tsx
+ ✓ Compiled in 1994ms (2134 modules)
+ ✓ Compiled /api/db/[table]/route in 770ms (901 modules)
+ ○ compiling /dashboard/page ...
+ ✓ Compiled /dashboard/page in 4.5s (1440 modules)
+ ✓ Compiled in 2.2s (1392 modules)
+ ✓ Compiled in 2.9s (2132 modules)
+ ✓ Compiled in 1509ms (2132 modules)
+ ✓ Compiled in 1187ms (2132 modules)
+ ✓ Compiled in 3.7s (3510 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled /api/auth/me/route in 906ms (1425 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  role: 'asesor',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '3cd3f22e-8500-44c3-be2b-692b72d493b9',
+  email: 'asesor1@credilibranzas.com',
+  role: 'asesor',
+  permissions_count: 7
+}
+ ✓ Compiled /api/db/[table]/route in 1074ms (1428 modules)
+ ✓ Compiled in 2.5s (2132 modules)
+ ✓ Compiled in 1700ms (2132 modules)
+ ✓ Compiled /calendario/page in 2.9s (2007 modules)
+ ✓ Compiled in 4.1s (3558 modules)
+ ✓ Compiled /calendario/page in 1726ms (2007 modules)
+ ✓ Compiled /reportes/page in 2s (1968 modules)
+ ✓ Compiled /api/db/[table]/route in 1170ms (2002 modules)
+ ✓ Compiled /kanban/page in 934ms (2017 modules)
+ ✓ Compiled /api/auth/logout/route in 605ms (2019 modules)
+ ✓ Compiled /login/page in 1437ms (2031 modules)
+ ✓ Compiled in 4.2s (4097 modules)
+ ✓ Compiled /api/auth/login/route in 1133ms (1999 modules)
+ ✓ Compiled /api/auth/me/route in 966ms (2001 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[FRONT Dashboard] render — loading: true session: false profile: null
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /api/db/[table]/route in 756ms (2004 modules)
+ ✓ Compiled /creditos/page in 2.1s (1970 modules)
+ ✓ Compiled /api/db/[table]/route in 830ms (2004 modules)
+ ✓ Compiled /creditos/[id]/page in 1925ms (2015 modules)
+ ✓ Compiled /kanban/page in 984ms (2025 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled in 7.6s (3000 modules)
+ ○ compiling /api/auth/me/route ...
+ ✓ Compiled /api/auth/me/route in 6.6s (901 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /api/db/[table]/route in 660ms (904 modules)
+ ✓ Compiled in 5s (3036 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled in 1340ms (3022 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ○ compiling /calendario/page ...
+ ✓ Compiled /calendario/page in 5.3s (1448 modules)
+ ✓ Compiled /api/db/[table]/route in 1315ms (1482 modules)
+ ✓ Compiled /clientes/nuevo/page in 977ms (1487 modules)
+ ✓ Compiled /clientes/[id]/page in 1327ms (1478 modules)
+ ✓ Compiled /creditos/page in 780ms (1437 modules)
+ ✓ Compiled /api/db/[table]/route in 505ms (1471 modules)
+ ✓ Compiled /creditos/nuevo/page in 1237ms (1478 modules)
+ ○ compiling /not-found ...
+ ✓ Compiled /not-found in 3.4s (3020 modules)
+ ✓ Compiled /reportes/page in 2.5s (1417 modules)
+ ✓ Compiled /sedes/page in 1313ms (1424 modules)
+ ✓ Compiled /usuarios/page in 1501ms (1425 modules)
+ ✓ Compiled /api/auth/me/route in 779ms (1417 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ⚠ ./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+./node_modules/@supabase/realtime-js/dist/main/index.js
+./node_modules/@supabase/supabase-js/dist/main/index.js
+./app/api/users/route.ts
+ ○ compiling /api/users/route ...
+ X node_modules\@supabase\supabase-js\dist\main\SupabaseClient.js (45:18) @ new SupabaseClient
+ X Error: supabaseKey is required.
+    at new SupabaseClient (webpack-internal:///(rsc)/./node_modules/@supabase/supabase-js/dist/main/SupabaseClient.js:62:33)
+    at createClient (webpack-internal:///(rsc)/./node_modules/@supabase/supabase-js/dist/main/index.js:81:12)
+    at eval (webpack-internal:///(rsc)/./app/api/users/route.ts:13:90)
+    at (rsc)/./app/api/users/route.ts (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:128:1)
+    at __webpack_require__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:33:43)
+    at eval (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Fusers%2Froute&page=%2Fapi%2Fusers%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fusers%2Froute.ts&appDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!:16:143)
+    at (rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Fusers%2Froute&page=%2Fapi%2Fusers%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fusers%2Froute.ts&appDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D! (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:117:1)
+    at __webpack_require__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:33:43)
+    at __webpack_exec__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:138:39)
+    at C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:139:192
+    at __webpack_require__.X (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:163:21)
+    at C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:139:47
+    at Object.<anonymous> (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:142:3)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14)
+    at Object..js (node:internal/modules/cjs/loader:1820:10)
+    at Module.load (node:internal/modules/cjs/loader:1423:32)
+    at Function._load (node:internal/modules/cjs/loader:1246:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1445:12)
+    at mod.require (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\require-hook.js:64:28)
+    at require (node:internal/modules/helpers:135:16)
+    at requirePage (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\require.js:109:84)
+    at C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\load-components.js:59:84
+    at async loadComponentsImpl (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\load-components.js:59:26)
+    at async DevServer.findPageComponentsImpl (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\next-server.js:438:36) {
+  page: '/api/users'
+}
+null
+ ⚠ ./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+./node_modules/@supabase/realtime-js/dist/main/index.js
+./node_modules/@supabase/supabase-js/dist/main/index.js
+./app/api/users/route.ts
+ ⚠ ./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+./node_modules/@supabase/realtime-js/dist/main/index.js
+./node_modules/@supabase/supabase-js/dist/main/index.js
+./app/api/users/route.ts
+ ⚠ ./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+./node_modules/@supabase/realtime-js/dist/main/index.js
+./node_modules/@supabase/supabase-js/dist/main/index.js
+./app/api/users/route.ts
+ ⚠ ./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+./node_modules/@supabase/realtime-js/dist/main/index.js
+./node_modules/@supabase/supabase-js/dist/main/index.js
+./app/api/sedes/route.ts
+ ✓ Compiled /api/sedes/route in 3.3s (3513 modules)
+ ✓ Compiled in 1445ms (2132 modules)
+ ✓ Compiled in 1459ms (2132 modules)
+ ✓ Compiled in 2s (2132 modules)
+ ✓ Compiled /api/sedes/route in 1247ms (1414 modules)
+ ✓ Compiled /api/db/[table]/route in 766ms (1417 modules)
+ ✓ Compiled /api/auth/me/route in 984ms (1419 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled in 2.9s (3513 modules)
+ ✓ Compiled in 1166ms (2132 modules)
+ ✓ Compiled in 3.5s (3513 modules)
+ ✓ Compiled /api/auth/me/route in 591ms (1414 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /api/sedes/route in 951ms (1416 modules)
+ ✓ Compiled /api/db/[table]/route in 1040ms (1419 modules)
+ ✓ Compiled in 1ms (1419 modules)
+ ✓ Compiled in 1ms (1419 modules)
+ ✓ Compiled in 0ms (1419 modules)
+ ✓ Compiled in 1ms (1419 modules)
+ ✓ Compiled /api/db/[table]/[id]/route in 1320ms (1421 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ⚠ ./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+./node_modules/@supabase/realtime-js/dist/main/index.js
+./node_modules/@supabase/supabase-js/dist/main/index.js
+./app/api/users/route.ts
+ ○ compiling /api/users/route ...
+ X node_modules\@supabase\supabase-js\dist\main\SupabaseClient.js (45:18) @ new SupabaseClient
+ X Error: supabaseKey is required.
+    at new SupabaseClient (webpack-internal:///(rsc)/./node_modules/@supabase/supabase-js/dist/main/SupabaseClient.js:62:33)
+    at createClient (webpack-internal:///(rsc)/./node_modules/@supabase/supabase-js/dist/main/index.js:81:12)
+    at eval (webpack-internal:///(rsc)/./app/api/users/route.ts:13:90)
+    at (rsc)/./app/api/users/route.ts (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:128:1)
+    at __webpack_require__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:33:43)
+    at eval (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Fusers%2Froute&page=%2Fapi%2Fusers%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fusers%2Froute.ts&appDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!:16:143)
+    at (rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Fusers%2Froute&page=%2Fapi%2Fusers%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fusers%2Froute.ts&appDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D! (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:117:1)
+    at __webpack_require__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:33:43)
+    at __webpack_exec__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:138:39)
+    at C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:139:192
+    at __webpack_require__.X (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:163:21)
+    at C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:139:47
+    at Object.<anonymous> (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:142:3)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14)
+    at Object..js (node:internal/modules/cjs/loader:1820:10)
+    at Module.load (node:internal/modules/cjs/loader:1423:32)
+    at Function._load (node:internal/modules/cjs/loader:1246:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1445:12)
+    at mod.require (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\require-hook.js:64:28)
+    at require (node:internal/modules/helpers:135:16)
+    at requirePage (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\require.js:109:84)
+    at C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\load-components.js:59:84
+    at async loadComponentsImpl (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\load-components.js:59:26)
+    at async DevServer.findPageComponentsImpl (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\next-server.js:438:36) {
+  page: '/api/users'
+}
+null
+ ⚠ ./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+./node_modules/@supabase/realtime-js/dist/main/index.js
+./node_modules/@supabase/supabase-js/dist/main/index.js
+./app/api/users/route.ts
+ ⚠ ./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+./node_modules/@supabase/realtime-js/dist/main/index.js
+./node_modules/@supabase/supabase-js/dist/main/index.js
+./app/api/users/route.ts
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ X node_modules\@supabase\supabase-js\dist\main\SupabaseClient.js (45:18) @ new SupabaseClient
+ X Error: supabaseKey is required.
+    at new SupabaseClient (webpack-internal:///(rsc)/./node_modules/@supabase/supabase-js/dist/main/SupabaseClient.js:62:33)
+    at createClient (webpack-internal:///(rsc)/./node_modules/@supabase/supabase-js/dist/main/index.js:81:12)
+    at eval (webpack-internal:///(rsc)/./app/api/users/route.ts:13:90)
+    at (rsc)/./app/api/users/route.ts (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:128:1)
+    at __webpack_require__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:33:43)
+    at eval (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Fusers%2Froute&page=%2Fapi%2Fusers%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fusers%2Froute.ts&appDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!:16:143)
+    at (rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Fusers%2Froute&page=%2Fapi%2Fusers%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fusers%2Froute.ts&appDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=C%3A%5CUsers%5CTIRESIA%5CDocuments%5CGerson%5CCRM-CREDILIBRANZASJG%5Ccreditos&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D! (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:117:1)
+    at __webpack_require__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:33:43)
+    at __webpack_exec__ (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:138:39)
+    at C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:139:192
+    at __webpack_require__.X (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\webpack-runtime.js:163:21)
+    at C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:139:47
+    at Object.<anonymous> (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\.next\server\app\api\users\route.js:142:3)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14)
+    at Object..js (node:internal/modules/cjs/loader:1820:10)
+    at Module.load (node:internal/modules/cjs/loader:1423:32)
+    at Function._load (node:internal/modules/cjs/loader:1246:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1445:12)
+    at mod.require (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\require-hook.js:64:28)
+    at require (node:internal/modules/helpers:135:16)
+    at requirePage (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\require.js:109:84)
+    at C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\load-components.js:59:84
+    at async loadComponentsImpl (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\load-components.js:59:26)
+    at async DevServer.findPageComponentsImpl (C:\Users\TIRESIA\Documents\Gerson\CRM-CREDILIBRANZASJG\creditos\node_modules\next\dist\server\next-server.js:438:36) {
+  page: '/api/users'
+}
+null
+ ✓ Compiled /not-found in 7s (3554 modules)
+ ✓ Compiled in 5.3s (3549 modules)
+ ✓ Compiled /api/db/[table]/route in 1008ms (1418 modules)
+ ✓ Compiled in 6.1s (3513 modules)
+ ✓ Compiled in 1676ms (2132 modules)
+ ✓ Compiled in 2.5s (2132 modules)
+ ✓ Compiled in 1584ms (2132 modules)
+ ✓ Compiled in 1459ms (2132 modules)
+ ✓ Compiled in 4.3s (3513 modules)
+ ✓ Compiled in 5.6s (3499 modules)
+ ✓ Compiled in 1509ms (2132 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled in 6.3s (3520 modules)
+ ✓ Compiled (3519 modules)
+ ✓ Compiled /api/auth/me/route in 1910ms (1417 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled in 1652ms (2134 modules)
+ ✓ Compiled in 2.2s (3551 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /api/db/[table]/route in 1169ms (1420 modules)
+ ✓ Compiled /login/page in 768ms (1429 modules)
+ ✓ Compiled in 2.3s (2134 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 4.3s (3518 modules)
+ ✓ Compiled /api/auth/me/route in 814ms (1417 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /api/db/[table]/route in 590ms (1420 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 3.2s (3554 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 5.8s (3558 modules)
+ ✓ Compiled (3557 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 6s (3564 modules)
+ ✓ Compiled (3563 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 4.9s (3562 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 2.2s (3562 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled in 4.2s (3562 modules)
+ ✓ Compiled in 2.2s (3562 modules)
+ ✓ Compiled in 5.8s (3562 modules)
+ ✓ Compiled in 2.1s (3562 modules)
+ ✓ Compiled /entidades/page in 1484ms (1393 modules)
+ ○ compiling /api/db/[table]/route ...
+ ✓ Compiled /api/db/[table]/route in 12.5s (1427 modules)
+ ✓ Compiled /solicitudes/page in 2s (1394 modules)
+ ✓ Compiled /api/db/[table]/route in 588ms (1428 modules)
+ ✓ Compiled /api/db/[table]/[id]/route in 911ms (1420 modules)
+ ✓ Compiled /api/auth/me/route in 1138ms (1422 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ○ compiling /roles/page ...
+ ✓ Compiled /roles/page in 3.1s (1397 modules)
+ ✓ Compiled /api/db/[table]/route in 897ms (1431 modules)
+ ✓ Compiled /api/auth/me/route in 577ms (902 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /api/roles/[id]/route in 1670ms (904 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /clientes/page in 884ms (913 modules)
+ ✓ Compiled /clientes/nuevo/page in 892ms (920 modules)
+ ✓ Compiled /calendario/page in 1349ms (1491 modules)
+ ✓ Compiled /kanban/page in 1191ms (1506 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ○ compiling /creditos/page ...
+ ✓ Compiled /creditos/page in 5.2s (1480 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ○ compiling /login/page ...
+ ✓ Compiled /login/page in 38.2s (1446 modules)
+ ✓ Compiled /api/auth/me/route in 2.4s (1479 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ○ compiling /api/auth/login/route ...
+ ✓ Compiled /api/auth/login/route in 10.1s (1482 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ○ compiling /dashboard/page ...
+ ✓ Compiled /dashboard/page in 11.4s (2017 modules)
+[FRONT Dashboard] render — loading: true session: false profile: null
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+ ✓ Compiled /api/db/[table]/route in 1567ms (2020 modules)
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}
+[BACK /api/auth/me] ▶ request received
+[BACK /api/auth/me] session: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  role: 'admin',
+  status: 'activo'
+}
+[BACK /api/auth/me] profile loaded: {
+  id: '832a68f6-32cb-44e6-b466-fe3c3f9700e0',
+  email: 'admin@credilibranzas.com',
+  role: 'admin',
+  permissions_count: 12
+}

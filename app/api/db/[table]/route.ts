@@ -12,7 +12,8 @@ type Table =
   | 'credits'
   | 'credit_status_history'
   | 'documents'
-  | 'follow_ups';
+  | 'follow_ups'
+  | 'sedes';
 
 const TABLE_LIST: Table[] = [
   'roles',
@@ -24,6 +25,7 @@ const TABLE_LIST: Table[] = [
   'credit_status_history',
   'documents',
   'follow_ups',
+  'sedes',
 ];
 
 const ALLOWED_COLUMNS: Record<Table, string[]> = {
@@ -36,6 +38,7 @@ const ALLOWED_COLUMNS: Record<Table, string[]> = {
   credit_status_history: ['id', 'credit_id', 'previous_status', 'new_status', 'changed_by', 'changed_at', 'comment'],
   documents: ['id', 'credit_id', 'document_type', 'file_url', 'status', 'uploaded_by', 'uploaded_at', 'reviewed_by', 'reviewed_at'],
   follow_ups: ['id', 'credit_id', 'asesor_id', 'channel', 'comment', 'contact_date', 'next_action_date', 'next_action_note', 'completed', 'created_at'],
+  sedes: ['id', 'name', 'code', 'address', 'city', 'phone', 'manager_id', 'active', 'created_at'],
 };
 
 const ALIASES: Record<string, string> = {
