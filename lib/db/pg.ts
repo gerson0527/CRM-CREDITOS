@@ -2,25 +2,6 @@ import { Pool } from 'pg';
 
 const connectionString = process.env.DATABASE_URL || 'postgresql://postgres@localhost:5432/credilibranzasjg';
 
-function getConnectionInfo(value: string) {
-  try {
-    const url = new URL(value);
-    return {
-      configured: Boolean(process.env.DATABASE_URL),
-      protocol: url.protocol,
-      host: url.hostname,
-      port: url.port || '5432',
-      database: url.pathname.replace(/^\//, ''),
-      user: decodeURIComponent(url.username),
-    };
-  } catch {
-    return { configured: Boolean(process.env.DATABASE_URL), invalid: true };
-  }
-}
-
-const connectionInfo = getConnectionInfo(connectionString);
-console.log('[db] PostgreSQL connection target', connectionInfo);
-
 declare global {
   var __pgPool: Pool | undefined;
 }
@@ -41,17 +22,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export async function query<T = unknown>(sql: string, params: unknown[] = []): Promise<T[]> {
-  try {
-    const res = await pool.query(sql, params);
-    return res.rows as T[];
-  } catch (error: any) {
-    console.error('[db] PostgreSQL query failed', {
-      ...connectionInfo,
-      code: error?.code,
-      message: error?.message,
-    });
-    throw error;
-  }
+  const res = await pool.query(sql, params);
+  return res.rows as T[];
 }
 
 export async function queryOne<T = unknown>(sql: string, params: unknown[] = []): Promise<T | null> {

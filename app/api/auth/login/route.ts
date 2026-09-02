@@ -57,25 +57,21 @@ function clearRateLimit(key: string) {
 
 export async function POST(request: Request) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown-ip';
-  console.log('[auth/login] request received', { ip });
 
   let body: LoginBody;
   try {
     body = await request.json();
   } catch {
-    console.error('[auth/login] invalid JSON body');
     return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 });
   }
 
   const { email, password } = body;
   if (!email || !password) {
-    console.warn('[auth/login] missing email or password', { hasEmail: Boolean(email), hasPassword: Boolean(password) });
     return NextResponse.json({ error: 'Email y contraseña requeridos' }, { status: 400 });
   }
 
   const normalizedEmail = email.toLowerCase().trim();
   const rateLimitKey = `${ip}:${normalizedEmail}`;
-  console.log('[auth/login] attempting user lookup', { email: normalizedEmail });
 
   // Verificar Rate Limiting
   const rateLimitStatus = isRateLimited(rateLimitKey);
@@ -112,20 +108,8 @@ export async function POST(request: Request) {
       [normalizedEmail]
     );
   } catch (error: any) {
-    console.error('[auth/login] database query failed', {
-      name: error?.name,
-      code: error?.code,
-      message: error?.message,
-      host: process.env.DATABASE_URL ? 'configured' : 'missing',
-    });
     return NextResponse.json({ error: 'Error interno al consultar la base de datos' }, { status: 500 });
   }
-
-  console.log('[auth/login] user lookup completed', {
-    found: Boolean(user),
-    status: user?.status,
-    role: user?.role,
-  });
 
   if (!user) {
     recordFailedAttempt(rateLimitKey);
@@ -150,10 +134,6 @@ export async function POST(request: Request) {
   try {
     ok = await bcrypt.compare(password, user.password_hash);
   } catch (error: any) {
-    console.error('[auth/login] password comparison failed', {
-      name: error?.name,
-      message: error?.message,
-    });
     return NextResponse.json({ error: 'Error interno al validar las credenciales' }, { status: 500 });
   }
   if (!ok) {
@@ -166,7 +146,6 @@ export async function POST(request: Request) {
 
   const token = createSessionToken(user.id);
   setSessionCookie(token);
-  console.log('[auth/login] login successful', { userId: user.id, role: user.role });
 
   return NextResponse.json({
     user: {
