@@ -33,13 +33,6 @@ const REQUIRED_DOCUMENTS: { key: string; label: string; required: boolean }[] = 
   { key: 'adicional_2', label: 'Adicional 2', required: false },
 ];
 
-interface UploadedFile {
-  key: string;
-  name: string;
-  size: number;
-  type: string;
-}
-
 export default function NewCreditPage() {
   const { profile } = useAuth();
   const router = useRouter();
@@ -84,7 +77,11 @@ export default function NewCreditPage() {
   }
 
   function removeFile(docKey: string) {
-    setUploadedFiles((prev) => prev.filter((f) => f.key !== docKey));
+    setUploadedFiles((prev) => {
+      const next = { ...prev };
+      delete next[docKey];
+      return next;
+    });
   }
 
   async function handleSubmit() {

@@ -143,10 +143,12 @@ export function FileUpload({
           if (thumbRes.ok) {
             await uploadToPresignedUrl(thumbPresigned.uploadUrl, processed.thumb, thumbPresigned.requiredHeaders);
             thumbKey = thumbPresigned.key;
-            const tRes = await fetch(`/api/uploads/preview?key=${encodeURIComponent(thumbKey)}`);
-            if (tRes.ok) {
-              const tData = await tRes.json();
-              if (tData.url) setThumbUrl(tData.url);
+            if (thumbKey) {
+              const tRes = await fetch(`/api/uploads/preview?key=${encodeURIComponent(thumbKey)}`);
+              if (tRes.ok) {
+                const tData = await tRes.json();
+                if (tData.url) setThumbUrl(tData.url);
+              }
             }
           }
         } catch { /* ignore thumb errors */ }
