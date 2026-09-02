@@ -4,7 +4,7 @@ import { useState, useEffect, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, ArrowRight, Check, User, CreditCard, FileText, Upload, CheckCircle2, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, User, CreditCard, FileText } from 'lucide-react';
 import { AppLayout } from '@/components/app-layout';
 import { PageTransition } from '@/components/transitions';
 import { PageHeader } from '@/components/page-header';
@@ -13,17 +13,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/providers/auth-provider';
 import { formatCurrency } from '@/lib/constants';
+import { FileUpload, type UploadedFile } from '@/components/file-upload';
 import type { FinancialEntity, CreditType } from '@/lib/types';
 
-const ACCEPTED_DOC_TYPES = '.pdf,.png,.jpg,.jpeg';
-const ACCEPTED_MIME = ['application/pdf', 'image/png', 'image/jpeg'];
 const MAX_FILE_SIZE_MB = 10;
 
 const REQUIRED_DOCUMENTS: { key: string; label: string; required: boolean }[] = [
@@ -57,7 +55,7 @@ export default function NewCreditPage() {
   const [creditData, setCreditData] = useState({
     entity_id: '', credit_type_id: '', requested_amount: '', term_months: '36',
   });
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<Record<string, UploadedFile>>({});
 
   useEffect(() => {
     supabase.from('financial_entities').select('*').eq('active', true).then(({ data }) => setEntities(data || []));
@@ -73,33 +71,16 @@ export default function NewCreditPage() {
   const selectedCreditType = creditTypes.find((ct) => ct.id === creditData.credit_type_id);
   const defaultRate = selectedCreditType ? Number(selectedCreditType.default_rate) : null;
 
-  function handleFileUpload(docKey: string, e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validar tipo MIME
-    if (!ACCEPTED_MIME.includes(file.type)) {
-      toast.error('Formato no permitido', {
-        description: `Solo se aceptan PDF, PNG o JPG. Recibido: ${file.type || 'desconocido'}`,
-      });
-      e.target.value = '';
-      return;
-    }
-
-    // Validar tamaño
-    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-      toast.error('Archivo muy grande', {
-        description: `Máximo ${MAX_FILE_SIZE_MB}MB. Tu archivo: ${(file.size / 1024 / 1024).toFixed(1)}MB`,
-      });
-      e.target.value = '';
-      return;
-    }
-
-    setUploadedFiles((prev) => [
-      ...prev.filter((f) => f.key !== docKey),
-      { key: docKey, name: file.name, size: file.size, type: file.type },
-    ]);
-    toast.success(`${REQUIRED_DOCUMENTS.find((d) => d.key === docKey)?.label} cargado`);
+  function handleFileChange(docKey: string, file: UploadedFile | null) {
+    setUploadedFiles((prev) => {
+      const next = { ...prev };
+      if (file) {
+        next[docKey] = file;
+      } else {
+        delete next[docKey];
+      }
+      return next;
+    });
   }
 
   function removeFile(docKey: string) {
@@ -157,12 +138,15 @@ export default function NewCreditPage() {
         comment: 'Crédito creado',
       });
 
-      // 4. Registrar documentos cargados
-      if (uploadedFiles.length > 0) {
-        const docsToInsert = uploadedFiles.map((f) => ({
+      // 4. Registrar documentos cargados.
+      // Guardamos el "key" (o JSON {original, thumb}) en file_url.
+      // En tu modelo real de Prisma puedes agregar un campo storage_key y thumbnail_key separados.
+      const filesArr = Object.values(uploadedFiles);
+      if (filesArr.length > 0) {
+        const docsToInsert = filesArr.map((f) => ({
           credit_id: credit.id,
-          document_type: f.key,
-          file_url: f.name, // En local guardamos el nombre; en prod se subiría a storage
+          document_type: f.documentType,
+          file_url: JSON.stringify({ original: f.key, thumb: f.thumbKey }),
           status: 'pendiente',
           uploaded_by: profile.id,
         }));
@@ -170,7 +154,7 @@ export default function NewCreditPage() {
       }
 
       toast.success('Crédito creado', {
-        description: `Cliente + crédito + ${uploadedFiles.length} documento(s) registrado(s).`,
+        description: `Cliente + crédito${filesArr.length > 0 ? ` + ${filesArr.length} archivo(s)` : ''} registrado(s).`,
       });
       router.push(`/creditos/${credit.id}`);
     } catch (err: any) {
@@ -318,7 +302,7 @@ export default function NewCreditPage() {
                 </motion.div>
               )}
 
-              {/* Step 2: Documents */}
+              {/* Step 2: Documents — upload directo a S3 */}
               {step === 2 && (
                 <motion.div
                   key="step2"
@@ -329,84 +313,27 @@ export default function NewCreditPage() {
                 >
                   <div className="rounded-xl border border-blue-200 bg-blue-50/60 p-3">
                     <p className="text-sm text-slate-700">
-                      Sube los <strong>6 documentos</strong> requeridos. Los 4 marcados como obligatorios son necesarios para avanzar el crédito.
+                      Sube los <strong>6 documentos</strong>. Los 4 marcados como obligatorios son necesarios para crear el crédito.
                     </p>
                     <p className="mt-1 text-xs text-slate-500">
-                      Formatos aceptados: <strong>PDF, PNG, JPG</strong>. Tamaño máx: {MAX_FILE_SIZE_MB}MB por archivo.
+                      Formatos: <strong>PDF, PNG, JPG, WebP</strong>. Tamaño máx: 10MB.
+                      Las imágenes se comprimen y generan thumbnail automáticamente.
                     </p>
                   </div>
 
                   <div className="space-y-2">
-                    {REQUIRED_DOCUMENTS.map((doc) => {
-                      const uploaded = uploadedFiles.find((f) => f.key === doc.key);
-                      return (
-                        <div
-                          key={doc.key}
-                          className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-3"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-                              uploaded ? 'bg-emerald-50' : doc.required ? 'bg-amber-50' : 'bg-slate-100'
-                            }`}>
-                              {uploaded ? (
-                                <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-                              ) : (
-                                <Upload className={`h-5 w-5 ${doc.required ? 'text-amber-500' : 'text-slate-400'}`} />
-                              )}
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium text-slate-900">{doc.label}</span>
-                                {doc.required ? (
-                                  <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-[10px]">Requerido</Badge>
-                                ) : (
-                                  <Badge className="bg-slate-100 text-slate-600 border-slate-200 text-[10px]">Opcional</Badge>
-                                )}
-                              </div>
-                              <p className="text-xs text-slate-500">
-                                {uploaded ? (
-                                  <span className="text-emerald-600">
-                                    {uploaded.name} ({(uploaded.size / 1024).toFixed(0)} KB)
-                                  </span>
-                                ) : (
-                                  'Sin archivo'
-                                )}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            {uploaded && (
-                              <Button
-                                type="button"
-                                size="icon"
-                                variant="ghost"
-                                onClick={() => removeFile(doc.key)}
-                                className="h-8 w-8 text-slate-400 hover:text-red-600"
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            )}
-                            <label>
-                              <input
-                                type="file"
-                                accept={ACCEPTED_DOC_TYPES}
-                                onChange={(e) => handleFileUpload(doc.key, e)}
-                                className="hidden"
-                              />
-                              <span className="inline-flex h-8 cursor-pointer items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50">
-                                <Upload className="mr-1.5 h-3 w-3" />
-                                {uploaded ? 'Cambiar' : 'Subir'}
-                              </span>
-                            </label>
-                          </div>
-                        </div>
-                      );
-                    })}
+                    {REQUIRED_DOCUMENTS.map((doc) => (
+                      <FileUpload
+                        key={doc.key}
+                        documentType={doc.key}
+                        documentLabel={doc.label}
+                        required={doc.required}
+                        value={uploadedFiles[doc.key] || null}
+                        onChange={(f) => handleFileChange(doc.key, f)}
+                        rootFolder="creditos"
+                      />
+                    ))}
                   </div>
-
-                  <p className="text-xs text-slate-500">
-                    💡 También puedes saltar este paso y subir los documentos después desde el detalle del crédito.
-                  </p>
                 </motion.div>
               )}
             </AnimatePresence>
