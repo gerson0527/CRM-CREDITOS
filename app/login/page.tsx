@@ -76,6 +76,12 @@ export default function LoginPage() {
       });
 
       const data = await res.json();
+      console.log('[login] API response', {
+        status: res.status,
+        ok: res.ok,
+        error: data.error,
+        user: data.user ? { id: data.user.id, role: data.user.role } : undefined,
+      });
 
       if (!res.ok) {
         toast.error('Acceso denegado', { description: data.error });
