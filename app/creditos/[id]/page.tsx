@@ -31,6 +31,24 @@ import {
 } from '@/lib/constants';
 import type { Credit, CreditStatus, Document, FollowUp, CreditStatusHistory } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import { ImagePreview } from '@/components/image-preview';
+
+function getDocumentPreview(doc: Document) {
+  try {
+    const stored = JSON.parse(doc.file_url) as { original?: string; thumb?: string };
+    const mainKey = stored.original || doc.file_url;
+    const extension = mainKey.split('.').pop()?.toLowerCase() || '';
+    const contentType = extension === 'pdf' ? 'application/pdf' : `image/${extension === 'jpg' ? 'jpeg' : extension}`;
+    return { mainKey, thumbKey: stored.thumb, contentType, filename: `${doc.document_type}.${extension || 'archivo'}` };
+  } catch {
+    const extension = doc.file_url.split('.').pop()?.toLowerCase() || '';
+    return {
+      mainKey: doc.file_url,
+      contentType: extension === 'pdf' ? 'application/pdf' : `image/${extension === 'jpg' ? 'jpeg' : extension}`,
+      filename: `${doc.document_type}.${extension || 'archivo'}`,
+    };
+  }
+}
 
 export default function CreditDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -381,24 +399,27 @@ export default function CreditDetailPage() {
                     {documents.length > 0 ? (
                       <div className="space-y-2.5">
                         {documents.map((doc) => (
-                          <div key={doc.id} className="flex items-center justify-between rounded-2xl border border-border/70 bg-accent/20 p-3">
-                            <div className="flex items-center gap-3">
-                              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                                <FileText className="h-4 w-4" />
+                          <div key={doc.id} className="rounded-2xl border border-border/70 bg-accent/20 p-3">
+                            <div className="mb-2 flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                                  <FileText className="h-4 w-4" />
+                                </div>
+                                <div>
+                                  <p className="text-xs font-bold capitalize text-foreground">{doc.document_type.replace(/_/g, ' ')}</p>
+                                  <p className="text-[11px] text-muted-foreground font-medium">{formatDate(doc.uploaded_at)}</p>
+                                </div>
                               </div>
-                              <div>
-                                <p className="text-xs font-bold capitalize text-foreground">{doc.document_type.replace(/_/g, ' ')}</p>
-                                <p className="text-[11px] text-muted-foreground font-medium">{formatDate(doc.uploaded_at)}</p>
-                              </div>
+                              <Badge className={cn(
+                                'rounded-full px-2.5 py-0.5 text-[10px] font-bold shadow-none',
+                                doc.status === 'validado' ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
+                                  : doc.status === 'rechazado' ? 'bg-red-500/15 text-red-700 dark:text-red-300 border border-red-500/20'
+                                  : 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/20'
+                              )}>
+                                {doc.status}
+                              </Badge>
                             </div>
-                            <Badge className={cn(
-                              'rounded-full px-2.5 py-0.5 text-[10px] font-bold shadow-none',
-                              doc.status === 'validado' ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
-                                : doc.status === 'rechazado' ? 'bg-red-500/15 text-red-700 dark:text-red-300 border border-red-500/20'
-                                : 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/20'
-                            )}>
-                              {doc.status}
-                            </Badge>
+                            <ImagePreview {...getDocumentPreview(doc)} canDownload={profile?.role === 'admin'} variant="inline" />
                           </div>
                         ))}
                       </div>

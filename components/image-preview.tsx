@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Download, ZoomIn, X, FileText, Loader2 } from 'lucide-react';
+import { Download, Eye, ZoomIn, X, FileText, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -14,6 +14,7 @@ interface ImagePreviewProps {
   size?: number;
   className?: string;
   variant?: 'card' | 'inline';
+  canDownload?: boolean;
 }
 
 export function ImagePreview({
@@ -24,6 +25,7 @@ export function ImagePreview({
   size,
   className,
   variant = 'card',
+  canDownload = true,
 }: ImagePreviewProps) {
   const [thumbUrl, setThumbUrl] = useState<string | null>(null);
   const [fullUrl, setFullUrl] = useState<string | null>(null);
@@ -83,7 +85,16 @@ export function ImagePreview({
       if (!res.ok) return;
       const data = await res.json();
       if (data.downloadUrl) {
-        window.open(data.downloadUrl, '_blank');
+        const fileRes = await fetch(data.downloadUrl);
+        if (!fileRes.ok) return;
+        const blobUrl = URL.createObjectURL(await fileRes.blob());
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(blobUrl);
       }
     } catch { /* ignore */ }
   }
@@ -101,13 +112,90 @@ export function ImagePreview({
           <p className="truncate text-sm font-medium text-slate-900">{filename}</p>
           {sizeStr && <p className="text-xs text-slate-500">{sizeStr}</p>}
         </div>
-        {mainKey && (
+        {mainKey && canDownload && (
           <Button size="sm" variant="outline" onClick={download}>
             <Download className="h-3.5 w-3.5" />
             Descargar
           </Button>
         )}
       </div>
+    );
+  }
+
+  if (variant === 'inline') {
+    return (
+      <>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={loadFullUrl}
+            disabled={!mainKey || loading}
+            className="h-8 rounded-lg text-xs"
+            title="Ver documento"
+          >
+            {loading ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Eye className="mr-1.5 h-3.5 w-3.5" />}
+            Ver documento
+          </Button>
+          {canDownload && mainKey && (
+            <Button type="button" size="sm" variant="outline" onClick={download} className="h-8 rounded-lg text-xs">
+              <Download className="mr-1.5 h-3.5 w-3.5" />
+              Descargar
+            </Button>
+          )}
+        </div>
+        <AnimatePresence>
+          {zoomed && fullUrl && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 p-4 backdrop-blur-sm"
+              onClick={() => setZoomed(false)}
+            >
+              <Button
+                type="button"
+                size="icon"
+                variant="secondary"
+                className="absolute right-4 top-4 h-10 w-10 rounded-full"
+                onClick={() => setZoomed(false)}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+              {isPdf ? (
+                <iframe
+                  src={fullUrl}
+                  title={filename}
+                  className="h-[90vh] w-[min(90vw,900px)] rounded-lg bg-white shadow-2xl"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              ) : (
+                <motion.img
+                  src={fullUrl}
+                  alt={filename}
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  className="max-h-[90vh] max-w-[90vw] rounded-lg shadow-2xl"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              )}
+              {canDownload && (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  className="absolute bottom-4 right-4"
+                  onClick={(e) => { e.stopPropagation(); download(); }}
+                >
+                  <Download className="mr-1.5 h-3.5 w-3.5" />
+                  Descargar original
+                </Button>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </>
     );
   }
 
@@ -132,12 +220,12 @@ export function ImagePreview({
             </div>
           )}
           <div className="absolute inset-0 flex items-center justify-center gap-1.5 bg-slate-900/0 opacity-0 transition-all group-hover:bg-slate-900/40 group-hover:opacity-100">
-            {mainKey && isImage && (
+            {mainKey && (
               <Button size="icon" variant="secondary" onClick={loadFullUrl} className="h-8 w-8 rounded-full">
                 <ZoomIn className="h-4 w-4" />
               </Button>
             )}
-            {mainKey && (
+            {mainKey && canDownload && (
               <Button size="icon" variant="secondary" onClick={download} className="h-8 w-8 rounded-full">
                 <Download className="h-4 w-4" />
               </Button>
@@ -169,23 +257,34 @@ export function ImagePreview({
             >
               <X className="h-5 w-5" />
             </Button>
-            <motion.img
-              src={fullUrl}
-              alt={filename}
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              className="max-h-[90vh] max-w-[90vw] rounded-lg shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            />
-            <Button
-              size="sm"
-              variant="secondary"
-              className="absolute bottom-4 right-4"
-              onClick={(e) => { e.stopPropagation(); download(); }}
-            >
-              <Download className="mr-1.5 h-3.5 w-3.5" />
-              Descargar original
-            </Button>
+            {isPdf ? (
+              <iframe
+                src={fullUrl}
+                title={filename}
+                className="h-[90vh] w-[min(90vw,900px)] rounded-lg bg-white shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <motion.img
+                src={fullUrl}
+                alt={filename}
+                initial={{ scale: 0.9 }}
+                animate={{ scale: 1 }}
+                className="max-h-[90vh] max-w-[90vw] rounded-lg shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              />
+            )}
+            {canDownload && (
+              <Button
+                size="sm"
+                variant="secondary"
+                className="absolute bottom-4 right-4"
+                onClick={(e) => { e.stopPropagation(); download(); }}
+              >
+                <Download className="mr-1.5 h-3.5 w-3.5" />
+                Descargar original
+              </Button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

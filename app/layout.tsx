@@ -5,7 +5,7 @@ import { AuthProvider } from '@/components/providers/auth-provider';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { NotificationProvider } from '@/components/providers/notification-provider';
 import { Toaster } from 'sonner';
-import { ChatWidget } from '@/components/chat-widget';
+// import { ChatWidget } from '@/components/chat-widget'; // ⏸️ Comentado temporalmente mientras se mejora el asistente virtual
 
 const inter = Inter({
   subsets: ['latin'],
@@ -37,7 +37,7 @@ export default function RootLayout({
           <AuthProvider>
             <NotificationProvider>
               {children}
-              <ChatWidget />
+              {/* <ChatWidget /> ⏸️ Asistente virtual deshabilitado temporalmente mientras se mejora */}
               <Toaster
                 position="top-right"
                 richColors

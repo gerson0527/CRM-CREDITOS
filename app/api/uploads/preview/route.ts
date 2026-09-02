@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getSessionUserFromRequest } from '@/lib/auth/session';
+import { getSessionUser } from '@/lib/auth/session';
 import { getDownloadUrl } from '@/lib/storage';
 
 /**
@@ -7,8 +7,8 @@ import { getDownloadUrl } from '@/lib/storage';
  * Usado por FileUpload (preview del thumb) e ImagePreview.
  */
 export async function GET(request: Request) {
-  const userId = getSessionUserFromRequest(request);
-  if (!userId) {
+  const user = await getSessionUser();
+  if (!user) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
   }
 

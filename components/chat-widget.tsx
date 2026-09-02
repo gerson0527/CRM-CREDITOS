@@ -1,5 +1,13 @@
 'use client';
 
+/* ⏸️ ASISTENTE VIRTUAL — PAUSADO TEMPORALMENTE
+ * --------------------------------------------
+ * Este componente está en pausa mientras se rediseña y mejora.
+ * El render global fue desactivado en `app/layout.tsx`.
+ * Cuando termines de mejorarlo, vuelve a habilitarlo descomentando
+ * las dos líneas marcadas en `app/layout.tsx`.
+ */
+
 import { useState, useRef, useEffect, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Send, Sparkles, Bot, Minimize2 } from 'lucide-react';
@@ -96,6 +104,9 @@ export function ChatWidget() {
     e.preventDefault();
     sendMessage(input);
   };
+
+  // El asistente queda desactivado hasta nuevo aviso.
+  return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-50 select-none">

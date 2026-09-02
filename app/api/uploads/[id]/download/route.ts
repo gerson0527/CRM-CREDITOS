@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getSessionUserFromRequest } from '@/lib/auth/session';
+import { getSessionUser } from '@/lib/auth/session';
 import { getDownloadUrl } from '@/lib/storage';
 import { queryOne } from '@/lib/db/pg';
 
@@ -8,9 +8,12 @@ import { queryOne } from '@/lib/db/pg';
  * Busca el `file_url` en la DB y genera la URL on-demand.
  */
 export async function GET(request: Request, { params }: { params: { id: string } }) {
-  const userId = getSessionUserFromRequest(request);
-  if (!userId) {
+  const user = await getSessionUser();
+  if (!user) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+  if (user.role !== 'admin') {
+    return NextResponse.json({ error: 'Solo el administrador puede descargar archivos' }, { status: 403 });
   }
 
   const doc = await queryOne<{ file_url: string; credit_id: string }>(
