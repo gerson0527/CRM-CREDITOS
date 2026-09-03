@@ -1,5 +1,8 @@
 -- ============================================================
 -- SCRIPT DE SEMILLA PARA USUARIOS DE PRUEBA / DEMO EN SUPABASE
+-- Solo desarrollo local. NUNCA commitees contraseñas reales en este archivo:
+-- sustituye el placeholder por una contraseña local fuerte al ejecutar
+-- y no la subas al repositorio.
 -- Si prefieres crear los usuarios directamente desde el Editor SQL de Supabase,
 -- puedes ejecutar estas consultas en Supabase > SQL Editor.
 -- ============================================================
@@ -22,7 +25,7 @@ BEGIN
     ) VALUES (
       v_user_id, '00000000-0000-0000-0000-000000000000',
       'admin@credilibranzas.com',
-      crypt('Credi123456!', gen_salt('bf')),
+      crypt('REEMPLAZAR_POR_CONTRASENA_LOCAL_FUERTE', gen_salt('bf')),
       now(),
       '{"provider":"email","providers":["email"]}',
       '{"full_name":"Administrador Principal"}',
@@ -43,7 +46,7 @@ BEGIN
     ) VALUES (
       v_user_id, '00000000-0000-0000-0000-000000000000',
       'supervisor@credilibranzas.com',
-      crypt('Credi123456!', gen_salt('bf')),
+      crypt('REEMPLAZAR_POR_CONTRASENA_LOCAL_FUERTE', gen_salt('bf')),
       now(),
       '{"provider":"email","providers":["email"]}',
       '{"full_name":"Supervisor de Ventas"}',
@@ -64,7 +67,7 @@ BEGIN
     ) VALUES (
       v_user_id, '00000000-0000-0000-0000-000000000000',
       'asesor1@credilibranzas.com',
-      crypt('Credi123456!', gen_salt('bf')),
+      crypt('REEMPLAZAR_POR_CONTRASENA_LOCAL_FUERTE', gen_salt('bf')),
       now(),
       '{"provider":"email","providers":["email"]}',
       '{"full_name":"Juan Pérez (Asesor)"}',
@@ -85,7 +88,7 @@ BEGIN
     ) VALUES (
       v_user_id, '00000000-0000-0000-0000-000000000000',
       'asesor2@credilibranzas.com',
-      crypt('Credi123456!', gen_salt('bf')),
+      crypt('REEMPLAZAR_POR_CONTRASENA_LOCAL_FUERTE', gen_salt('bf')),
       now(),
       '{"provider":"email","providers":["email"]}',
       '{"full_name":"María Rodríguez (Asesor)"}',
@@ -106,7 +109,7 @@ BEGIN
     ) VALUES (
       v_user_id, '00000000-0000-0000-0000-000000000000',
       'asesor3@credilibranzas.com',
-      crypt('Credi123456!', gen_salt('bf')),
+      crypt('REEMPLAZAR_POR_CONTRASENA_LOCAL_FUERTE', gen_salt('bf')),
       now(),
       '{"provider":"email","providers":["email"]}',
       '{"full_name":"Asesor Pendiente"}',

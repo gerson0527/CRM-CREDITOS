@@ -1,10 +1,26 @@
-// Genera password_hash bcrypt para los usuarios demo y los actualiza en la DB.
-// Uso: node scripts/seed_passwords.mjs
+// Asigna un password_hash bcrypt a los usuarios demo YA EXISTENTES en la DB local.
+// La contraseña NUNCA se hardcodea: se lee de SEED_DEMO_PASSWORD y jamás se imprime.
+//
+// Uso (PowerShell):
+//   $env:SEED_DEMO_PASSWORD="una-contraseña-local-fuerte"
+//   $env:DATABASE_URL="postgresql://postgres@localhost:5432/credilibranzasjg"
+//   node scripts/seed_passwords.mjs
+//
+// Solo para desarrollo local. Nunca ejecutes esto contra producción
+// con una contraseña compartida o publicada.
 
 import bcrypt from 'bcryptjs';
 import { Client } from 'pg';
 
-const DEMO_PASSWORD = 'Credi123456!';
+const DEMO_PASSWORD = process.env.SEED_DEMO_PASSWORD;
+if (!DEMO_PASSWORD || DEMO_PASSWORD.length < 12) {
+  console.error(
+    'Falta SEED_DEMO_PASSWORD (mínimo 12 caracteres). ' +
+    'Defínela solo en tu entorno local, sin commitearla.'
+  );
+  process.exit(1);
+}
+
 const USERS = [
   { email: 'admin@credilibranzas.com',     role: 'admin' },
   { email: 'supervisor@credilibranzas.com', role: 'supervisor' },
@@ -19,11 +35,10 @@ const client = new Client({ connectionString, ssl: false });
 async function main() {
   await client.connect();
   const hash = await bcrypt.hash(DEMO_PASSWORD, 10);
-  console.log(`Hash generado: ${hash.slice(0, 20)}...`);
 
   for (const u of USERS) {
     const res = await client.query(
-      `UPDATE public.profiles
+      `UPDATE public.users
        SET password_hash = $1
        WHERE email = $2
        RETURNING email`,
@@ -37,11 +52,7 @@ async function main() {
   }
 
   await client.end();
-  console.log('\n✓ Listo. Ahora puedes login con:');
-  console.log('  admin@credilibranzas.com / Credi123456!');
-  console.log('  supervisor@credilibranzas.com / Credi123456!');
-  console.log('  asesor1@credilibranzas.com / Credi123456!');
-  console.log('  etc.');
+  console.log('\n✓ Listo. Usa la contraseña que definiste en SEED_DEMO_PASSWORD (no se muestra aquí por seguridad).');
 }
 
 main().catch((err) => {

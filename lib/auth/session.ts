@@ -2,7 +2,14 @@ import crypto from 'crypto';
 import { cookies } from 'next/headers';
 import { queryOne } from '@/lib/db/pg';
 
-const SECRET = process.env.SESSION_SECRET || 'dev-secret-change-in-production';
+const SESSION_SECRET = process.env.SESSION_SECRET;
+if (!SESSION_SECRET) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('SESSION_SECRET no está configurado. La app no arranca en producción sin secreto de sesión.');
+  }
+  console.warn('[auth] SESSION_SECRET ausente: usando secreto solo para desarrollo local. No usar en producción.');
+}
+const SECRET = SESSION_SECRET || 'dev-only-insecure-fallback-never-use-in-production';
 const COOKIE_NAME = 'crm_session';
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
 
@@ -58,6 +65,9 @@ export function createSessionToken(userId: string): string {
 
 export function setSessionCookie(token: string) {
   cookies().set(COOKIE_NAME, token, {
+    // Verificado: HttpOnly (JS no puede leerla: mitiga robo vía XSS),
+    // SameSite=Lax (mitiga CSRF en navegaciones cross-site),
+    // Secure solo en producción (localhost es HTTP).
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',

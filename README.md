@@ -36,15 +36,22 @@ npm run dev
 
 Abre [http://localhost:3000](http://localhost:3000) en el navegador.
 
-### Credenciales demo
+### Cuentas demo (solo desarrollo local)
 
-| Email | Rol | Contraseña |
-|---|---|---|
-| `admin@credilibranzas.com` | Administrador | `Credi123456!` |
-| `supervisor@credilibranzas.com` | Supervisor | `Credi123456!` |
-| `asesor1@credilibranzas.com` | Asesor | `Credi123456!` |
-| `asesor2@credilibranzas.com` | Asesor | `Credi123456!` |
-| `asesor3@credilibranzas.com` | Asesor (pendiente) | `Credi123456!` |
+No se publican contraseñas en este repositorio. Para desarrollo local:
+
+1. Crea los usuarios demo con el script de seed (no imprime ni guarda contraseñas en git).
+2. Define tu propia contraseña local con la variable de entorno `SEED_DEMO_PASSWORD` (nunca la commitees):
+
+```bash
+# PowerShell
+$env:SEED_DEMO_PASSWORD="una-contraseña-local-fuerte-que-solo-vive-en-tu-máquina"
+node scripts/seed_passwords.mjs
+```
+
+Roles de ejemplo: `Administrador`, `Supervisor`, `Asesor` (ver `supabase/seed_demo_users.sql` para los correos de ejemplo).
+
+> Nunca uses estas cuentas demo en producción. Crea usuarios reales desde **Gestión de Usuarios** y rota cualquier credencial que haya estado expuesta.
 
 ## Arquitectura
 

@@ -19,7 +19,9 @@ Reemplaza `[PASSWORD]` con la contraseña del proyecto Supabase. La encuentras e
 
 ## 3. Crear los primeros usuarios
 
-Desde la app, entra como admin (`admin@credilibranzas.com` / `Credi123456!`) y ve a **Gestión de Usuarios → Crear usuario**.
+Desde la app, entra con tu cuenta de administrador (creada durante el bootstrap de producción) y ve a **Gestión de Usuarios → Crear usuario**.
+
+> Si alguna credencial demo llegó a usarse o exponerse públicamente, rótala de inmediato y no la reutilices en producción.
 
 Los nuevos usuarios que crees tendrán `must_change_password = true`, así que se les mostrará el diálogo de cambio de contraseña en su primer login.
 
