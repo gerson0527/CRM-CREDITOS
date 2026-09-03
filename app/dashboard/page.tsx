@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useAuth } from '@/components/providers/auth-provider';
+import { RouteGuard } from '@/components/providers/route-guard';
 import { AppLayout } from '@/components/app-layout';
 
 const AdminDashboard = dynamic(() => import('./admin-dashboard'), { ssr: false });
@@ -9,9 +10,15 @@ const SupervisorDashboard = dynamic(() => import('./supervisor-dashboard'), { ss
 const AsesorDashboard = dynamic(() => import('./asesor-dashboard'), { ssr: false });
 
 export default function DashboardPage() {
-  const { profile, loading, session } = useAuth();
+  return (
+    <RouteGuard>
+      <DashboardContent />
+    </RouteGuard>
+  );
+}
 
-  console.log('[FRONT Dashboard] render — loading:', loading, 'session:', !!session, 'profile:', profile ? { id: profile.id, role: profile.role } : null);
+function DashboardContent() {
+  const { profile } = useAuth();
 
   if (!profile) {
     return (
