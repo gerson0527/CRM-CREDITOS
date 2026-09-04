@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Upload, X, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { processFileForUpload, uploadToPresignedUrl, type ProcessedFile } from '@/lib/image-optimization';
+import { hasAllowedMagicBytes, processFileForUpload, uploadToPresignedUrl, type ProcessedFile } from '@/lib/image-optimization';
 import { isAllowedMimeType } from '@/lib/storage';
 
 export interface UploadedFile {
@@ -85,6 +85,11 @@ export function FileUpload({
     }
     if (file.size > MAX_SIZE) {
       setError(`Archivo muy grande (${(file.size / 1024 / 1024).toFixed(1)}MB). Máximo: ${MAX_SIZE / 1024 / 1024}MB`);
+      return;
+    }
+    // El MIME lo declara el navegador según la extensión: verificar contenido real.
+    if (!(await hasAllowedMagicBytes(file))) {
+      setError('El contenido del archivo no coincide con un PDF o imagen válida.');
       return;
     }
     setUploading(true);

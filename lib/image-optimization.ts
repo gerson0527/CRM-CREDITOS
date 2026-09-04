@@ -28,6 +28,25 @@ const DEFAULT_OPTIONS: Required<CompressionOptions> = {
   thumbSize: 320,
 };
 
+/**
+ * Verifica los magic bytes reales del archivo (no solo el MIME declarado,
+ * que se puede falsificar renombrando la extensión). Lee los primeros
+ * 12 bytes: PDF=%PDF, PNG=89 50 4E 47, JPEG=FF D8 FF, WEBP=RIFF....WEBP.
+ */
+export async function hasAllowedMagicBytes(file: File): Promise<boolean> {
+  const header = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+  const ascii = (start: number, len: number) => {
+    let s = '';
+    for (let i = start; i < start + len && i < header.length; i++) s += String.fromCharCode(header[i]);
+    return s;
+  };
+  if (ascii(0, 4) === '%PDF') return true; // PDF
+  if (header[0] === 0x89 && header[1] === 0x50 && header[2] === 0x4e && header[3] === 0x47) return true; // PNG
+  if (header[0] === 0xff && header[1] === 0xd8 && header[2] === 0xff) return true; // JPEG
+  if (ascii(0, 4) === 'RIFF' && ascii(8, 4) === 'WEBP') return true; // WebP
+  return false;
+}
+
 export async function compressImage(
   file: File,
   opts: CompressionOptions = {}

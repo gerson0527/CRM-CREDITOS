@@ -288,7 +288,15 @@ function Reports() {
       formatDate(c.status_changed_at),
       Math.floor((Date.now() - new Date(c.status_changed_at || c.created_at).getTime()) / 86400000),
     ]);
-    const csv = [headers, ...rows].map((r) => r.join(';')).join('\n');
+    // Anti inyección CSV: celdas que empiecen con = + - @_TAB_CR se prefijan
+    // con ' para que Excel/LibreOffice no las interpreten como fórmulas.
+    const sanitizeCell = (v: unknown): string => {
+      const s = String(v ?? '');
+      return /^[=+\-@\t\r]/.test(s) ? `'${s}` : s;
+    };
+    const csv = [headers, ...rows]
+      .map((r) => r.map(sanitizeCell).join(';'))
+      .join('\n');
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
