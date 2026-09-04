@@ -361,7 +361,7 @@ function Reports() {
 
           <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-5">
             <div className="space-y-1.5">
-              <Label className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Label className="flex h-4 items-center gap-1 text-xs text-muted-foreground">
                 <Calendar className="h-3 w-3" /> Desde
               </Label>
               <Input
@@ -372,7 +372,7 @@ function Reports() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Label className="flex h-4 items-center gap-1 text-xs text-muted-foreground">
                 <Calendar className="h-3 w-3" /> Hasta
               </Label>
               <Input
@@ -383,7 +383,7 @@ function Reports() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Asesor</Label>
+              <Label className="flex h-4 items-center text-xs text-muted-foreground">Asesor</Label>
               <Select value={asesorFilter} onValueChange={(v) => { setAsesorFilter(v); setAsesorPage(0); }}>
                 <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Todos" /></SelectTrigger>
                 <SelectContent>
@@ -395,7 +395,7 @@ function Reports() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Entidad</Label>
+              <Label className="flex h-4 items-center text-xs text-muted-foreground">Entidad</Label>
               <Select value={entityFilter} onValueChange={(v) => { setEntityFilter(v); setAsesorPage(0); }}>
                 <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Todas" /></SelectTrigger>
                 <SelectContent>
@@ -407,7 +407,7 @@ function Reports() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Estado</Label>
+              <Label className="flex h-4 items-center text-xs text-muted-foreground">Estado</Label>
               <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setAsesorPage(0); }}>
                 <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Todos" /></SelectTrigger>
                 <SelectContent>
