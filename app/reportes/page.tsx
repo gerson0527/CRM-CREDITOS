@@ -685,7 +685,7 @@ function Reports() {
                     <YAxis
                       type="category"
                       dataKey="entity"
-                      tick={{ fontSize: 11, fill: 'currentColor' }}
+                      tick={{ fontSize: 11, fill: 'currentColor', textAnchor: 'start' }}
                       className="text-muted-foreground"
                       width={150}
                       tickLine={false}
