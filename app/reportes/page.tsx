@@ -20,6 +20,11 @@ import { KpiCard } from '@/components/kpi-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
@@ -48,13 +53,15 @@ function Reports() {
   const [entities, setEntities] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ==== Filtro de fechas ====
+  // ==== Filtros ====
   const [dateFrom, setDateFrom] = useState<string>('');
   const [dateTo, setDateTo] = useState<string>('');
   const [activeRange, setActiveRange] = useState<string>('all');
+  const [asesorFilter, setAsesorFilter] = useState<string>('all');
+  const [entityFilter, setEntityFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
 
   const filteredCredits = useMemo(() => {
-    if (!dateFrom && !dateTo) return credits;
     return credits.filter((c) => {
       const d = new Date(c.created_at);
       if (dateFrom && d < new Date(dateFrom)) return false;
@@ -63,9 +70,16 @@ function Reports() {
         endDate.setHours(23, 59, 59, 999);
         if (d > endDate) return false;
       }
+      if (asesorFilter !== 'all' && c.asesor_id !== asesorFilter) return false;
+      if (entityFilter !== 'all' && c.entity_id !== entityFilter) return false;
+      if (statusFilter !== 'all' && c.status !== statusFilter) return false;
       return true;
     });
-  }, [credits, dateFrom, dateTo]);
+  }, [credits, dateFrom, dateTo, asesorFilter, entityFilter, statusFilter]);
+
+  const hasActiveFilters =
+    dateFrom !== '' || dateTo !== '' || asesorFilter !== 'all' ||
+    entityFilter !== 'all' || statusFilter !== 'all';
 
   function applyRange(range: string) {
     setActiveRange(range);
@@ -107,6 +121,10 @@ function Reports() {
 
   function resetFilters() {
     applyRange('all');
+    setAsesorFilter('all');
+    setEntityFilter('all');
+    setStatusFilter('all');
+    setAsesorPage(0);
   }
 
   useEffect(() => {
@@ -128,18 +146,18 @@ function Reports() {
     setLoading(false);
   }
 
-  // ==== Métricas globales ====
-  const totalSolicitados = credits.reduce((s, c) => s + Number(c.requested_amount ?? 0), 0);
-  const totalAprobados = credits
+  // ==== Métricas globales (respetan filtros) ====
+  const totalSolicitados = filteredCredits.reduce((s, c) => s + Number(c.requested_amount ?? 0), 0);
+  const totalAprobados = filteredCredits
     .filter((c) => c.status === 'aprobado' || c.status === 'desembolsado')
     .reduce((s, c) => s + Number(c.approved_amount ?? c.requested_amount ?? 0), 0);
-  const totalDesembolsado = credits
+  const totalDesembolsado = filteredCredits
     .filter((c) => c.status === 'desembolsado')
     .reduce((s, c) => s + Number(c.approved_amount ?? c.requested_amount ?? 0), 0);
-  const tasaAprobacion = credits.length > 0
-    ? (credits.filter((c) => ['aprobado', 'desembolsado'].includes(c.status)).length / credits.length) * 100
+  const tasaAprobacion = filteredCredits.length > 0
+    ? (filteredCredits.filter((c) => ['aprobado', 'desembolsado'].includes(c.status)).length / filteredCredits.length) * 100
     : 0;
-  const ticketPromedio = credits.length > 0 ? totalSolicitados / credits.length : 0;
+  const ticketPromedio = filteredCredits.length > 0 ? totalSolicitados / filteredCredits.length : 0;
   const metaTotal = asesores.reduce((s, a) => s + Number(a.monthly_goal ?? 0), 0);
   const cumplimientoMeta = metaTotal > 0 ? (totalDesembolsado / metaTotal) * 100 : 0;
 
@@ -147,15 +165,15 @@ function Reports() {
   const creditsByStatus = useMemo(() => {
     return CREDIT_STATUSES.map((s) => ({
       name: s.label,
-      value: credits.filter((c) => c.status === s.value).length,
+      value: filteredCredits.filter((c) => c.status === s.value).length,
       color: s.color,
     })).filter((s) => s.value > 0);
-  }, [credits]);
+  }, [filteredCredits]);
 
   // ==== Créditos por entidad ====
   const creditsByEntity = useMemo(() => {
     const map = new Map<string, { entity: string; count: number; amount: number; disbursed: number }>();
-    credits.forEach((c) => {
+    filteredCredits.forEach((c) => {
       const name = c.entity?.name || 'Sin entidad';
       const e = map.get(name) || { entity: name, count: 0, amount: 0, disbursed: 0 };
       e.count++;
@@ -166,12 +184,12 @@ function Reports() {
     return Array.from(map.values())
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 8);
-  }, [credits]);
+  }, [filteredCredits]);
 
   // ==== Tendencia mensual (12 meses) ====
   const monthlyTrend = useMemo(() => {
     const map = new Map<string, { month: string; count: number; amount: number; disbursed: number; sortKey: string }>();
-    credits.forEach((c) => {
+    filteredCredits.forEach((c) => {
       const d = new Date(c.created_at);
       const sortKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
       const label = d.toLocaleDateString('es-CO', { month: 'short', year: '2-digit' });
@@ -184,12 +202,12 @@ function Reports() {
     return Array.from(map.values())
       .sort((a, b) => a.sortKey.localeCompare(b.sortKey))
       .slice(-12);
-  }, [credits]);
+  }, [filteredCredits]);
 
   // ==== Desempeño por asesor ====
   const asesorPerf = useMemo(() => {
     return asesores.map((a) => {
-      const asesorCredits = credits.filter((c) => c.asesor_id === a.id);
+      const asesorCredits = filteredCredits.filter((c) => c.asesor_id === a.id);
       const disbursed = asesorCredits.filter((c) => c.status === 'desembolsado');
       const totalDisbursed = disbursed.reduce(
         (s, c) => s + Number(c.approved_amount ?? c.requested_amount ?? 0),
@@ -215,12 +233,12 @@ function Reports() {
         commission: totalDisbursed * (Number(a.commission_rate ?? 0) / 100),
       };
     }).sort((a, b) => b.totalDisbursed - a.totalDisbursed);
-  }, [asesores, credits]);
+  }, [asesores, filteredCredits]);
 
   // ==== Pipeline / estado actual ====
   const pipelineSnapshot = useMemo(() => {
     return CREDIT_STATUSES.map((s) => {
-      const items = credits.filter((c) => c.status === s.value);
+      const items = filteredCredits.filter((c) => c.status === s.value);
       const oldest = items.length > 0
         ? items.reduce((a, b) => (new Date(a.status_changed_at || a.created_at).getTime() < new Date(b.status_changed_at || b.created_at).getTime() ? a : b))
         : null;
@@ -239,7 +257,7 @@ function Reports() {
   // ==== Top clientes por monto ====
   const topClients = useMemo(() => {
     const map = new Map<string, { id: string; name: string; total: number; credits: number }>();
-    credits.forEach((c) => {
+    filteredCredits.forEach((c) => {
       if (!c.client) return;
       const name = `${c.client.first_name} ${c.client.last_name}`;
       const e = map.get(c.client.id) || { id: c.client.id, name, total: 0, credits: 0 };
@@ -248,7 +266,7 @@ function Reports() {
       map.set(c.client.id, e);
     });
     return Array.from(map.values()).sort((a, b) => b.total - a.total).slice(0, 5);
-  }, [credits]);
+  }, [filteredCredits]);
 
   function exportCSV() {
     const headers = [
@@ -256,7 +274,7 @@ function Reports() {
       'Tasa', 'Plazo (meses)', 'Asesor', 'Entidad', 'Tipo crédito',
       'Fecha creación', 'Último cambio', 'Estado días',
     ];
-    const rows = credits.map((c) => [
+    const rows = filteredCredits.map((c) => [
       `${c.client?.first_name} ${c.client?.last_name}`,
       c.client?.document_number || '',
       CREDIT_STATUSES.find((s) => s.value === c.status)?.label || c.status,
@@ -291,10 +309,10 @@ function Reports() {
     );
   }
 
-  const creditsActivos = credits.filter((c) =>
+  const creditsActivos = filteredCredits.filter((c) =>
     ['lead', 'documentacion', 'enviado', 'estudio', 'aprobado'].includes(c.status)
   ).length;
-  const estancados = credits.filter((c) => {
+  const estancados = filteredCredits.filter((c) => {
     const last = c.status_changed_at || c.created_at;
     const days = Math.floor((Date.now() - new Date(last).getTime()) / 86400000);
     return ['lead', 'documentacion', 'enviado', 'estudio', 'aprobado'].includes(c.status) && days >= 7;
@@ -313,6 +331,115 @@ function Reports() {
         }
       />
 
+      {/* Barra de filtros */}
+      <Card className="mb-6">
+        <CardContent className="p-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="mr-1 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              <Filter className="h-3.5 w-3.5" />
+              Filtros
+            </span>
+            {[
+              { key: 'all', label: 'Todo' },
+              { key: 'today', label: 'Hoy' },
+              { key: 'week', label: '7 días' },
+              { key: 'month', label: 'Mes' },
+              { key: 'quarter', label: 'Trimestre' },
+              { key: 'year', label: 'Año' },
+            ].map((r) => (
+              <Button
+                key={r.key}
+                size="sm"
+                variant={activeRange === r.key ? 'default' : 'outline'}
+                onClick={() => applyRange(r.key)}
+                className="h-8 rounded-lg text-xs font-semibold"
+              >
+                {r.label}
+              </Button>
+            ))}
+          </div>
+
+          <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-5">
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-1 text-xs text-muted-foreground">
+                <Calendar className="h-3 w-3" /> Desde
+              </Label>
+              <Input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => { setDateFrom(e.target.value); setActiveRange('custom'); }}
+                className="h-9 text-xs"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-1 text-xs text-muted-foreground">
+                <Calendar className="h-3 w-3" /> Hasta
+              </Label>
+              <Input
+                type="date"
+                value={dateTo}
+                onChange={(e) => { setDateTo(e.target.value); setActiveRange('custom'); }}
+                className="h-9 text-xs"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground">Asesor</Label>
+              <Select value={asesorFilter} onValueChange={(v) => { setAsesorFilter(v); setAsesorPage(0); }}>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Todos" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  {asesores.map((a) => (
+                    <SelectItem key={a.id} value={a.id}>{a.full_name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground">Entidad</Label>
+              <Select value={entityFilter} onValueChange={(v) => { setEntityFilter(v); setAsesorPage(0); }}>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Todas" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas</SelectItem>
+                  {entities.map((e) => (
+                    <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground">Estado</Label>
+              <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setAsesorPage(0); }}>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Todos" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  {CREDIT_STATUSES.map((s) => (
+                    <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-3">
+            <p className="text-xs text-muted-foreground">
+              Mostrando <span className="font-bold text-foreground">{filteredCredits.length}</span> de{' '}
+              <span className="font-bold text-foreground">{credits.length}</span> créditos
+              {hasActiveFilters && (
+                <Badge variant="secondary" className="ml-2 rounded-full text-[10px]">
+                  Filtrado
+                </Badge>
+              )}
+            </p>
+            {hasActiveFilters && (
+              <Button size="sm" variant="ghost" onClick={resetFilters} className="h-8 text-xs">
+                <X className="mr-1 h-3.5 w-3.5" />
+                Limpiar filtros
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="space-y-6">
         {/* KPIs principales */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -322,7 +449,7 @@ function Reports() {
             icon={<DollarSign className="h-5 w-5" />}
             tone="emerald"
             format={formatCurrency}
-            footer={`${credits.filter((c) => c.status === 'desembolsado').length} operaciones exitosas`}
+            footer={`${filteredCredits.filter((c) => c.status === 'desembolsado').length} operaciones exitosas`}
           />
           <KpiCard
             label="Volumen Total Solicitado"
@@ -330,7 +457,7 @@ function Reports() {
             icon={<BarChart3 className="h-5 w-5" />}
             tone="blue"
             format={formatCurrency}
-            footer={`${credits.length} solicitudes radicadas`}
+            footer={`${filteredCredits.length} solicitudes radicadas`}
           />
           <KpiCard
             label="Tasa Global de Aprobación"
