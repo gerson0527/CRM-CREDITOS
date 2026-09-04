@@ -5,10 +5,12 @@
 -- Ejecutar despues de production_complete_migration.sql.
 -- Puede ejecutarse varias veces sin duplicar el usuario.
 --
--- Credenciales iniciales:
--- Email: admin@credilibranzas.com
--- Clave temporal: Credi123456!
--- Cambiar la clave despues del primer ingreso.
+-- Cuenta inicial: admin@credilibranzas.com
+-- ANTES DE EJECUTAR: sustituye el placeholder de abajo por una clave
+-- temporal fuerte, generada solo para este bootstrap. NUNCA commitees
+-- contraseñas reales: este repositorio es público.
+-- El perfil queda con must_change_password = true para forzar el cambio
+-- en el primer ingreso.
 -- ============================================================
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
@@ -39,7 +41,7 @@ BEGIN
     VALUES (
       v_user_id,
       'admin@credilibranzas.com',
-      crypt('Credi123456!', gen_salt('bf')),
+      crypt('REEMPLAZAR_POR_CLAVE_TEMPORAL_FUERTE', gen_salt('bf')),
       'activo'
     );
   ELSE
