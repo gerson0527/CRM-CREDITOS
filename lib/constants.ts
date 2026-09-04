@@ -66,6 +66,17 @@ export function formatCurrency(amount: number | string | null | undefined): stri
   }).format(num);
 }
 
+export function formatCompactCurrency(amount: number | string | null | undefined): string {
+  if (amount === null || amount === undefined || amount === '') return '—';
+  const num = typeof amount === 'string' ? Number(amount) : amount;
+  if (Number.isNaN(num)) return '—';
+  const abs = Math.abs(num);
+  if (abs >= 1_000_000_000) return `$${(num / 1_000_000_000).toLocaleString('es-CO', { maximumFractionDigits: 1 })} B`;
+  if (abs >= 1_000_000) return `$${(num / 1_000_000).toLocaleString('es-CO', { maximumFractionDigits: 0 })} M`;
+  if (abs >= 1_000) return `$${(num / 1_000).toLocaleString('es-CO', { maximumFractionDigits: 0 })} mil`;
+  return `$${num.toLocaleString('es-CO', { maximumFractionDigits: 0 })}`;
+}
+
 export function formatDate(date: string | null | undefined): string {
   if (!date) return '—';
   return new Intl.DateTimeFormat('es-CO', {

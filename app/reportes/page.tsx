@@ -24,7 +24,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { supabase } from '@/lib/supabase/client';
-import { CREDIT_STATUSES, formatCurrency, formatDate, formatDateShort } from '@/lib/constants';
+import { CREDIT_STATUSES, formatCompactCurrency, formatCurrency, formatDate, formatDateShort } from '@/lib/constants';
 import type { Credit, Profile } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
@@ -538,11 +538,32 @@ function Reports() {
             </CardHeader>
             <CardContent>
               {creditsByEntity.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={creditsByEntity} layout="vertical" margin={{ top: 0, right: 10, left: 60, bottom: 0 }}>
+                <ResponsiveContainer width="100%" height={Math.max(260, creditsByEntity.length * 54)}>
+                  <BarChart
+                    data={creditsByEntity}
+                    layout="vertical"
+                    margin={{ top: 0, right: 16, left: 8, bottom: 0 }}
+                    barCategoryGap="30%"
+                    barGap={4}
+                  >
                     <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-border/60" horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 11, fill: 'currentColor' }} className="text-muted-foreground" />
-                    <YAxis type="category" dataKey="entity" tick={{ fontSize: 11, fill: 'currentColor' }} className="text-muted-foreground" width={140} />
+                    <XAxis
+                      type="number"
+                      tick={{ fontSize: 11, fill: 'currentColor' }}
+                      className="text-muted-foreground"
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(v: number) => formatCompactCurrency(v)}
+                    />
+                    <YAxis
+                      type="category"
+                      dataKey="entity"
+                      tick={{ fontSize: 11, fill: 'currentColor' }}
+                      className="text-muted-foreground"
+                      width={150}
+                      tickLine={false}
+                      axisLine={false}
+                    />
                     <Tooltip
                       contentStyle={{
                         borderRadius: '14px',
@@ -550,10 +571,11 @@ function Reports() {
                         background: 'hsl(var(--card))',
                         color: 'hsl(var(--foreground))',
                       }}
-                      formatter={(value: number) => formatCurrency(value)}
+                      formatter={(value: number, name: string) => [formatCurrency(value), name]}
                     />
-                    <Bar dataKey="amount" fill="#3b82f6" name="Solicitado" radius={[0, 6, 6, 0]} />
-                    <Bar dataKey="disbursed" fill="#10b981" name="Desembolsado" radius={[0, 6, 6, 0]} />
+                    <Legend wrapperStyle={{ fontSize: '12px' }} iconType="circle" iconSize={8} />
+                    <Bar dataKey="amount" fill="#1D5FA8" name="Solicitado" radius={[0, 6, 6, 0]} barSize={11} />
+                    <Bar dataKey="disbursed" fill="#3AA655" name="Desembolsado" radius={[0, 6, 6, 0]} barSize={11} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : <p className="text-xs text-muted-foreground py-10 text-center">Sin datos de entidades.</p>}
