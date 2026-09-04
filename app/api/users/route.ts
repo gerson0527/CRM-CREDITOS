@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import { apiError } from '@/lib/api-error';
 import { query, queryOne } from '@/lib/db/pg';
 import { getSessionUser } from '@/lib/auth/session';
 
@@ -124,7 +125,7 @@ export async function POST(request: Request) {
         role,
       },
     });
-  } catch (err: any) {
-    return NextResponse.json({ error: `Error al registrar el usuario: ${err.message}` }, { status: 500 });
+  } catch (err) {
+    return apiError(err, 'Error al registrar el usuario.');
   }
 }

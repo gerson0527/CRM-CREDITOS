@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getSessionUserFromRequest } from '@/lib/auth/session';
+import { apiError } from '@/lib/api-error';
+import { getSessionUser } from '@/lib/auth/session';
 import { query } from '@/lib/db/pg';
 
 interface ConfirmBody {
@@ -18,8 +19,8 @@ interface ConfirmBody {
  * campos separados como `storage_key` y `thumbnail_key`.
  */
 export async function POST(request: Request) {
-  const userId = getSessionUserFromRequest(request);
-  if (!userId) {
+  const user = await getSessionUser();
+  if (!user) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
   }
 
@@ -56,7 +57,7 @@ export async function POST(request: Request) {
     );
 
     return NextResponse.json({ success: true, count: files.length });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err) {
+    return apiError(err);
   }
 }

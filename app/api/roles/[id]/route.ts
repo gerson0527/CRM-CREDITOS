@@ -1,34 +1,18 @@
 import { NextResponse } from 'next/server';
+import { apiError } from '@/lib/api-error';
 import { query, queryOne } from '@/lib/db/pg';
-import { getSessionUser, getSessionUserFromRequest, type SessionUser } from '@/lib/auth/session';
+import { getSessionUser } from '@/lib/auth/session';
 
-async function requireAdmin(req: Request) {
-  let user = await getSessionUser();
-  if (!user) {
-    const userId = getSessionUserFromRequest(req);
-    if (userId) {
-      user = await queryOne<SessionUser>(
-        `SELECT u.id, u.email, u.status, p.role, p.full_name
-         FROM public.users u
-         LEFT JOIN public.profiles p ON p.user_id = u.id OR p.id = u.id
-         WHERE u.id = $1 OR p.id = $1`,
-        [userId]
-      );
-    }
-  }
-
+async function requireAdmin(_req: Request) {
+  // getSessionUser ya valida firma, expiración, cap absoluto de 7d,
+  // estado activo y bloqueo por cambio de contraseña pendiente.
+  const user = await getSessionUser();
   if (!user) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
   }
 
   if (user.role !== 'admin') {
-    const prof = await queryOne<{ role: string }>(
-      `SELECT role FROM public.profiles WHERE id = $1 OR user_id = $1 OR email = $2`,
-      [user.id, user.email]
-    );
-    if (prof?.role !== 'admin') {
-      return NextResponse.json({ error: 'Solo administradores' }, { status: 403 });
-    }
+    return NextResponse.json({ error: 'Solo administradores' }, { status: 403 });
   }
 
   return null;
@@ -90,8 +74,8 @@ export async function PATCH(
     );
 
     return NextResponse.json({ role: updated });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 400 });
+  } catch (err) {
+    return apiError(err);
   }
 }
 
@@ -134,7 +118,7 @@ export async function DELETE(
   try {
     await query(`DELETE FROM public.roles WHERE id = $1`, [params.id]);
     return NextResponse.json({ success: true });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 400 });
+  } catch (err) {
+    return apiError(err);
   }
 }

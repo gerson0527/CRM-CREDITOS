@@ -3,12 +3,11 @@ import { getSessionUser } from '@/lib/auth/session';
 import { queryOne } from '@/lib/db/pg';
 
 export async function GET() {
-  console.log('[BACK /api/auth/me] ▶ request received');
-  const session = await getSessionUser();
-  console.log('[BACK /api/auth/me] session:', session ? { id: session.id, role: session.role, status: session.status } : 'NO SESSION');
+  // allowStalePassword: /me debe responder aunque el usuario tenga cambio
+  // de contraseña pendiente (el cliente muestra el diálogo con este flag).
+  const session = await getSessionUser({ allowStalePassword: true });
 
   if (!session) {
-    console.log('[BACK /api/auth/me] ◀ 200 user=null (no session)');
     return NextResponse.json({ user: null }, { status: 200 });
   }
 
@@ -37,13 +36,6 @@ export async function GET() {
      WHERE p.user_id = $1`,
     [session.id]
   );
-
-  console.log('[BACK /api/auth/me] profile loaded:', profile ? {
-    id: profile.id,
-    email: profile.email,
-    role: profile.role,
-    permissions_count: profile.permissions?.length || 0,
-  } : 'NO PROFILE');
 
   return NextResponse.json({ user: profile });
 }

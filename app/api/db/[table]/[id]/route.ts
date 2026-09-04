@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { apiError } from '@/lib/api-error';
 import { getSessionUser } from '@/lib/auth/session';
 import { query, queryOne } from '@/lib/db/pg';
 import { getVisibleAsesorIds } from '@/lib/auth/visibility';
@@ -140,8 +141,8 @@ export async function GET(_req: Request, { params }: { params: { table: string; 
   try {
     const row = await queryOne(sql, [params.id]);
     return NextResponse.json({ row: row ?? null });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 400 });
+  } catch (err) {
+    return apiError(err);
   }
 }
 
@@ -196,8 +197,8 @@ export async function PATCH(request: Request, { params }: { params: { table: str
   try {
     const rows = await query(sql, values);
     return NextResponse.json({ row: rows[0] });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 400 });
+  } catch (err) {
+    return apiError(err);
   }
 }
 
@@ -225,7 +226,7 @@ export async function DELETE(_req: Request, { params }: { params: { table: strin
   try {
     await query(`DELETE FROM public.${tableKey} WHERE id = $1`, [params.id]);
     return NextResponse.json({ success: true });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 400 });
+  } catch (err) {
+    return apiError(err);
   }
 }

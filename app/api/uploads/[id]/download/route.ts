@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { apiError } from '@/lib/api-error';
 import { getSessionUser } from '@/lib/auth/session';
 import { getDownloadUrl } from '@/lib/storage';
 import { queryOne } from '@/lib/db/pg';
@@ -38,7 +39,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
   try {
     const downloadUrl = await getDownloadUrl(key, 3600);
     return NextResponse.json({ downloadUrl, key });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err) {
+    return apiError(err);
   }
 }

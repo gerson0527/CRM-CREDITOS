@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { apiError } from '@/lib/api-error';
 import { getSessionUser } from '@/lib/auth/session';
 import { query } from '@/lib/db/pg';
 import { buildClientsWhere, buildCreditsWhere, buildFollowUpsWhere } from '@/lib/auth/visibility';
@@ -222,8 +223,8 @@ export async function GET(request: Request, { params }: { params: { table: strin
   try {
     const rows = await query(sql, sqlParams);
     return NextResponse.json({ rows });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 400 });
+  } catch (err) {
+    return apiError(err);
   }
 }
 
@@ -262,9 +263,10 @@ export async function POST(request: Request, { params }: { params: { table: stri
     values.push(user.id);
   }
 
-  // Bloquear creación de roles/permisos a no-admin
-  if (tableKey === 'roles' && user.role !== 'admin') {
-    return NextResponse.json({ error: 'Solo admin' }, { status: 403 });
+  // Los perfiles y roles solo se crean vía /api/users (admin).
+  // Sin esto, cualquier usuario autenticado podría insertar un perfil admin.
+  if ((tableKey === 'roles' || tableKey === 'profiles') && user.role !== 'admin') {
+    return NextResponse.json({ error: 'Solo administradores' }, { status: 403 });
   }
 
   if (cols.length === 0) {
@@ -277,7 +279,7 @@ export async function POST(request: Request, { params }: { params: { table: stri
   try {
     const rows = await query(sql, values);
     return NextResponse.json({ row: rows[0] });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 400 });
+  } catch (err) {
+    return apiError(err);
   }
 }

@@ -1,30 +1,15 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { createClient } from '@supabase/supabase-js';
-import { getSessionUserId, getSessionUserFromRequest } from '@/lib/auth/session';
+import { getSessionUser } from '@/lib/auth/session';
 import { queryOne } from '@/lib/db/pg';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-const supabaseAuth = createClient(supabaseUrl, anonKey, {
-  auth: { persistSession: false, autoRefreshToken: false },
-});
-
-async function requireUser(req: Request): Promise<string | null> {
-  const token = req.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-  if (token) {
-    const { data } = await supabaseAuth.auth.getUser(token);
-    return data.user?.id ?? null;
-  }
-  return getSessionUserFromRequest(req);
-}
-
 export async function POST(request: Request) {
-  const userId = await requireUser(request);
-  if (!userId) {
+  // Ruta de remediación: permite sesión con cambio pendiente (para eso existe).
+  const session = await getSessionUser({ allowStalePassword: true });
+  if (!session) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
   }
+  const userId = session.id;
 
   const body = await request.json().catch(() => ({}));
   const { currentPassword, newPassword, confirmPassword } = body;
@@ -57,19 +42,20 @@ export async function POST(request: Request) {
     );
   }
 
-  const profile = await queryOne<{ password_hash: string | null; must_change_password: boolean }>(
-    'SELECT password_hash, must_change_password FROM public.profiles WHERE id = $1',
+  // Fuente única de verdad para login: public.users.password_hash
+  const account = await queryOne<{ password_hash: string | null }>(
+    'SELECT password_hash FROM public.users WHERE id = $1',
     [userId]
   );
 
-  if (!profile || !profile.password_hash) {
+  if (!account || !account.password_hash) {
     return NextResponse.json(
       { error: 'No se encontró la cuenta' },
       { status: 404 }
     );
   }
 
-  const ok = await bcrypt.compare(currentPassword, profile.password_hash);
+  const ok = await bcrypt.compare(currentPassword, account.password_hash);
   if (!ok) {
     return NextResponse.json(
       { error: 'La contraseña actual es incorrecta' },
@@ -79,10 +65,12 @@ export async function POST(request: Request) {
 
   const newHash = await bcrypt.hash(newPassword, 10);
   await queryOne(
-    `UPDATE public.profiles
-     SET password_hash = $1, must_change_password = false, updated_at = now()
-     WHERE id = $2`,
+    `UPDATE public.users SET password_hash = $1 WHERE id = $2`,
     [newHash, userId]
+  );
+  await queryOne(
+    `UPDATE public.profiles SET must_change_password = false, updated_at = now() WHERE user_id = $1`,
+    [userId]
   );
 
   return NextResponse.json({ success: true });

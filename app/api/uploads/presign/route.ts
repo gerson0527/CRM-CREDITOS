@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getSessionUserFromRequest } from '@/lib/auth/session';
+import { apiError } from '@/lib/api-error';
+import { getSessionUser } from '@/lib/auth/session';
 import { getUploadUrl, generateKey, isAllowedMimeType, isImage } from '@/lib/storage';
 
 interface PresignBody {
@@ -14,8 +15,8 @@ interface PresignBody {
 const MAX_FILE_SIZE = parseInt(process.env.STORAGE_MAX_FILE_SIZE_MB || '10', 10) * 1024 * 1024;
 
 export async function POST(request: Request) {
-  const userId = getSessionUserFromRequest(request);
-  if (!userId) {
+  const user = await getSessionUser();
+  if (!user) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
   }
 
@@ -57,11 +58,7 @@ export async function POST(request: Request) {
       maxSize: MAX_FILE_SIZE,
       isImage: isImage(contentType),
     });
-  } catch (err: any) {
-    console.error('[presign] error:', err);
-    return NextResponse.json(
-      { error: `Error al generar URL: ${err.message}` },
-      { status: 500 }
-    );
+  } catch (err) {
+    return apiError(err, 'Error al generar URL de subida.');
   }
 }
