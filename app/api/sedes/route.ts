@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { apiError } from '@/lib/api-error';
 import { query, queryOne } from '@/lib/db/pg';
 import { getSessionUser } from '@/lib/auth/session';
+import { audit } from '@/lib/audit';
 
 async function requireAdmin(_req: Request) {
   // getSessionUser ya valida firma, expiración, cap absoluto de 7d,
@@ -22,6 +23,7 @@ export async function POST(request: Request) {
   const guard = await requireAdmin(request);
   if (guard) return guard;
 
+  const user = await getSessionUser();
   const body = await request.json().catch(() => ({}));
   const { name, code, address, city, phone } = body;
 
@@ -36,6 +38,15 @@ export async function POST(request: Request) {
        RETURNING id`,
       [name.trim(), code?.trim() || null, address?.trim() || null, city?.trim() || null, phone?.trim() || null]
     );
+
+    void audit({
+      actor: user ? { id: user.id } : null,
+      action: 'sede.created',
+      target: { type: 'sede', id: created?.id ?? '' },
+      diff: { name, code, address, city, phone },
+      request,
+    });
+
     return NextResponse.json({ id: created?.id });
   } catch (err) {
     return apiError(err);

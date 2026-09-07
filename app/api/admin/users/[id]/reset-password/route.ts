@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { getSessionUser } from '@/lib/auth/session';
 import { queryOne, withTransaction } from '@/lib/db/pg';
+import { audit } from '@/lib/audit';
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
   const caller = await getSessionUser();
@@ -42,6 +43,15 @@ export async function POST(request: Request, { params }: { params: { id: string 
       'UPDATE public.user_sessions SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL',
       [params.id]
     );
+  });
+
+  // Bitacora: registrar quien reseteo la clave de quien.
+  void audit({
+    actor: { id: caller.id },
+    action: 'user.password_reset',
+    target: { type: 'user', id: params.id },
+    diff: { must_change_password: !!mustChangePassword },
+    request,
   });
 
   return NextResponse.json({ success: true });

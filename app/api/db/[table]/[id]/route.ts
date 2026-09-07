@@ -3,6 +3,7 @@ import { apiError } from '@/lib/api-error';
 import { getSessionUser } from '@/lib/auth/session';
 import { query, queryOne } from '@/lib/db/pg';
 import { getVisibleAsesorIds } from '@/lib/auth/visibility';
+import { audit, type AuditAction } from '@/lib/audit';
 
 type Table =
   | 'roles'
@@ -211,27 +212,74 @@ export async function PATCH(request: Request, { params }: { params: { table: str
   const allowedCols = ALLOWED_COLUMNS[tableKey as Table];
   const sets: string[] = [];
   const values: unknown[] = [];
+  const changedFields: Record<string, unknown> = {};
   let i = 1;
   for (const [k, v] of Object.entries(body)) {
     if (allowedCols.includes(k) && k !== 'id') {
       sets.push(`${k} = $${i++}`);
       values.push(v);
+      changedFields[k] = v;
     }
   }
   if (sets.length === 0) return NextResponse.json({ error: 'Sin campos válidos para actualizar' }, { status: 400 });
+
+  // Para audit del status de credito, capturamos el estado anterior.
+  let previousStatus: string | null = null;
+  if (tableKey === 'credits' && changedFields.status !== undefined) {
+    const prev = await queryOne<{ status: string }>(
+      `SELECT status FROM public.credits WHERE id = $1`,
+      [params.id]
+    );
+    previousStatus = prev?.status ?? null;
+  }
 
   values.push(params.id);
   const sql = `UPDATE public.${tableKey} SET ${sets.join(', ')} WHERE id = $${i} RETURNING *`;
 
   try {
     const rows = await query(sql, values);
+
+    // Bitacora de auditoria (fire-and-forget, no bloquea el flujo).
+    if (tableKey === 'credits' && changedFields.status !== undefined && previousStatus !== null) {
+      void audit({
+        actor: { id: user.id },
+        action: 'credit.status_change',
+        target: { type: 'credit', id: params.id },
+        diff: {
+          from: previousStatus,
+          to: changedFields.status,
+          reason: changedFields.devolucion_reason ?? null,
+          requires_upload: changedFields.devolucion_requires_upload ?? null,
+        },
+        request,
+      });
+    }
+    if (tableKey === 'profiles' && (changedFields.role !== undefined || changedFields.role_id !== undefined)) {
+      void audit({
+        actor: { id: user.id },
+        action: 'user.role_change',
+        target: { type: 'profile', id: params.id },
+        diff: { changes: changedFields },
+        request,
+      });
+    }
+    if (tableKey === 'sedes') {
+      void audit({
+        actor: { id: user.id },
+        action: 'sede.updated',
+        target: { type: 'sede', id: params.id },
+        diff: { changes: changedFields },
+        request,
+      });
+    }
+
     return NextResponse.json({ row: rows[0] });
   } catch (err) {
     return apiError(err);
   }
 }
 
-export async function DELETE(_req: Request, { params }: { params: { table: string; id: string } }) {
+export async function DELETE(request: Request, { params }: { params: { table: string; id: string } }) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
 
@@ -254,6 +302,22 @@ export async function DELETE(_req: Request, { params }: { params: { table: strin
 
   try {
     await query(`DELETE FROM public.${tableKey} WHERE id = $1`, [params.id]);
+
+    // Bitacora: eliminacion de profiles, sedes, clientes.
+    const auditAction: AuditAction | null =
+      tableKey === 'profiles' ? 'user.deleted' :
+      tableKey === 'sedes' ? 'sede.deleted' :
+      null;
+    if (auditAction) {
+      void audit({
+        actor: { id: user.id },
+        action: auditAction,
+        target: { type: tableKey, id: params.id },
+        diff: {},
+        request,
+      });
+    }
+
     return NextResponse.json({ success: true });
   } catch (err) {
     return apiError(err);

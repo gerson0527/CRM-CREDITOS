@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { apiError } from '@/lib/api-error';
 import { query, queryOne, withTransaction } from '@/lib/db/pg';
 import { getSessionUser } from '@/lib/auth/session';
+import { audit } from '@/lib/audit';
 
 interface CreateUserBody {
   email: string;
@@ -123,6 +124,14 @@ export async function POST(request: Request) {
       );
 
       return userId;
+    });
+
+    void audit({
+      actor: { id: caller.id },
+      action: 'user.created',
+      target: { type: 'user', id: createdUserId },
+      diff: { email: normalizedEmail, full_name, role },
+      request,
     });
 
     return NextResponse.json({
