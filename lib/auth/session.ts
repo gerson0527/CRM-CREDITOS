@@ -148,6 +148,29 @@ export async function revokeAllSessions(userId: string, exceptTokenHash?: string
   }
 }
 
+/**
+ * Variante transaccional de revokeAllSessions: usa el client de la transaccion
+ * activa para que la revocacion forme parte del mismo BEGIN/COMMIT que el resto
+ * de las escrituras (password update, audit log, etc).
+ */
+export async function revokeAllSessionsTx(
+  client: { query: (sql: string, params: unknown[]) => Promise<unknown> },
+  userId: string,
+  exceptTokenHash?: string
+): Promise<void> {
+  if (exceptTokenHash) {
+    await client.query(
+      `UPDATE public.user_sessions SET revoked_at = now() WHERE user_id = $1 AND token_hash <> $2 AND revoked_at IS NULL`,
+      [userId, exceptTokenHash]
+    );
+  } else {
+    await client.query(
+      `UPDATE public.user_sessions SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL`,
+      [userId]
+    );
+  }
+}
+
 export async function getSessionUser(
   opts: { allowStalePassword?: boolean } = {}
 ): Promise<SessionUser | null> {

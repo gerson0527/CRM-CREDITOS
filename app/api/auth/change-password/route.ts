@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
-import { getSessionUser, revokeAllSessions, tokenHash } from '@/lib/auth/session';
-import { queryOne } from '@/lib/db/pg';
+import { getSessionUser, revokeAllSessionsTx, tokenHash } from '@/lib/auth/session';
+import { queryOne, withTransaction } from '@/lib/db/pg';
 
 export async function POST(request: Request) {
   // Ruta de remediación: permite sesión con cambio pendiente (para eso existe).
@@ -64,18 +64,22 @@ export async function POST(request: Request) {
     );
   }
 
-  const newHash = await bcrypt.hash(newPassword, 10);
-  await queryOne(
-    `UPDATE public.users SET password_hash = $1 WHERE id = $2`,
-    [newHash, userId]
-  );
-  await queryOne(
-    `UPDATE public.profiles SET must_change_password = false, updated_at = now() WHERE user_id = $1`,
-    [userId]
-  );
+  const newHash = await bcrypt.hash(newPassword, 12);
   // Cierra las demás sesiones del usuario (la actual sigue válida).
   const current = cookies().get('crm_session')?.value;
-  await revokeAllSessions(userId, current ? tokenHash(current) : undefined);
+  const exceptTokenHash = current ? tokenHash(current) : undefined;
+
+  await withTransaction(async (client) => {
+    await client.query(
+      `UPDATE public.users SET password_hash = $1 WHERE id = $2`,
+      [newHash, userId]
+    );
+    await client.query(
+      `UPDATE public.profiles SET must_change_password = false, updated_at = now() WHERE user_id = $1`,
+      [userId]
+    );
+    await revokeAllSessionsTx(client, userId, exceptTokenHash);
+  });
 
   return NextResponse.json({ success: true });
 }

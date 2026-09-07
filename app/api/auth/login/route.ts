@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { queryOne } from '@/lib/db/pg';
+import { query, queryOne } from '@/lib/db/pg';
 import { createSessionToken, setSessionCookie, registerSession } from '@/lib/auth/session';
 
 interface LoginBody {
@@ -8,51 +8,56 @@ interface LoginBody {
   password: string;
 }
 
-// In-Memory Rate Limiter para mitigar ataques de fuerza bruta
+// Rate limit persistido en DB (public.login_attempts).
+// Escala correctamente entre replicas del servidor (no es un Map en memoria).
 const MAX_ATTEMPTS = 5;
-const LOCKOUT_WINDOW_MS = 15 * 60 * 1000; // 15 minutos
+const LOCKOUT_WINDOW_SECONDS = 15 * 60; // 15 minutos
 
-interface RateLimitEntry {
-  attempts: number;
-  resetTime: number;
+interface RateLimitResult {
+  limited: boolean;
+  retryAfterSeconds: number;
 }
 
-const loginAttempts = new Map<string, RateLimitEntry>();
-
-function isRateLimited(key: string): { limited: boolean; retryAfterSeconds: number } {
+async function isRateLimited(key: string): Promise<RateLimitResult> {
+  const row = await queryOne<{ attempts: number; reset_at: Date }>(
+    `SELECT attempts, reset_at FROM public.login_attempts WHERE rate_key = $1`,
+    [key]
+  );
+  if (!row) return { limited: false, retryAfterSeconds: 0 };
   const now = Date.now();
-  const entry = loginAttempts.get(key);
-
-  if (!entry) {
+  const resetMs = new Date(row.reset_at).getTime();
+  if (now > resetMs) {
+    // Ventana expirada: limpiar y permitir.
+    await query(`DELETE FROM public.login_attempts WHERE rate_key = $1`, [key]);
     return { limited: false, retryAfterSeconds: 0 };
   }
-
-  if (now > entry.resetTime) {
-    loginAttempts.delete(key);
-    return { limited: false, retryAfterSeconds: 0 };
+  if (row.attempts >= MAX_ATTEMPTS) {
+    return { limited: true, retryAfterSeconds: Math.ceil((resetMs - now) / 1000) };
   }
-
-  if (entry.attempts >= MAX_ATTEMPTS) {
-    const retryAfterSeconds = Math.ceil((entry.resetTime - now) / 1000);
-    return { limited: true, retryAfterSeconds };
-  }
-
   return { limited: false, retryAfterSeconds: 0 };
 }
 
-function recordFailedAttempt(key: string) {
-  const now = Date.now();
-  const entry = loginAttempts.get(key);
-
-  if (!entry || now > entry.resetTime) {
-    loginAttempts.set(key, { attempts: 1, resetTime: now + LOCKOUT_WINDOW_MS });
-  } else {
-    entry.attempts += 1;
-  }
+async function recordFailedAttempt(key: string): Promise<void> {
+  const resetAt = new Date(Date.now() + LOCKOUT_WINDOW_SECONDS * 1000);
+  await query(
+    `INSERT INTO public.login_attempts (rate_key, attempts, reset_at, updated_at)
+     VALUES ($1, 1, $2, now())
+     ON CONFLICT (rate_key) DO UPDATE SET
+       attempts = CASE
+         WHEN public.login_attempts.reset_at < now() THEN 1
+         ELSE public.login_attempts.attempts + 1
+       END,
+       reset_at = CASE
+         WHEN public.login_attempts.reset_at < now() THEN EXCLUDED.reset_at
+         ELSE public.login_attempts.reset_at
+       END,
+       updated_at = now()`,
+    [key, resetAt]
+  );
 }
 
-function clearRateLimit(key: string) {
-  loginAttempts.delete(key);
+async function clearRateLimit(key: string): Promise<void> {
+  await query(`DELETE FROM public.login_attempts WHERE rate_key = $1`, [key]);
 }
 
 export async function POST(request: Request) {
@@ -74,7 +79,7 @@ export async function POST(request: Request) {
   const rateLimitKey = `${ip}:${normalizedEmail}`;
 
   // Verificar Rate Limiting
-  const rateLimitStatus = isRateLimited(rateLimitKey);
+  const rateLimitStatus = await isRateLimited(rateLimitKey);
   if (rateLimitStatus.limited) {
     return NextResponse.json(
       {
@@ -112,7 +117,7 @@ export async function POST(request: Request) {
   }
 
   if (!user) {
-    recordFailedAttempt(rateLimitKey);
+    await recordFailedAttempt(rateLimitKey);
     return NextResponse.json({ error: 'Credenciales inválidas' }, { status: 401 });
   }
 
@@ -137,12 +142,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Error interno al validar las credenciales' }, { status: 500 });
   }
   if (!ok) {
-    recordFailedAttempt(rateLimitKey);
+    await recordFailedAttempt(rateLimitKey);
     return NextResponse.json({ error: 'Credenciales inválidas' }, { status: 401 });
   }
 
   // Éxito: Limpiar contador de intentos
-  clearRateLimit(rateLimitKey);
+  await clearRateLimit(rateLimitKey);
 
   const token = createSessionToken(user.id);
   setSessionCookie(token);
