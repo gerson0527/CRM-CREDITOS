@@ -30,7 +30,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
   }
 
-  const hash = await bcrypt.hash(newPassword, 10);
+  const hash = await bcrypt.hash(newPassword, 12);
 
   await withTransaction(async (client) => {
     await client.query('UPDATE public.users SET password_hash = $1 WHERE id = $2', [hash, params.id]);

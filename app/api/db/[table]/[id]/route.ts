@@ -31,7 +31,7 @@ const TABLE_LIST: Table[] = [
 
 const ALLOWED_COLUMNS: Record<Table, string[]> = {
   roles: ['id', 'slug', 'name', 'description', 'permissions', 'is_system', 'is_default', 'created_at'],
-  profiles: ['id', 'full_name', 'phone', 'email', 'role', 'role_id', 'status', 'supervisor_id', 'monthly_goal', 'commission_rate', 'created_at', 'updated_at'],
+  profiles: ['id', 'full_name', 'phone', 'role', 'role_id', 'status', 'supervisor_id', 'monthly_goal', 'commission_rate', 'created_at', 'updated_at'],
   financial_entities: ['id', 'name', 'credit_types', 'avg_response_days', 'contact_name', 'contact_phone', 'active', 'created_at', 'credit_min_amount', 'credit_max_amount'],
   credit_types: ['id', 'name', 'min_amount', 'max_amount', 'default_rate', 'required_documents', 'active', 'created_at'],
   clients: ['id', 'first_name', 'last_name', 'document_number', 'phone', 'email', 'address', 'city', 'reported_income', 'personal_refs', 'created_by', 'created_at'],

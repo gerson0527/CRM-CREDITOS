@@ -91,7 +91,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, 12);
 
     const createdUserId = await withTransaction(async (client) => {
       const uRes = await client.query<{ id: string }>(
