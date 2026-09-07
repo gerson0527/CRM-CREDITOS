@@ -42,6 +42,23 @@ const ALLOWED_COLUMNS: Record<Table, string[]> = {
   sedes: ['id', 'name', 'code', 'address', 'city', 'phone', 'manager_id', 'active', 'created_at'],
 };
 
+// Columnas adicionales que se devuelven en GET pero NO son escribibles
+// via PATCH. Las usa internamente la UI (devolucion_reason y requires_upload)
+// pero se mantienen fuera del whitelist de mutacion directa para que
+// solo se modifiquen via flujos de aplicacion server-side (changeStatus).
+const READ_ONLY_COLUMNS: Record<Table, string[]> = {
+  credits: ['devolucion_reason', 'devolucion_requires_upload'],
+  profiles: [],
+  roles: [],
+  financial_entities: [],
+  credit_types: [],
+  clients: [],
+  credit_status_history: [],
+  documents: [],
+  follow_ups: [],
+  sedes: [],
+};
+
 const ALIASES: Record<string, string> = {
   client: 'clients',
   asesor: 'profiles',
@@ -136,7 +153,9 @@ export async function GET(_req: Request, { params }: { params: { table: string; 
   }
 
   const allowedCols = ALLOWED_COLUMNS[tableKey as Table];
-  const sql = `SELECT ${allowedCols.map((c) => `${tableKey}.${c}`).join(', ')} FROM public.${tableKey} WHERE ${tableKey}.id = $1 LIMIT 1`;
+  const readOnlyCols = READ_ONLY_COLUMNS[tableKey as Table] ?? [];
+  const selectCols = [...allowedCols, ...readOnlyCols];
+  const sql = `SELECT ${selectCols.map((c) => `${tableKey}.${c}`).join(', ')} FROM public.${tableKey} WHERE ${tableKey}.id = $1 LIMIT 1`;
 
   try {
     const row = await queryOne(sql, [params.id]);
@@ -177,6 +196,16 @@ export async function PATCH(request: Request, { params }: { params: { table: str
         );
       }
     }
+  }
+
+  // Solo admin/supervisor pueden cambiar el status de un crédito.
+  // Los cambios de status del crédito deben pasar por la UI de transición
+  // rápida (que dispara credit_status_history con auditoría).
+  if (tableKey === 'credits' && user.role === 'asesor' && 'status' in body) {
+    return NextResponse.json(
+      { error: 'Solo administradores o supervisores pueden cambiar el estado del crédito' },
+      { status: 403 }
+    );
   }
 
   const allowedCols = ALLOWED_COLUMNS[tableKey as Table];
