@@ -28,6 +28,20 @@ export async function PATCH(
   if (guard) return guard;
 
   const body = await request.json().catch(() => ({}));
+
+  if (body.manager_id) {
+    const validManager = await queryOne<{ id: string }>(
+      `SELECT id FROM public.profiles WHERE id = $1 AND role IN ('supervisor', 'admin') AND status = 'activo'`,
+      [body.manager_id]
+    );
+    if (!validManager) {
+      return NextResponse.json(
+        { error: 'El manager_id especificado no es válido o no corresponde a un supervisor/admin activo' },
+        { status: 400 }
+      );
+    }
+  }
+
   const sets: string[] = [];
   const values: unknown[] = [];
   let i = 1;

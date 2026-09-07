@@ -451,7 +451,7 @@ function UserManagement() {
         setCreateOpen(open);
         if (!open) { setCreatedResult(null); setCopied(false); }
       }}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-xl max-h-[calc(100dvh-2.5rem)] overflow-y-auto pr-6">
           {!createdResult ? (
             <>
               <DialogHeader>

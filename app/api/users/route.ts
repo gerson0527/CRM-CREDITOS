@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { apiError } from '@/lib/api-error';
-import { query, queryOne } from '@/lib/db/pg';
+import { query, queryOne, withTransaction } from '@/lib/db/pg';
 import { getSessionUser } from '@/lib/auth/session';
 
 interface CreateUserBody {
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     );
   }
 
-  // 4. Resolver role_id si no se provee
+  // 4. Resolver y validar role_id
   let resolvedRoleId = role_id;
   if (!resolvedRoleId) {
     const roleData = await queryOne<{ id: string }>(
@@ -70,6 +70,17 @@ export async function POST(request: Request) {
       [role]
     );
     resolvedRoleId = roleData?.id || null;
+  } else {
+    const roleData = await queryOne<{ slug: string }>(
+      `SELECT slug FROM public.roles WHERE id = $1 LIMIT 1`,
+      [resolvedRoleId]
+    );
+    if (!roleData || roleData.slug !== role) {
+      return NextResponse.json(
+        { error: 'El role_id indicado no coincide con el rol especificado' },
+        { status: 400 }
+      );
+    }
   }
 
   if (role === 'asesor' && !supervisor_id) {
@@ -80,46 +91,44 @@ export async function POST(request: Request) {
   }
 
   try {
-    // 5. Generar Hash de la contraseña con bcrypt
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // 6. Crear usuario en public.users
-    const createdUser = await queryOne<{ id: string }>(
-      `INSERT INTO public.users (email, password_hash, status)
-       VALUES ($1, $2, 'activo')
-       RETURNING id`,
-      [normalizedEmail, passwordHash]
-    );
+    const createdUserId = await withTransaction(async (client) => {
+      const uRes = await client.query<{ id: string }>(
+        `INSERT INTO public.users (email, password_hash, status)
+         VALUES ($1, $2, 'activo')
+         RETURNING id`,
+        [normalizedEmail, passwordHash]
+      );
+      const userId = uRes.rows[0]?.id;
+      if (!userId) throw new Error('No se pudo generar el ID de usuario');
 
-    if (!createdUser?.id) {
-      return NextResponse.json({ error: 'Error al crear el usuario en la base de datos' }, { status: 500 });
-    }
+      await client.query(
+        `INSERT INTO public.profiles (
+          id, user_id, email, full_name, role, role_id, supervisor_id, sede_id, monthly_goal, commission_rate, phone, status, must_change_password
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'activo', true)`,
+        [
+          userId,
+          userId,
+          normalizedEmail,
+          full_name.trim(),
+          role,
+          resolvedRoleId,
+          role === 'asesor' ? supervisor_id : null,
+          sede_id || null,
+          monthly_goal ? Number(monthly_goal) : 0,
+          commission_rate ? Number(commission_rate) : 0,
+          phone ? phone.trim() : null,
+        ]
+      );
 
-    // 7. Crear perfil en public.profiles
-    const createdProfile = await queryOne<{ id: string }>(
-      `INSERT INTO public.profiles (
-        id, user_id, email, full_name, role, role_id, supervisor_id, sede_id, monthly_goal, commission_rate, phone, status, must_change_password
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'activo', true)
-      RETURNING id`,
-      [
-        createdUser.id,
-        createdUser.id,
-        normalizedEmail,
-        full_name.trim(),
-        role,
-        resolvedRoleId,
-        role === 'asesor' ? supervisor_id : null,
-        sede_id || null,
-        monthly_goal ? Number(monthly_goal) : 0,
-        commission_rate ? Number(commission_rate) : 0,
-        phone ? phone.trim() : null,
-      ]
-    );
+      return userId;
+    });
 
     return NextResponse.json({
       success: true,
       user: {
-        id: createdUser.id,
+        id: createdUserId,
         email: normalizedEmail,
         full_name,
         role,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -8,6 +8,7 @@ import {
   ArrowLeft, Phone, Mail, MapPin, Building2, DollarSign,
   Calendar, FileText, MessageSquare, Plus, Clock,
   CheckCircle2, XCircle, Upload, User, TrendingUp, ArrowRightLeft, ShieldCheck,
+  Undo2, Send,
 } from 'lucide-react';
 import { AppLayout } from '@/components/app-layout';
 import { PageTransition, StaggerList, StaggerItem } from '@/components/transitions';
@@ -23,6 +24,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/providers/auth-provider';
 import {
@@ -32,6 +36,7 @@ import {
 import type { Credit, CreditStatus, Document, FollowUp, CreditStatusHistory } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { ImagePreview } from '@/components/image-preview';
+import { FileUpload, type UploadedFile } from '@/components/file-upload';
 
 function getDocumentPreview(doc: Document) {
   try {
@@ -64,11 +69,23 @@ export default function CreditDetailPage() {
     channel: 'llamada', comment: '', next_action_date: '', next_action_note: '',
   });
 
-  useEffect(() => {
-    if (id) loadData();
-  }, [id]);
+  // Devolución: modales separados para admin (motivo + flag) y asesor (subida de archivos)
+  const [requestModalOpen, setRequestModalOpen] = useState(false);
+  const [requestReason, setRequestReason] = useState('');
+  const [requestRequiresUpload, setRequestRequiresUpload] = useState(true);
 
-  async function loadData() {
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [uploadFiles, setUploadFiles] = useState<Record<string, UploadedFile>>({});
+  const [savingUpload, setSavingUpload] = useState(false);
+
+  const canManageStatus = profile?.role === 'admin' || profile?.role === 'supervisor';
+  const isCreditAsesor = profile?.role === 'asesor' && credit?.asesor_id === profile.id;
+  const hasDevolucionDocs = documents.some((d) =>
+    d.document_type?.startsWith('devolucion_')
+  );
+
+  const loadData = useCallback(async () => {
+    if (!id) return;
     setLoading(true);
 
     const { data: creditData } = await supabase
@@ -106,15 +123,31 @@ export default function CreditDetailPage() {
     setDocuments(docsData as Document[] || []);
     setFollowUps(fuData as FollowUp[] || []);
     setLoading(false);
-  }
+  }, [id]);
 
-  async function changeStatus(newStatus: CreditStatus) {
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  async function changeStatus(newStatus: CreditStatus, options?: { reason?: string; requiresUpload?: boolean }) {
     if (!credit || !profile) return;
     const oldStatus = credit.status;
 
+    // Para devolucion: actualiza también los campos persistentes.
+    const updatePayload: Record<string, unknown> = { status: newStatus };
+    if (newStatus === 'devolucion') {
+      updatePayload.devolucion_reason = options?.reason ?? null;
+      updatePayload.devolucion_requires_upload = !!options?.requiresUpload;
+    }
+    if (newStatus !== 'devolucion') {
+      // Al salir del estado, limpiamos los campos de devolución.
+      updatePayload.devolucion_reason = null;
+      updatePayload.devolucion_requires_upload = false;
+    }
+
     const { error } = await supabase
       .from('credits')
-      .update({ status: newStatus })
+      .update(updatePayload)
       .eq('id', credit.id);
 
     if (error) {
@@ -122,17 +155,79 @@ export default function CreditDetailPage() {
       return;
     }
 
+    const fromLabel = CREDIT_STATUSES.find((s) => s.value === oldStatus)?.label ?? oldStatus;
+    const toLabel = CREDIT_STATUSES.find((s) => s.value === newStatus)?.label ?? newStatus;
+    const baseComment = `Cambió de ${fromLabel} a ${toLabel}`;
+    const comment = options?.reason
+      ? `${baseComment}. Motivo: ${options.reason}`
+      : baseComment;
+
     await supabase.from('credit_status_history').insert({
       credit_id: credit.id,
       previous_status: oldStatus,
       new_status: newStatus,
       changed_by: profile.id,
-      comment: `Cambió de ${CREDIT_STATUSES.find((s) => s.value === oldStatus)?.label} a ${CREDIT_STATUSES.find((s) => s.value === newStatus)?.label}`,
+      comment,
     });
 
-    setCredit({ ...credit, status: newStatus });
-    toast.success('Estado actualizado');
+    setCredit({
+      ...credit,
+      status: newStatus,
+      devolucion_reason: updatePayload.devolucion_reason as string | null,
+      devolucion_requires_upload: updatePayload.devolucion_requires_upload as boolean,
+    });
+    toast.success('Estado actualizado', {
+      description: newStatus === 'devolucion'
+        ? options?.requiresUpload
+          ? 'El asesor deberá subir los documentos solicitados.'
+          : 'Devolución registrada (sin archivos pendientes).'
+        : `Ahora en "${toLabel}"`,
+    });
     loadData();
+  }
+
+  async function handleRequestDevolution() {
+    if (!requestReason.trim()) {
+      toast.error('Indica el motivo de la devolución');
+      return;
+    }
+    const reason = requestReason.trim();
+    const requiresUpload = requestRequiresUpload;
+    await changeStatus('devolucion', { reason, requiresUpload });
+    setRequestModalOpen(false);
+    setRequestReason('');
+    setRequestRequiresUpload(true);
+  }
+
+  async function handleSubmitUpload() {
+    if (!credit || !profile) return;
+    const files = Object.values(uploadFiles);
+    if (files.length === 0) {
+      toast.error('Adjunta al menos un archivo');
+      return;
+    }
+    setSavingUpload(true);
+    try {
+      const docsToInsert = files.map((f) => ({
+        credit_id: credit.id,
+        document_type: 'devolucion_soporte',
+        file_url: JSON.stringify({ original: f.key, thumb: f.thumbKey }),
+        status: 'pendiente',
+        uploaded_by: profile.id,
+      }));
+      const { error } = await supabase.from('documents').insert(docsToInsert);
+      if (error) throw error;
+      toast.success('Archivos de devolución subidos', {
+        description: `${files.length} archivo(s) registrados. El administrador revisará y continuará el flujo.`,
+      });
+      setUploadFiles({});
+      setUploadModalOpen(false);
+      loadData();
+    } catch (err: any) {
+      toast.error('Error al guardar archivos', { description: err.message });
+    } finally {
+      setSavingUpload(false);
+    }
   }
 
   async function addFollowUp() {
@@ -223,42 +318,54 @@ export default function CreditDetailPage() {
                 </div>
               </div>
 
-              {/* Status Transition Bar (Admins) */}
-              {profile?.role === 'admin' && (
-                <div className="mt-2 rounded-2xl border border-border/70 bg-accent/30 p-3.5">
-                  <div className="mb-2.5 flex items-center gap-2">
-                    <ArrowRightLeft className="h-3.5 w-3.5 text-primary" />
-                    <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                      Transición Rápida de Estado (Admin)
-                    </p>
+                {/* Status Transition Bar (Admin / Supervisor) */}
+                {canManageStatus && (
+                  <div className="mt-2 rounded-2xl border border-border/70 bg-accent/30 p-3.5">
+                    <div className="mb-2.5 flex items-center gap-2">
+                      <ArrowRightLeft className="h-3.5 w-3.5 text-primary" />
+                      <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                        Transición Rápida de Estado (Admin / Supervisor)
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {CREDIT_STATUSES.filter((s) => s.value !== credit.status).map((s) => {
+                        const isRejection = s.value === 'rechazado';
+                        const isDesist = s.value === 'desistido';
+                        const isDevolution = s.value === 'devolucion';
+                        return (
+                          <Button
+                            key={s.value}
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              if (isDevolution) {
+                                setRequestReason('');
+                                setRequestRequiresUpload(true);
+                                setRequestModalOpen(true);
+                                return;
+                              }
+                              changeStatus(s.value);
+                            }}
+                            className={cn(
+                              'h-8 rounded-xl text-xs font-bold transition-all shadow-2xs',
+                              isRejection
+                                ? 'border-red-500/30 text-red-700 dark:text-red-400 hover:bg-red-500/10'
+                                : isDesist
+                                ? 'border-border/80 text-muted-foreground hover:bg-accent'
+                                : isDevolution
+                                ? 'border-orange-500/40 text-orange-700 dark:text-orange-300 hover:bg-orange-500/10'
+                                : 'hover:border-primary/50 hover:bg-primary/5'
+                            )}
+                          >
+                            {isRejection && <XCircle className="mr-1 h-3.5 w-3.5 text-red-500" />}
+                            {isDevolution && <Undo2 className="mr-1 h-3.5 w-3.5 text-orange-500" />}
+                            {s.label}
+                          </Button>
+                        );
+                      })}
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {CREDIT_STATUSES.filter((s) => s.value !== credit.status).map((s) => {
-                      const isRejection = s.value === 'rechazado';
-                      const isDesist = s.value === 'desistido';
-                      return (
-                        <Button
-                          key={s.value}
-                          variant="outline"
-                          size="sm"
-                          onClick={() => changeStatus(s.value)}
-                          className={cn(
-                            'h-8 rounded-xl text-xs font-bold transition-all shadow-2xs',
-                            isRejection
-                              ? 'border-red-500/30 text-red-700 dark:text-red-400 hover:bg-red-500/10'
-                              : isDesist
-                              ? 'border-border/80 text-muted-foreground hover:bg-accent'
-                              : 'hover:border-primary/50 hover:bg-primary/5'
-                          )}
-                        >
-                          {isRejection && <XCircle className="mr-1 h-3.5 w-3.5 text-red-500" />}
-                          {s.label}
-                        </Button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
+                )}
             </div>
           </CardContent>
         </Card>
@@ -276,6 +383,11 @@ export default function CreditDetailPage() {
                 </TabsTrigger>
                 <TabsTrigger value="docs" className="rounded-xl text-xs font-bold data-[state=active]:bg-card data-[state=active]:shadow-xs">
                   Documentos ({documents.length})
+                  {documents.some((d) => d.document_type?.startsWith('devolucion_')) && (
+                    <span className="ml-1.5 inline-flex h-4 min-w-[16px] items-center justify-center rounded-full bg-orange-500/20 px-1 text-[9px] font-bold text-orange-700 dark:text-orange-300">
+                      ↩
+                    </span>
+                  )}
                 </TabsTrigger>
                 <TabsTrigger value="followups" className="rounded-xl text-xs font-bold data-[state=active]:bg-card data-[state=active]:shadow-xs">
                   Seguimientos ({followUps.length})
@@ -393,44 +505,106 @@ export default function CreditDetailPage() {
               </TabsContent>
 
               {/* Documents tab */}
-              <TabsContent value="docs" className="mt-4">
-                <Card className="border border-border/80 bg-card/90 shadow-xs">
-                  <CardContent className="p-5">
-                    {documents.length > 0 ? (
-                      <div className="space-y-2.5">
-                        {documents.map((doc) => (
-                          <div key={doc.id} className="rounded-2xl border border-border/70 bg-accent/20 p-3">
-                            <div className="mb-2 flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                                  <FileText className="h-4 w-4" />
-                                </div>
-                                <div>
-                                  <p className="text-xs font-bold capitalize text-foreground">{doc.document_type.replace(/_/g, ' ')}</p>
-                                  <p className="text-[11px] text-muted-foreground font-medium">{formatDate(doc.uploaded_at)}</p>
-                                </div>
-                              </div>
-                              <Badge className={cn(
-                                'rounded-full px-2.5 py-0.5 text-[10px] font-bold shadow-none',
-                                doc.status === 'validado' ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
-                                  : doc.status === 'rechazado' ? 'bg-red-500/15 text-red-700 dark:text-red-300 border border-red-500/20'
-                                  : 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/20'
-                              )}>
-                                {doc.status}
-                              </Badge>
-                            </div>
-                            <ImagePreview {...getDocumentPreview(doc)} canDownload={profile?.role === 'admin'} variant="inline" />
+              <TabsContent value="docs" className="mt-4 space-y-4">
+                {(() => {
+                  const devolucionDocs = documents.filter((d) => d.document_type?.startsWith('devolucion_'));
+                  const regularDocs = documents.filter((d) => !d.document_type?.startsWith('devolucion_'));
+                  if (documents.length === 0) {
+                    return (
+                      <Card className="border border-border/80 bg-card/90 shadow-xs">
+                        <CardContent className="p-5">
+                          <div className="flex flex-col items-center py-8 text-center">
+                            <Upload className="h-10 w-10 text-muted-foreground" />
+                            <p className="mt-2 text-xs font-medium text-muted-foreground">Sin documentos adjuntos</p>
                           </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center py-8 text-center">
-                        <Upload className="h-10 w-10 text-muted-foreground" />
-                        <p className="mt-2 text-xs font-medium text-muted-foreground">Sin documentos adjuntos</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                        </CardContent>
+                      </Card>
+                    );
+                  }
+                  return (
+                    <>
+                      {devolucionDocs.length > 0 && (
+                        <Card className="border border-orange-500/40 bg-orange-500/5 shadow-xs">
+                          <CardContent className="p-5">
+                            <div className="mb-3 flex items-center gap-2">
+                              <Undo2 className="h-4 w-4 text-orange-600" />
+                              <p className="font-display text-xs font-bold text-orange-700 dark:text-orange-300">
+                                Documentos de Devolución ({devolucionDocs.length})
+                              </p>
+                            </div>
+                            <div className="space-y-2.5">
+                              {devolucionDocs.map((doc) => (
+                                <div key={doc.id} className="rounded-2xl border border-orange-500/30 bg-background p-3">
+                                  <div className="mb-2 flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-500/15 text-orange-700 dark:text-orange-300">
+                                        <FileText className="h-4 w-4" />
+                                      </div>
+                                      <div>
+                                        <p className="text-xs font-bold capitalize text-foreground">{doc.document_type.replace(/_/g, ' ')}</p>
+                                        <p className="text-[11px] text-muted-foreground font-medium">
+                                          Subido por {profile?.id === doc.uploaded_by ? 'ti' : 'asesor'} · {formatDate(doc.uploaded_at)}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <Badge className={cn(
+                                      'rounded-full px-2.5 py-0.5 text-[10px] font-bold shadow-none',
+                                      doc.status === 'validado' ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
+                                        : doc.status === 'rechazado' ? 'bg-red-500/15 text-red-700 dark:text-red-300 border border-red-500/20'
+                                        : 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/20'
+                                    )}>
+                                      {doc.status}
+                                    </Badge>
+                                  </div>
+                                  <ImagePreview {...getDocumentPreview(doc)} canDownload={profile?.role === 'admin'} variant="inline" />
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+                      <Card className="border border-border/80 bg-card/90 shadow-xs">
+                        <CardContent className="p-5">
+                          <div className="mb-3 flex items-center justify-between">
+                            <p className="font-display text-xs font-bold text-foreground">
+                              Documentación general ({regularDocs.length})
+                            </p>
+                          </div>
+                          {regularDocs.length > 0 ? (
+                            <div className="space-y-2.5">
+                              {regularDocs.map((doc) => (
+                                <div key={doc.id} className="rounded-2xl border border-border/70 bg-accent/20 p-3">
+                                  <div className="mb-2 flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                                        <FileText className="h-4 w-4" />
+                                      </div>
+                                      <div>
+                                        <p className="text-xs font-bold capitalize text-foreground">{doc.document_type.replace(/_/g, ' ')}</p>
+                                        <p className="text-[11px] text-muted-foreground font-medium">{formatDate(doc.uploaded_at)}</p>
+                                      </div>
+                                    </div>
+                                    <Badge className={cn(
+                                      'rounded-full px-2.5 py-0.5 text-[10px] font-bold shadow-none',
+                                      doc.status === 'validado' ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
+                                        : doc.status === 'rechazado' ? 'bg-red-500/15 text-red-700 dark:text-red-300 border border-red-500/20'
+                                        : 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/20'
+                                    )}>
+                                      {doc.status}
+                                    </Badge>
+                                  </div>
+                                  <ImagePreview {...getDocumentPreview(doc)} canDownload={profile?.role === 'admin'} variant="inline" />
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-xs text-muted-foreground text-center py-4">Sin documentación general adicional.</p>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </>
+                  );
+                })()}
               </TabsContent>
 
               {/* Follow-ups tab */}
@@ -518,6 +692,55 @@ export default function CreditDetailPage() {
 
           {/* Right Sidebar Stats */}
           <div className="space-y-4">
+            {credit.status === 'devolucion' && (
+              <Card className="border border-orange-500/40 bg-orange-500/5 shadow-xs">
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center gap-2 font-display text-xs font-bold text-orange-700 dark:text-orange-300">
+                    <Undo2 className="h-4 w-4" /> Crédito en Devolución
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-2.5">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300">
+                      Motivo de la devolución
+                    </p>
+                    <p className="mt-1 text-xs font-medium text-orange-900 dark:text-orange-100">
+                      {credit.devolucion_reason?.trim()
+                        ? credit.devolucion_reason
+                        : 'La entidad financiera devolvió este crédito. Contacta al administrador si necesitas más detalles.'}
+                    </p>
+                  </div>
+                  {isCreditAsesor && !hasDevolucionDocs && (
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setUploadFiles({});
+                        setUploadModalOpen(true);
+                      }}
+                      className="w-full rounded-xl bg-orange-500 text-xs font-bold text-white shadow-sm hover:bg-orange-600"
+                    >
+                      <Upload className="mr-1.5 h-3.5 w-3.5" />
+                      Subir archivo de soporte
+                    </Button>
+                  )}
+                  {isCreditAsesor && hasDevolucionDocs && (
+                    <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      Archivos subidos. Espera la revisión del administrador.
+                    </div>
+                  )}
+                  {canManageStatus && (
+                    <p className="text-[11px] text-orange-700/80 dark:text-orange-300/80">
+                      {hasDevolucionDocs
+                        ? 'El asesor ya subió los archivos. Revisa la pestaña Documentos.'
+                        : credit.devolucion_requires_upload
+                        ? 'Se notificó al asesor para que suba los archivos solicitados.'
+                        : 'El campo "requiere archivos" quedó sin marcar — el asesor puede subir igual desde el botón de arriba.'}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
             <Card className="border border-border/80 bg-card/90 shadow-xs backdrop-blur-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="font-display text-sm font-bold text-foreground">Resumen de Operación</CardTitle>
@@ -555,6 +778,137 @@ export default function CreditDetailPage() {
           </div>
         </div>
       </PageTransition>
+
+      {/* Modal Admin/Supervisor: registrar devolución (motivo + flag) */}
+      <Dialog open={requestModalOpen} onOpenChange={setRequestModalOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 font-display">
+              <Undo2 className="h-5 w-5 text-orange-500" />
+              Solicitar devolución del crédito
+            </DialogTitle>
+            <DialogDescription>
+              Indica al asesor por qué la entidad financiera devuelve este crédito y si debe adjuntar documentos.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-xs font-bold uppercase text-muted-foreground">
+                Motivo de la devolución *
+              </Label>
+              <Textarea
+                rows={4}
+                value={requestReason}
+                onChange={(e) => setRequestReason(e.target.value)}
+                placeholder="Ej. La entidad requiere cédula legible del codeudor y certificado laboral actualizado con fecha de este mes..."
+                className="rounded-xl text-sm"
+              />
+              <p className="text-[11px] text-muted-foreground">
+                Este motivo quedará visible para el asesor en la página del crédito y en el historial.
+              </p>
+            </div>
+
+            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border/70 bg-accent/20 p-3 transition-colors hover:bg-accent/40">
+              <input
+                type="checkbox"
+                checked={requestRequiresUpload}
+                onChange={(e) => setRequestRequiresUpload(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-border text-orange-500 focus:ring-orange-500"
+              />
+              <div>
+                <p className="text-xs font-bold text-foreground">
+                  Requiere que el asesor suba archivos
+                </p>
+                <p className="mt-0.5 text-[11px] text-muted-foreground">
+                  Si lo activas, el asesor verá una alerta naranja en este crédito con un botón para adjuntar los documentos faltantes.
+                </p>
+              </div>
+            </label>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" className="rounded-xl" onClick={() => setRequestModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              className="rounded-xl bg-orange-500 text-white hover:bg-orange-600"
+              onClick={handleRequestDevolution}
+              disabled={!requestReason.trim()}
+            >
+              <Undo2 className="mr-1.5 h-4 w-4" />
+              Marcar como devolución
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Asesor: subir archivos de soporte para la devolución */}
+      <Dialog open={uploadModalOpen} onOpenChange={setUploadModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 font-display">
+              <Upload className="h-5 w-5 text-orange-500" />
+              Subir archivos de devolución
+            </DialogTitle>
+            <DialogDescription>
+              Adjunta los documentos que la entidad financiera solicita para resolver la devolución.
+            </DialogDescription>
+          </DialogHeader>
+
+          {credit?.devolucion_reason && (
+            <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-3">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300">
+                Motivo de la devolución
+              </p>
+              <p className="mt-1 text-xs font-medium text-orange-900 dark:text-orange-100">
+                {credit.devolucion_reason}
+              </p>
+            </div>
+          )}
+
+          <div className="space-y-3">
+            <FileUpload
+              documentType="devolucion_soporte"
+              documentLabel="Documento solicitado"
+              required
+              value={uploadFiles.principal || null}
+              onChange={(f) => setUploadFiles((prev) => ({ ...prev, principal: f as UploadedFile }))}
+              rootFolder="creditos"
+            />
+            <FileUpload
+              documentType="devolucion_adicional"
+              documentLabel="Documento adicional (opcional)"
+              value={uploadFiles.adicional || null}
+              onChange={(f) => setUploadFiles((prev) => {
+                const next = { ...prev };
+                if (f) next.adicional = f;
+                else delete next.adicional;
+                return next;
+                })}
+              rootFolder="creditos"
+            />
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" className="rounded-xl" onClick={() => setUploadModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              className="rounded-xl"
+              onClick={handleSubmitUpload}
+              disabled={savingUpload || Object.keys(uploadFiles).length === 0}
+            >
+              {savingUpload ? (
+                <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              ) : (
+                <Send className="mr-1.5 h-4 w-4" />
+              )}
+              Enviar archivos
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }

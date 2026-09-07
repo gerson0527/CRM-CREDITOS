@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
@@ -30,13 +30,8 @@ export default function AsesorDashboard() {
   const [followUps, setFollowUps] = useState<FollowUp[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (profile?.id) {
-      loadDashboard();
-    }
-  }, [profile?.id]);
-
-  async function loadDashboard() {
+  const loadDashboard = useCallback(async () => {
+    if (!profile?.id) return;
     setLoading(true);
 
     const { data: creditsData } = await supabase
@@ -47,7 +42,7 @@ export default function AsesorDashboard() {
         entity:financial_entities(id, name),
         credit_type:credit_types(id, name)
       `)
-      .eq('asesor_id', profile!.id)
+      .eq('asesor_id', profile.id)
       .order('created_at', { ascending: false });
 
     const { data: followUpsData } = await supabase
@@ -59,7 +54,7 @@ export default function AsesorDashboard() {
           client:clients(first_name, last_name)
         )
       `)
-      .eq('asesor_id', profile!.id)
+      .eq('asesor_id', profile.id)
       .eq('completed', false)
       .order('next_action_date', { ascending: true, nullsFirst: false })
       .limit(10);
@@ -67,7 +62,11 @@ export default function AsesorDashboard() {
     setCredits(creditsData as Credit[] || []);
     setFollowUps(followUpsData as FollowUp[] || []);
     setLoading(false);
-  }
+  }, [profile?.id]);
+
+  useEffect(() => {
+    loadDashboard();
+  }, [loadDashboard]);
 
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -192,7 +191,6 @@ export default function AsesorDashboard() {
             {
               label: 'Docs incompletas',
               value: incompleteDocs.length,
-              href: '/kanban',
               tone: 'blue',
               description: 'créditos que necesitan documentación',
             },

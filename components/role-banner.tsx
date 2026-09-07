@@ -110,7 +110,8 @@ export function RoleBanner({ greeting, subtitle, tone = 'blue', roleLabel, actio
 interface AttentionItem {
   label: string;
   value: number | string;
-  href: string;
+  /** Si se omite, la tarjeta se renderiza como un indicador estático (no clickeable). */
+  href?: string;
   tone?: 'red' | 'amber' | 'blue' | 'green';
   description?: string;
 }
@@ -167,16 +168,9 @@ export function AttentionSection({ title, subtitle, items }: AttentionSectionPro
         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item, idx) => {
             const tone = ATTENTION_TONES[item.tone || 'amber'];
-            return (
-              <Link
-                key={idx}
-                href={item.href}
-                className={cn(
-                  'group flex items-center justify-between rounded-xl border p-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xs',
-                  tone.bg,
-                  tone.border
-                )}
-              >
+            const interactive = !!item.href;
+            const inner = (
+              <>
                 <div className="min-w-0 pr-2">
                   <p className={cn('text-xs font-bold uppercase tracking-wider', tone.text)}>
                     {item.label}
@@ -185,10 +179,31 @@ export function AttentionSection({ title, subtitle, items }: AttentionSectionPro
                     <p className="mt-0.5 truncate text-xs text-muted-foreground">{item.description}</p>
                   )}
                 </div>
-                <span className={cn('ml-2 font-display text-2xl font-black tabular-nums transition-transform group-hover:scale-105', tone.accent)}>
+                <span
+                  className={cn(
+                    'ml-2 font-display text-2xl font-black tabular-nums',
+                    interactive && 'transition-transform group-hover:scale-105',
+                    tone.accent
+                  )}
+                >
                   {item.value}
                 </span>
+              </>
+            );
+            const cardClass = cn(
+              'flex items-center justify-between rounded-xl border p-3.5',
+              interactive && 'group transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xs',
+              tone.bg,
+              tone.border
+            );
+            return interactive ? (
+              <Link key={idx} href={item.href!} className={cardClass}>
+                {inner}
               </Link>
+            ) : (
+              <div key={idx} className={cardClass} aria-disabled>
+                {inner}
+              </div>
             );
           })}
         </div>

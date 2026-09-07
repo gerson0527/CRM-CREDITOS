@@ -141,7 +141,7 @@ export function EditUserDialog({ open, onOpenChange, user, roles, sedes, supervi
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-2xl max-h-[calc(100dvh-2.5rem)] overflow-y-auto pr-6">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Save className="h-5 w-5 text-primary" />

@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS public.credits (
   asesor_id uuid REFERENCES public.profiles(id) ON DELETE SET NULL,
   entity_id uuid REFERENCES public.financial_entities(id) ON DELETE SET NULL,
   credit_type_id uuid REFERENCES public.credit_types(id) ON DELETE SET NULL,
-  status text NOT NULL DEFAULT 'lead' CHECK (status IN ('lead','documentacion','enviado','estudio','aprobado','desembolsado','rechazado','desistido')),
+  status text NOT NULL DEFAULT 'lead' CHECK (status IN ('lead','documentacion','enviado','estudio','devolucion','aprobado','desembolsado','rechazado','desistido')),
   requested_amount numeric DEFAULT 0,
   approved_amount numeric,
   term_months int,

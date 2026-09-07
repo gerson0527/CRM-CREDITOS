@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { queryOne } from '@/lib/db/pg';
-import { createSessionToken, setSessionCookie } from '@/lib/auth/session';
+import { createSessionToken, setSessionCookie, registerSession } from '@/lib/auth/session';
 
 interface LoginBody {
   email: string;
@@ -146,6 +146,10 @@ export async function POST(request: Request) {
 
   const token = createSessionToken(user.id);
   setSessionCookie(token);
+  await registerSession(user.id, token, {
+    ip: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null,
+    userAgent: request.headers.get('user-agent'),
+  });
 
   return NextResponse.json({
     user: {

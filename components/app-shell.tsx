@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/components/providers/auth-provider';
-import { useNotifications } from '@/components/providers/notification-provider';
+import { useNotifications, type NotificationItem } from '@/components/providers/notification-provider';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -29,7 +29,6 @@ import {
   Sun,
   Calendar as CalendarIcon,
   CheckCheck,
-  Sparkles,
   MessageSquare,
   FileText,
   Clock,
@@ -79,9 +78,124 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/roles', label: 'Roles y Permisos', icon: <Shield className="h-4.5 w-4.5" />, permission: 'roles', section: 'admin' },
 ];
 
+function NotificationRow({
+  item,
+  onDismiss,
+  onMarkAsRead,
+}: {
+  item: NotificationItem;
+  onDismiss: (id: string) => void;
+  onMarkAsRead: (id: string) => void;
+}) {
+  const [isDismissing, setIsDismissing] = useState(false);
+  const router = useRouter();
+
+  const handleClick = () => {
+    if (isDismissing) return;
+    onMarkAsRead(item.id);
+    setIsDismissing(true);
+    setTimeout(() => {
+      onDismiss(item.id);
+    }, 3000);
+  };
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: -6 }}
+      animate={
+        isDismissing
+          ? {
+              opacity: 0,
+              scale: 0.98,
+              filter: 'blur(2px)',
+              transition: { duration: 3, ease: 'easeInOut' },
+            }
+          : { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }
+      }
+      exit={{
+        opacity: 0,
+        height: 0,
+        paddingTop: 0,
+        paddingBottom: 0,
+        marginTop: 0,
+        marginBottom: 0,
+        overflow: 'hidden',
+        transition: { duration: 0.4, ease: 'easeInOut' },
+      }}
+      onClick={handleClick}
+      className={cn(
+        'relative flex items-start gap-3 p-3.5 text-xs transition-colors cursor-pointer select-none overflow-hidden',
+        isDismissing
+          ? 'bg-accent/20 cursor-default'
+          : !item.read
+          ? 'bg-primary/5 hover:bg-primary/10 font-medium'
+          : 'opacity-85 hover:bg-accent/50'
+      )}
+    >
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-accent text-primary mt-0.5 shadow-2xs">
+        {item.type === 'credit_status' ? (
+          <CreditCard className="h-4 w-4 text-blue-500" />
+        ) : item.type === 'follow_up' ? (
+          <MessageSquare className="h-4 w-4 text-emerald-500" />
+        ) : (
+          <FileText className="h-4 w-4 text-amber-500" />
+        )}
+      </div>
+
+      <div className="flex-1 overflow-hidden">
+        <div className="flex items-center justify-between gap-1">
+          <p className="font-bold text-foreground truncate">{item.title}</p>
+          {!item.read && !isDismissing && (
+            <span className="h-2 w-2 rounded-full bg-primary shrink-0 animate-pulse" />
+          )}
+          {isDismissing && (
+            <span className="text-[10px] text-muted-foreground/80 font-normal italic shrink-0">
+              Desapareciendo...
+            </span>
+          )}
+        </div>
+        <p className="mt-0.5 text-muted-foreground line-clamp-2 text-[11px]">{item.message}</p>
+        <div className="mt-1.5 flex items-center justify-between text-[10px] text-muted-foreground/80">
+          <span className="font-semibold text-foreground/70">{item.sender_name || 'Sistema'}</span>
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1 font-medium">
+              <Clock className="h-3 w-3" />
+              {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </span>
+            {item.link && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(item.link!);
+                }}
+                className="hover:text-primary p-0.5 rounded transition-colors"
+                title="Abrir detalle"
+              >
+                <ExternalLink className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Barra de progreso sutil de 3 segundos con desvanecimiento suave */}
+      {isDismissing && (
+        <motion.div
+          initial={{ width: '100%' }}
+          animate={{ width: '0%' }}
+          transition={{ duration: 3, ease: 'linear' }}
+          className="absolute bottom-0 left-0 h-0.5 bg-primary/40"
+        />
+      )}
+    </motion.div>
+  );
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const { profile, signOut } = useAuth();
-  const { notifications, unreadCount, markAsRead, markAllAsRead, addNotification } = useNotifications();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, removeNotification } = useNotifications();
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -94,16 +208,6 @@ export function AppShell({ children }: { children: ReactNode }) {
   const handleSignOut = async () => {
     await signOut();
     router.replace('/login');
-  };
-
-  const handleSimulateAlert = () => {
-    addNotification({
-      title: '💬 Mensaje de Asesor en Vivo',
-      message: 'Juan Pérez: "Cliente confirmó la documentación para el crédito #CR-920".',
-      type: 'follow_up',
-      sender_name: 'Juan Pérez',
-      link: '/calendario',
-    });
   };
 
   const Sidebar = (
@@ -302,56 +406,25 @@ export function AppShell({ children }: { children: ReactNode }) {
                       No tienes notificaciones recientes.
                     </div>
                   ) : (
-                    notifications.map((item) => (
-                      <div
-                        key={item.id}
-                        onClick={() => {
-                          markAsRead(item.id);
-                          if (item.link) router.push(item.link);
-                        }}
-                        className={cn(
-                          'flex items-start gap-3 p-3.5 text-xs transition-colors cursor-pointer hover:bg-accent/50',
-                          !item.read ? 'bg-primary/5 font-medium' : 'opacity-85'
-                        )}
-                      >
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-accent text-primary mt-0.5 shadow-2xs">
-                          {item.type === 'credit_status' ? (
-                            <CreditCard className="h-4 w-4 text-blue-500" />
-                          ) : item.type === 'follow_up' ? (
-                            <MessageSquare className="h-4 w-4 text-emerald-500" />
-                          ) : (
-                            <FileText className="h-4 w-4 text-amber-500" />
-                          )}
-                        </div>
-
-                        <div className="flex-1 overflow-hidden">
-                          <div className="flex items-center justify-between gap-1">
-                            <p className="font-bold text-foreground truncate">{item.title}</p>
-                            {!item.read && <span className="h-2 w-2 rounded-full bg-primary shrink-0" />}
-                          </div>
-                          <p className="mt-0.5 text-muted-foreground line-clamp-2 text-[11px]">{item.message}</p>
-                          <div className="mt-1.5 flex items-center justify-between text-[10px] text-muted-foreground/80">
-                            <span className="font-semibold text-foreground/70">{item.sender_name || 'Sistema'}</span>
-                            <span className="flex items-center gap-1 font-medium">
-                              <Clock className="h-3 w-3" />
-                              {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))
+                    <AnimatePresence initial={false}>
+                      {notifications.map((item) => (
+                        <NotificationRow
+                          key={item.id}
+                          item={item}
+                          onDismiss={removeNotification}
+                          onMarkAsRead={markAsRead}
+                        />
+                      ))}
+                    </AnimatePresence>
                   )}
                 </div>
 
                 <div className="border-t border-border/80 p-2.5 bg-accent/40 flex items-center justify-between text-xs">
-                  <button
-                    onClick={handleSimulateAlert}
-                    className="flex items-center gap-1 text-primary hover:underline font-bold text-[11px]"
-                  >
-                    <Sparkles className="h-3.5 w-3.5" />
-                    <span>Simular Alerta Realtime</span>
-                  </button>
-                  <Link href="/calendario" className="text-muted-foreground hover:text-foreground text-[11px] flex items-center gap-1 font-medium">
+                  <span className="text-[11px] text-muted-foreground flex items-center gap-1.5 font-medium">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Actividad en tiempo real</span>
+                  </span>
+                  <Link href="/calendario" className="text-muted-foreground hover:text-foreground text-[11px] flex items-center gap-1 font-medium transition-colors">
                     <span>Ver Calendario</span>
                     <ExternalLink className="h-3 w-3" />
                   </Link>

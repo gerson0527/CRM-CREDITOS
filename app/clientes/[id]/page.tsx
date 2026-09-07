@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
@@ -28,11 +28,8 @@ export default function ClientDetailPage() {
   const [credits, setCredits] = useState<Credit[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (id) loadData();
-  }, [id]);
-
-  async function loadData() {
+  const loadData = useCallback(async () => {
+    if (!id) return;
     setLoading(true);
 
     const { data: clientData } = await supabase
@@ -59,7 +56,11 @@ export default function ClientDetailPage() {
 
     setCredits((creditsData as Credit[]) || []);
     setLoading(false);
-  }
+  }, [id]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   if (loading) {
     return (

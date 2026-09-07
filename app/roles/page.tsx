@@ -272,7 +272,7 @@ function RolesManagement() {
 
       {/* Dialog: Crear rol */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-xl max-h-[calc(100dvh-2.5rem)] overflow-y-auto pr-6">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Plus className="h-5 w-5 text-primary" />
@@ -416,7 +416,7 @@ function EditRoleDialog({
 
   return (
     <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-xl max-h-[calc(100dvh-2.5rem)] overflow-y-auto pr-6">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5 text-primary" />

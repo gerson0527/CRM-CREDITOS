@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, Suspense, type FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -52,6 +52,18 @@ const DEMO_ACCOUNTS: Record<string, { role: string; full_name: string; status: s
 };
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { refreshProfile } = useAuth();
@@ -129,7 +141,7 @@ export default function LoginPage() {
 
         {/* Top Logo */}
         <div className="relative z-10">
-          <Logo variant="light" showText={true} />
+          <Logo variant="light" showText={true} size="lg" />
         </div>
 
         {/* Center Pitch Content */}

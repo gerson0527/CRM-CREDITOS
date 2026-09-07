@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
-import { getSessionUser } from '@/lib/auth/session';
+import { getSessionUser, revokeAllSessions, tokenHash } from '@/lib/auth/session';
 import { queryOne } from '@/lib/db/pg';
 
 export async function POST(request: Request) {
@@ -72,6 +73,9 @@ export async function POST(request: Request) {
     `UPDATE public.profiles SET must_change_password = false, updated_at = now() WHERE user_id = $1`,
     [userId]
   );
+  // Cierra las demás sesiones del usuario (la actual sigue válida).
+  const current = cookies().get('crm_session')?.value;
+  await revokeAllSessions(userId, current ? tokenHash(current) : undefined);
 
   return NextResponse.json({ success: true });
 }

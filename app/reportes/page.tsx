@@ -252,7 +252,7 @@ function Reports() {
         oldest: daysOld,
       };
     });
-  }, [credits]);
+  }, [filteredCredits]);
 
   // ==== Top clientes por monto ====
   const topClients = useMemo(() => {
