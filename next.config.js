@@ -4,10 +4,10 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: { unoptimized: true },
-  // Marcar paquetes de servidor como externos. En Next 13 va en `experimental`.
-  experimental: {
-    serverComponentsExternalPackages: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner', 'pg'],
-  },
+  // Marcar paquetes de servidor como externos.
+  // Next 13: experimental.serverComponentsExternalPackages
+  // Next 14+: serverExternalPackages (top-level)
+  serverExternalPackages: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner', 'pg'],
   async headers() {
     return [
       {
