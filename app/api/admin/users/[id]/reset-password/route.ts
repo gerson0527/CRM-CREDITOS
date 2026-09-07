@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { getSessionUser } from '@/lib/auth/session';
-import { query, queryOne } from '@/lib/db/pg';
+import { queryOne, withTransaction } from '@/lib/db/pg';
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
   const caller = await getSessionUser();
@@ -31,11 +31,18 @@ export async function POST(request: Request, { params }: { params: { id: string 
   }
 
   const hash = await bcrypt.hash(newPassword, 10);
-  await query('UPDATE public.users SET password_hash = $1 WHERE id = $2', [hash, params.id]);
-  await query(
-    'UPDATE public.profiles SET must_change_password = $1 WHERE user_id = $2',
-    [!!mustChangePassword, params.id]
-  );
+
+  await withTransaction(async (client) => {
+    await client.query('UPDATE public.users SET password_hash = $1 WHERE id = $2', [hash, params.id]);
+    await client.query(
+      'UPDATE public.profiles SET must_change_password = $1 WHERE user_id = $2',
+      [!!mustChangePassword, params.id]
+    );
+    await client.query(
+      'UPDATE public.user_sessions SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL',
+      [params.id]
+    );
+  });
 
   return NextResponse.json({ success: true });
 }

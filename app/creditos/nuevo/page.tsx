@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, ArrowRight, Check, User, CreditCard, FileText } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, User, CreditCard, FileText, Loader2, Search } from 'lucide-react';
 import { AppLayout } from '@/components/app-layout';
 import { PageTransition } from '@/components/transitions';
 import { PageHeader } from '@/components/page-header';
@@ -50,6 +50,11 @@ export default function NewCreditPage() {
   });
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, UploadedFile>>({});
 
+  // Búsqueda por cédula
+  const [lookingUp, setLookingUp] = useState(false);
+  const [clientFound, setClientFound] = useState<null | { id: string; first_name: string; last_name: string }>(null);
+  const lookupSeq = useRef(0);
+
   useEffect(() => {
     supabase.from('financial_entities').select('*').eq('active', true).then(({ data }) => setEntities(data || []));
     supabase.from('credit_types').select('*').eq('active', true).then(({ data }) => setCreditTypes(data || []));
@@ -84,29 +89,95 @@ export default function NewCreditPage() {
     });
   }
 
+  async function lookupClientByDocument(rawDoc: string) {
+    const doc = rawDoc.trim();
+    setClientFound(null);
+    if (doc.length < 6) return;
+    const seq = ++lookupSeq.current;
+    setLookingUp(true);
+    try {
+      const { data, error } = await supabase
+        .from('clients')
+        .select('id, first_name, last_name, phone, email, address, city, reported_income, personal_refs')
+        .eq('document_number', doc)
+        .maybeSingle();
+      if (seq !== lookupSeq.current) return;
+      if (error) {
+        toast.error('No se pudo consultar la cédula', { description: error.message });
+        return;
+      }
+      if (!data) return;
+      setClientFound({ id: data.id, first_name: data.first_name, last_name: data.last_name });
+      setClientData((prev) => ({
+        ...prev,
+        first_name: data.first_name ?? prev.first_name,
+        last_name: data.last_name ?? prev.last_name,
+        phone: data.phone ?? prev.phone,
+        email: data.email ?? prev.email,
+        address: data.address ?? prev.address,
+        city: data.city ?? prev.city,
+        reported_income:
+          data.reported_income != null ? String(data.reported_income) : prev.reported_income,
+      }));
+    } finally {
+      if (seq === lookupSeq.current) setLookingUp(false);
+    }
+  }
+
+  function handleDocumentChange(value: string) {
+    setClientData((prev) => ({ ...prev, document_number: value }));
+    if (clientFound) setClientFound(null);
+  }
+
   async function handleSubmit() {
     if (!profile) return;
     setLoading(true);
 
     try {
-      // 1. Create client
-      const { data: client, error: clientErr } = await supabase
-        .from('clients')
-        .insert({
-          first_name: clientData.first_name,
-          last_name: clientData.last_name,
-          document_number: clientData.document_number,
-          phone: clientData.phone || null,
-          email: clientData.email || null,
-          address: clientData.address || null,
-          city: clientData.city || null,
-          reported_income: parseFloat(clientData.reported_income) || 0,
-          created_by: profile.id,
-        })
-        .select()
-        .single();
+      // 1. Obtener o crear cliente
+      const docClean = clientData.document_number.trim();
+      let client: any = null;
 
-      if (clientErr) throw clientErr;
+      const { data: existingClients } = await supabase
+        .from('clients')
+        .select('id, first_name, last_name')
+        .eq('document_number', docClean);
+
+      if (existingClients && existingClients.length > 0) {
+        client = existingClients[0];
+        // Actualizar datos de contacto si cambiaron
+        await supabase
+          .from('clients')
+          .update({
+            first_name: clientData.first_name.trim(),
+            last_name: clientData.last_name.trim(),
+            phone: clientData.phone?.trim() || null,
+            email: clientData.email?.trim() || null,
+            address: clientData.address?.trim() || null,
+            city: clientData.city?.trim() || null,
+            reported_income: parseFloat(clientData.reported_income) || 0,
+          })
+          .eq('id', client.id);
+      } else {
+        const { data: createdClient, error: clientErr } = await supabase
+          .from('clients')
+          .insert({
+            first_name: clientData.first_name.trim(),
+            last_name: clientData.last_name.trim(),
+            document_number: docClean,
+            phone: clientData.phone?.trim() || null,
+            email: clientData.email?.trim() || null,
+            address: clientData.address?.trim() || null,
+            city: clientData.city?.trim() || null,
+            reported_income: parseFloat(clientData.reported_income) || 0,
+            created_by: profile.id,
+          })
+          .select()
+          .single();
+
+        if (clientErr) throw clientErr;
+        client = createdClient;
+      }
 
       // 2. Create credit
       const { data: credit, error: creditErr } = await supabase
@@ -207,6 +278,36 @@ export default function NewCreditPage() {
                   className="space-y-4"
                 >
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="space-y-2 sm:col-span-2">
+                      <Label>Cédula *</Label>
+                      <div className="relative">
+                        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                        <Input
+                          className="pl-9 pr-10"
+                          inputMode="numeric"
+                          value={clientData.document_number}
+                          onChange={(e) => handleDocumentChange(e.target.value)}
+                          onBlur={(e) => lookupClientByDocument(e.target.value)}
+                          placeholder="1034567890"
+                          aria-describedby="cedula-help"
+                        />
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          {lookingUp ? (
+                            <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+                          ) : clientFound ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                              <Check className="h-3 w-3" />
+                              {clientFound.first_name} {clientFound.last_name}
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+                      <p id="cedula-help" className="text-xs text-slate-500">
+                        {clientFound
+                          ? 'Cliente existente. Sus datos se cargaron automáticamente.'
+                          : 'Escribe la cédula y presiona fuera del campo para buscar en el sistema.'}
+                      </p>
+                    </div>
                     <div className="space-y-2">
                       <Label>Nombre *</Label>
                       <Input value={clientData.first_name} onChange={(e) => setClientData({ ...clientData, first_name: e.target.value })} placeholder="Andrea" />
@@ -214,10 +315,6 @@ export default function NewCreditPage() {
                     <div className="space-y-2">
                       <Label>Apellidos *</Label>
                       <Input value={clientData.last_name} onChange={(e) => setClientData({ ...clientData, last_name: e.target.value })} placeholder="Lopez" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Cédula *</Label>
-                      <Input value={clientData.document_number} onChange={(e) => setClientData({ ...clientData, document_number: e.target.value })} placeholder="1034567890" />
                     </div>
                     <div className="space-y-2">
                       <Label>Teléfono</Label>
@@ -284,17 +381,6 @@ export default function NewCreditPage() {
                       <Label>Plazo (meses)</Label>
                       <Input type="number" value={creditData.term_months} onChange={(e) => setCreditData({ ...creditData, term_months: e.target.value })} placeholder="36" />
                     </div>
-                    {defaultRate !== null && (
-                      <div className="space-y-2 sm:col-span-2">
-                        <Label>Tasa de interés (anual %)</Label>
-                        <div className="flex h-10 items-center rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700">
-                          <span className="font-semibold">{defaultRate.toFixed(2)}%</span>
-                          <span className="ml-2 text-xs text-slate-500">
-                            (tasa por defecto del tipo de crédito "{selectedCreditType?.name}")
-                          </span>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </motion.div>
               )}

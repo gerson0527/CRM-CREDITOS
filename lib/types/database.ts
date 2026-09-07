@@ -6,6 +6,7 @@ export type CreditStatus =
   | 'documentacion'
   | 'enviado'
   | 'estudio'
+  | 'devolucion'
   | 'aprobado'
   | 'desembolsado'
   | 'rechazado'
@@ -112,6 +113,9 @@ export interface Credit {
   created_at: string;
   updated_at: string;
   status_changed_at: string;
+  // Devolución: motivo que la entidad le da al asesor y flag de subida pendiente.
+  devolucion_reason: string | null;
+  devolucion_requires_upload: boolean;
   // Joined relations
   client?: Client;
   asesor?: Pick<Profile, 'id' | 'full_name'>;

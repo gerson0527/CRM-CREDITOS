@@ -59,17 +59,38 @@ export default function NuevoClientePage() {
 
     setLoading(true);
     try {
+      const docClean = data.document_number.trim();
+
+      // Verificar si ya existe un cliente registrado con este documento
+      const { data: existing } = await supabase
+        .from('clients')
+        .select('id, first_name, last_name, document_number')
+        .eq('document_number', docClean);
+
+      if (existing && existing.length > 0) {
+        const found = existing[0];
+        toast.error('Cliente ya registrado', {
+          description: `El documento ${docClean} ya pertenece a ${found.first_name} ${found.last_name}.`,
+          action: {
+            label: 'Ver Cliente',
+            onClick: () => router.push(`/clientes/${found.id}`),
+          },
+        });
+        setLoading(false);
+        return;
+      }
+
       const assignedAsesor = data.asesor_id || profile.id;
       const { data: created, error } = await supabase
         .from('clients')
         .insert({
-          first_name: data.first_name,
-          last_name: data.last_name,
-          document_number: data.document_number,
-          phone: data.phone || null,
-          email: data.email || null,
-          address: data.address || null,
-          city: data.city || null,
+          first_name: data.first_name.trim(),
+          last_name: data.last_name.trim(),
+          document_number: docClean,
+          phone: data.phone?.trim() || null,
+          email: data.email?.trim() || null,
+          address: data.address?.trim() || null,
+          city: data.city?.trim() || null,
           reported_income: parseFloat(data.reported_income) || 0,
           created_by: assignedAsesor,
         })

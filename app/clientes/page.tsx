@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Filter, Plus, Mail, Phone, User, Users as UsersIcon, RotateCcw, DollarSign } from 'lucide-react';
 import { AppLayout } from '@/components/app-layout';
@@ -44,11 +44,7 @@ export default function ClientesPage() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(15);
 
-  useEffect(() => {
-    if (profile) loadData();
-  }, [profile?.id, profile?.role]);
-
-  async function loadData() {
+  const loadData = useCallback(async () => {
     if (!profile) return;
     setLoading(true);
 
@@ -95,16 +91,23 @@ export default function ClientesPage() {
         });
       });
 
-      clientList.forEach((c) => {
-        const s = stats.get(c.id);
-        c.credits_count = s?.count ?? 0;
-        c.total_placed = s?.total ?? 0;
-      });
+      setClients(
+        clientList.map((c) => ({
+          ...c,
+          credits_count: stats.get(c.id)?.count || 0,
+          total_placed: stats.get(c.id)?.total || 0,
+        }))
+      );
+    } else {
+      setClients([]);
     }
 
-    setClients(clientList);
     setLoading(false);
-  }
+  }, [profile]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const cities = useMemo(() => {
     const set = new Set<string>();

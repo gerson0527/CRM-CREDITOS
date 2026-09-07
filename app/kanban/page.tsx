@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   DndContext, DragOverlay, PointerSensor, useSensor, useSensors,
@@ -14,14 +14,19 @@ import { AppLayout } from '@/components/app-layout';
 import { PageTransition } from '@/components/transitions';
 import { PageHeader } from '@/components/page-header';
 import { StatusBadge } from '@/components/status-badge';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/providers/auth-provider';
 import { CREDIT_STATUSES, PIPELINE_ORDER, formatCurrency, formatDate, daysSince } from '@/lib/constants';
 import type { Credit, CreditStatus } from '@/lib/types';
 import { useRouter } from 'next/navigation';
-import { Plus, GripVertical, Building2, User, Clock, Layers, ArrowRight } from 'lucide-react';
+import { Plus, GripVertical, Building2, User, Clock, Layers, ArrowRight, ArrowLeft, Filter, Calendar, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -35,16 +40,51 @@ export default function KanbanPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const columnRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
+  // Filtros del tablero
+  const [advisors, setAdvisors] = useState<{ id: string; full_name: string }[]>([]);
+  const [loadingAdvisors, setLoadingAdvisors] = useState(false);
+  const today = new Date().toISOString().slice(0, 10);
+  const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const [filters, setFilters] = useState({
+    asesor_id: profile?.role === 'asesor' ? profile.id : 'all',
+    from: monthAgo,
+    to: today,
+  });
+  const [appliedFilters, setAppliedFilters] = useState<typeof filters | null>(null);
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
 
-  useEffect(() => {
-    loadCredits();
-  }, [profile?.id]);
-
-  async function loadCredits() {
+  const loadAdvisors = useCallback(async () => {
     if (!profile) return;
+    setLoadingAdvisors(true);
+    try {
+      if (profile.role === 'asesor') {
+        setAdvisors([{ id: profile.id, full_name: profile.full_name }]);
+        return;
+      }
+      let query = supabase
+        .from('profiles')
+        .select('id, full_name')
+        .eq('role', 'asesor')
+        .eq('status', 'activo');
+      if (profile.role === 'supervisor') {
+        query = query.eq('supervisor_id', profile.id);
+      }
+      const { data } = await query.order('full_name');
+      setAdvisors(data || []);
+    } finally {
+      setLoadingAdvisors(false);
+    }
+  }, [profile]);
+
+  useEffect(() => {
+    loadAdvisors();
+  }, [loadAdvisors]);
+
+  const loadCredits = useCallback(async () => {
+    if (!profile || !appliedFilters) return;
     setLoading(true);
 
     let query = supabase
@@ -56,9 +96,21 @@ export default function KanbanPage() {
         entity:financial_entities(id, name)
       `);
 
+    // Filtros del usuario
+    if (appliedFilters.asesor_id !== 'all') {
+      query = query.eq('asesor_id', appliedFilters.asesor_id);
+    }
+    if (appliedFilters.from) {
+      query = query.gte('created_at', appliedFilters.from);
+    }
+    if (appliedFilters.to) {
+      query = query.lte('created_at', `${appliedFilters.to}T23:59:59`);
+    }
+
+    // Restricciones por rol (independientes de los filtros del usuario)
     if (profile.role === 'asesor') {
       query = query.eq('asesor_id', profile.id);
-    } else if (profile.role === 'supervisor') {
+    } else if (profile.role === 'supervisor' && appliedFilters.asesor_id === 'all') {
       const { data: team } = await supabase
         .from('profiles')
         .select('id')
@@ -66,12 +118,37 @@ export default function KanbanPage() {
       const teamIds = (team || []).map((t: { id: string }) => t.id);
       if (teamIds.length > 0) {
         query = query.in('asesor_id', teamIds);
+      } else {
+        setCredits([]);
+        setLoading(false);
+        return;
       }
     }
 
     const { data } = await query.order('updated_at', { ascending: false });
     setCredits(data as Credit[] || []);
     setLoading(false);
+  }, [profile, appliedFilters]);
+
+  useEffect(() => {
+    if (appliedFilters) loadCredits();
+  }, [appliedFilters, loadCredits]);
+
+  function applyFilters() {
+    if (!filters.from || !filters.to) {
+      toast.error('Selecciona fecha de inicio y fecha final');
+      return;
+    }
+    if (filters.from > filters.to) {
+      toast.error('La fecha de inicio no puede ser mayor que la fecha final');
+      return;
+    }
+    setAppliedFilters({ ...filters });
+  }
+
+  function resetFilters() {
+    setAppliedFilters(null);
+    setCredits([]);
   }
 
   function scrollColumnIntoView(status: CreditStatus) {
@@ -79,6 +156,16 @@ export default function KanbanPage() {
     const container = scrollRef.current;
     if (!el || !container) return;
     el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+
+  function scrollBy(direction: 'left' | 'right') {
+    const container = scrollRef.current;
+    if (!container) return;
+    const amount = container.clientWidth * 0.8;
+    container.scrollBy({
+      left: direction === 'left' ? -amount : amount,
+      behavior: 'smooth',
+    });
   }
 
   function handleDragStart(event: DragStartEvent) {
@@ -201,48 +288,79 @@ export default function KanbanPage() {
             </div>
           </div>
 
-          {credits.length === 0 && !loading ? (
-            <motion.div
-              animate={{ scale: [1, 1.02, 1] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="flex flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-border/80 p-12 text-center"
-            >
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                <Layers className="h-8 w-8" />
-              </div>
-              <p className="font-display text-lg font-bold text-foreground">No hay créditos registrados</p>
-              <p className="mt-1 text-xs text-muted-foreground">Comienza radicando tu primera solicitud de crédito.</p>
-              <Link href="/creditos/nuevo" className="mt-4">
-                <Button size="sm" className="rounded-xl">
-                  <Plus className="mr-1.5 h-4 w-4" />
-                  Radicar Crédito
-                </Button>
-              </Link>
-            </motion.div>
+          {appliedFilters === null ? (
+            <FilterGate
+              advisors={advisors}
+              loadingAdvisors={loadingAdvisors}
+              filters={filters}
+              onChange={setFilters}
+              onApply={applyFilters}
+              canShowAll={profile?.role === 'admin' || profile?.role === 'supervisor'}
+            />
           ) : (
-            <DndContext
-              sensors={sensors}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-            >
-              <div
-                ref={scrollRef}
-                className="grid flex-1 gap-4 overflow-y-auto pb-4"
-                style={{
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                  gridAutoRows: 'minmax(300px, auto)',
-                }}
-              >
-                {creditsByStatus.map(({ status, items, totalAmount }) => (
-                  <KanbanColumn
-                    key={status}
-                    status={status}
-                    items={items}
-                    totalAmount={totalAmount}
-                    onCardClick={(id) => router.push(`/creditos/${id}`)}
-                    registerRef={(el) => { columnRefs.current[status] = el; }}
-                  />
-                ))}
+            <>
+              <ActiveFiltersBar
+                advisors={advisors}
+                applied={appliedFilters}
+                onChange={resetFilters}
+              />
+              {credits.length === 0 && !loading ? (
+                <motion.div
+                  animate={{ scale: [1, 1.02, 1] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  className="flex flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-border/80 p-12 text-center"
+                >
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                    <Layers className="h-8 w-8" />
+                  </div>
+                  <p className="font-display text-lg font-bold text-foreground">No hay créditos en este rango</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Ajusta los filtros o amplía el rango de fechas.</p>
+                  <Button size="sm" variant="outline" className="mt-4 rounded-xl" onClick={resetFilters}>
+                    Cambiar filtros
+                  </Button>
+                </motion.div>
+              ) : (
+                <DndContext
+                  sensors={sensors}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                >
+              <div className="relative flex-1">
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  onClick={() => scrollBy('left')}
+                  aria-label="Desplazar columnas a la izquierda"
+                  className="fixed top-1/2 left-[272px] z-40 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border-border/80 bg-card/95 shadow-lg backdrop-blur-sm transition-transform hover:scale-105 hover:bg-card"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  onClick={() => scrollBy('right')}
+                  aria-label="Desplazar columnas a la derecha"
+                  className="fixed top-1/2 right-4 z-40 h-10 w-10 -translate-y-1/2 rounded-full border-border/80 bg-card/95 shadow-lg backdrop-blur-sm transition-transform hover:scale-105 hover:bg-card"
+                >
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+                <div
+                  ref={scrollRef}
+                  className="flex h-full gap-4 overflow-x-auto overflow-y-hidden pb-4 pl-4 pr-4 snap-x snap-mandatory"
+                >
+                  {creditsByStatus.map(({ status, items, totalAmount }) => (
+                    <KanbanColumn
+                      key={status}
+                      status={status}
+                      items={items}
+                      totalAmount={totalAmount}
+                      onCardClick={(id) => router.push(`/creditos/${id}`)}
+                      registerRef={(el) => { columnRefs.current[status] = el; }}
+                    />
+                  ))}
+                </div>
               </div>
 
               <DragOverlay>
@@ -251,6 +369,8 @@ export default function KanbanPage() {
                 ) : null}
               </DragOverlay>
             </DndContext>
+              )}
+            </>
           )}
         </div>
       </PageTransition>
@@ -280,7 +400,7 @@ function KanbanColumn({
         setNodeRef(el);
         registerRef(el);
       }}
-      className="flex h-full min-h-[320px] flex-col rounded-3xl border border-border/80 bg-card/80 shadow-xs backdrop-blur-sm transition-all"
+      className="flex h-full min-h-[320px] w-[280px] shrink-0 snap-start flex-col rounded-3xl border border-border/80 bg-card/80 shadow-xs backdrop-blur-sm transition-all"
     >
       {/* Column Header */}
       <div className="flex items-center justify-between border-b border-border/70 p-3.5 bg-accent/20 rounded-t-3xl">
@@ -301,7 +421,7 @@ function KanbanColumn({
       {/* Cards Drop Area */}
       <div
         className={cn(
-          'flex-1 space-y-2.5 p-2.5 transition-colors rounded-b-3xl',
+          'flex-1 space-y-2.5 overflow-y-auto p-2.5 transition-colors rounded-b-3xl',
           isOver ? 'bg-primary/10 ring-2 ring-primary/30 ring-inset' : 'bg-transparent'
         )}
       >
@@ -423,6 +543,142 @@ function KanbanCard({ credit, isDragOverlay }: { credit: Credit; isDragOverlay?:
           <span>{credit.entity.name}</span>
         </div>
       )}
+    </div>
+  );
+}
+
+function FilterGate({
+  advisors,
+  loadingAdvisors,
+  filters,
+  onChange,
+  onApply,
+  canShowAll,
+}: {
+  advisors: { id: string; full_name: string }[];
+  loadingAdvisors: boolean;
+  filters: { asesor_id: string; from: string; to: string };
+  onChange: (next: { asesor_id: string; from: string; to: string }) => void;
+  onApply: () => void;
+  canShowAll: boolean;
+}) {
+  return (
+    <div className="flex flex-1 items-center justify-center px-4 py-10">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+        className="w-full max-w-xl"
+      >
+        <Card className="border-border/80 shadow-sm">
+          <CardContent className="space-y-5 p-6">
+            <div className="flex items-start gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <Filter className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="font-display text-lg font-bold text-foreground">Configura el tablero</h2>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Elige el asesor y el rango de fechas para cargar las solicitudes que se mostrarán en el Kanban.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1.5">
+                <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                Asesor
+              </Label>
+              <Select
+                value={filters.asesor_id}
+                onValueChange={(v) => onChange({ ...filters, asesor_id: v })}
+                disabled={loadingAdvisors}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={loadingAdvisors ? 'Cargando asesores...' : 'Selecciona un asesor'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {canShowAll && <SelectItem value="all">Todos los asesores</SelectItem>}
+                  {advisors.map((a) => (
+                    <SelectItem key={a.id} value={a.id}>
+                      {a.full_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label className="flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                  Fecha inicio
+                </Label>
+                <Input
+                  type="date"
+                  value={filters.from}
+                  max={filters.to || undefined}
+                  onChange={(e) => onChange({ ...filters, from: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                  Fecha final
+                </Label>
+                <Input
+                  type="date"
+                  value={filters.to}
+                  min={filters.from || undefined}
+                  onChange={(e) => onChange({ ...filters, to: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 border-t border-border/60 pt-4">
+              <Button onClick={onApply} className="rounded-xl px-5">
+                <ArrowRight className="mr-1.5 h-4 w-4" />
+                Ver tablero
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </div>
+  );
+}
+
+function ActiveFiltersBar({
+  advisors,
+  applied,
+  onChange,
+}: {
+  advisors: { id: string; full_name: string }[];
+  applied: { asesor_id: string; from: string; to: string };
+  onChange: () => void;
+}) {
+  const asesorName =
+    applied.asesor_id === 'all'
+      ? 'Todos los asesores'
+      : advisors.find((a) => a.id === applied.asesor_id)?.full_name ?? 'Asesor';
+  return (
+    <div className="mb-4 flex flex-wrap items-center gap-2 rounded-2xl border border-border/80 bg-card/70 px-4 py-2.5 text-xs shadow-2xs">
+      <span className="flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 font-semibold text-primary">
+        <Users className="h-3.5 w-3.5" />
+        {asesorName}
+      </span>
+      <span className="flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 font-semibold text-slate-700">
+        <Calendar className="h-3.5 w-3.5" />
+        {applied.from} → {applied.to}
+      </span>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onChange}
+        className="ml-auto h-7 rounded-lg px-2.5 text-xs text-muted-foreground hover:text-foreground"
+      >
+        Cambiar filtros
+      </Button>
     </div>
   );
 }

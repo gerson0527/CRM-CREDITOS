@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, Suspense, type FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -52,6 +52,18 @@ const DEMO_ACCOUNTS: Record<string, { role: string; full_name: string; status: s
 };
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { refreshProfile } = useAuth();
@@ -98,12 +110,12 @@ export default function LoginPage() {
     }
   };
 
-  const DEMO_PASSWORD = 'Credi123456!';
-
+  // Los accesos rápidos solo autocompletan el correo (solo desarrollo).
+  // La contraseña SIEMPRE la escribe el usuario: nunca hardcodear
+  // credenciales en el cliente, el repo es público.
   const handleQuickAccess = (emailVal: string) => {
     setEmail(emailVal);
-    setPassword(DEMO_PASSWORD);
-    loginWithCredentials(emailVal, DEMO_PASSWORD);
+    setPassword('');
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -129,7 +141,7 @@ export default function LoginPage() {
 
         {/* Top Logo */}
         <div className="relative z-10">
-          <Logo variant="light" showText={true} />
+          <Logo variant="light" showText={true} size="lg" />
         </div>
 
         {/* Center Pitch Content */}
@@ -294,10 +306,10 @@ export default function LoginPage() {
               <div className="mt-6 rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-4">
                 <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary">
                   <Zap className="h-4 w-4 fill-primary text-primary" />
-                  <span>Acceso Rápido Demo (1-Click)</span>
+                  <span>Acceso Rápido Demo</span>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Selecciona un perfil institucional para iniciar sesión de prueba:
+                  Autocompleta el correo institucional (la contraseña la escribes tú):
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {Object.entries(DEMO_ACCOUNTS).map(([demoEmail, u]) => (

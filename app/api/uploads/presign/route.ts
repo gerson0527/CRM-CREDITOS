@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { apiError } from '@/lib/api-error';
 import { getSessionUser } from '@/lib/auth/session';
 import { getUploadUrl, generateKey, isAllowedMimeType, isImage } from '@/lib/storage';
+import { canAccessCredit } from '@/lib/auth/visibility';
 
 interface PresignBody {
   filename: string;
@@ -41,6 +42,16 @@ export async function POST(request: Request) {
       { error: `Tipo de archivo no permitido: ${contentType}. Solo se aceptan imágenes (jpg/png/webp) y PDF.` },
       { status: 400 }
     );
+  }
+
+  if (entityId && entityId !== 'temp' && rootFolder === 'creditos') {
+    const hasAccess = await canAccessCredit(user, entityId);
+    if (!hasAccess) {
+      return NextResponse.json(
+        { error: 'No autorizado para subir archivos a este crédito' },
+        { status: 403 }
+      );
+    }
   }
 
   const key = generateKey({

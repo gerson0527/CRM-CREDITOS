@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { cookies } from 'next/headers';
-import { queryOne } from '@/lib/db/pg';
+import { query, queryOne } from '@/lib/db/pg';
 
 const SESSION_SECRET = process.env.SESSION_SECRET;
 if (!SESSION_SECRET) {
@@ -31,6 +31,11 @@ const ABSOLUTE_MAX_AGE_SECONDS = 7 * 24 * 60 * 60;
 function sign(payload: string): string {
   const sig = crypto.createHmac('sha256', SECRET).update(payload).digest('hex');
   return `${payload}.${sig}`;
+}
+
+/** Hash SHA-256 del token para guardar en DB (nunca se guarda el token). */
+export function tokenHash(token: string): string {
+  return crypto.createHash('sha256').update(token).digest('hex');
 }
 
 function parseSessionToken(token: string): { userId: string; exp: number; iat: number } | null {
@@ -103,6 +108,46 @@ export function getSessionUserId(): string | null {
   return verify(token);
 }
 
+/** Registra la sesión en DB al hacer login (para poder revocarla). */
+export async function registerSession(
+  userId: string,
+  token: string,
+  meta?: { ip?: string | null; userAgent?: string | null }
+): Promise<void> {
+  const parsed = parseSessionToken(token);
+  if (!parsed) return;
+  await query(
+    `INSERT INTO public.user_sessions (user_id, token_hash, expires_at, ip, user_agent)
+     VALUES ($1, $2, to_timestamp($3), $4, $5)
+     ON CONFLICT (token_hash) DO UPDATE SET expires_at = EXCLUDED.expires_at, last_seen_at = now()`,
+    [userId, tokenHash(token), parsed.exp, meta?.ip ?? null, meta?.userAgent ?? null]
+  );
+}
+
+/** Revoca la sesión actual (logout): la cookie deja de ser válida de inmediato. */
+export async function revokeCurrentSession(): Promise<void> {
+  const token = cookies().get(COOKIE_NAME)?.value;
+  if (!token) return;
+  await query(`UPDATE public.user_sessions SET revoked_at = now() WHERE token_hash = $1`, [
+    tokenHash(token),
+  ]);
+}
+
+/** Revoca todas las sesiones de un usuario, opcionalmente excepto una. */
+export async function revokeAllSessions(userId: string, exceptTokenHash?: string): Promise<void> {
+  if (exceptTokenHash) {
+    await query(
+      `UPDATE public.user_sessions SET revoked_at = now() WHERE user_id = $1 AND token_hash <> $2 AND revoked_at IS NULL`,
+      [userId, exceptTokenHash]
+    );
+  } else {
+    await query(
+      `UPDATE public.user_sessions SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL`,
+      [userId]
+    );
+  }
+}
+
 export async function getSessionUser(
   opts: { allowStalePassword?: boolean } = {}
 ): Promise<SessionUser | null> {
@@ -110,6 +155,18 @@ export async function getSessionUser(
   if (!token) return null;
   const parsed = parseSessionToken(token);
   if (!parsed) return null;
+  // La sesión debe existir en DB y no estar revocada (logout / cambio de clave la invalidan).
+  const row = await queryOne<{ user_id: string; revoked_at: string | null }>(
+    `SELECT user_id, revoked_at FROM public.user_sessions WHERE token_hash = $1`,
+    [tokenHash(token)]
+  );
+  if (!row || row.revoked_at || row.user_id !== parsed.userId) return null;
+  // Actividad reciente (throttle a 5 min para no escribir en cada request).
+  await query(
+    `UPDATE public.user_sessions SET last_seen_at = now()
+     WHERE token_hash = $1 AND last_seen_at < now() - interval '5 minutes'`,
+    [tokenHash(token)]
+  );
   const user = await queryOne<SessionUser>(
     `SELECT u.id, u.email, u.status, p.role, p.full_name, p.must_change_password
      FROM public.users u
@@ -126,7 +183,14 @@ export async function getSessionUser(
   const remaining = parsed.exp - Date.now() / 1000;
   if (remaining < SLIDING_REFRESH_THRESHOLD_SECONDS) {
     try {
-      setSessionCookie(createSessionToken(parsed.userId, parsed.iat));
+      const fresh = createSessionToken(parsed.userId, parsed.iat);
+      await query(
+        `UPDATE public.user_sessions
+         SET token_hash = $1, expires_at = to_timestamp($2), last_seen_at = now()
+         WHERE token_hash = $3`,
+        [tokenHash(fresh), Math.floor(Date.now() / 1000) + MAX_AGE_SECONDS, tokenHash(token)]
+      );
+      setSessionCookie(fresh);
     } catch {
       // Si el contexto no permite escribir cookies, la sesión sigue válida
       // hasta su expiración original.

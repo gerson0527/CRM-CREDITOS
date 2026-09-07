@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   format,
@@ -159,71 +159,7 @@ export default function CalendarioPage() {
   const [newAllDay, setNewAllDay] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    loadCalendarData();
-  }, [profile?.id]);
-
-  async function loadCalendarData() {
-    setLoading(true);
-
-    try {
-      // Cargar lista de créditos para vincular
-      const { data: creditsData } = await supabase
-        .from('credits')
-        .select('id, clients(first_name, last_name)');
-
-      const formattedCredits = (creditsData || []).map((c: any) => ({
-        id: c.id,
-        client_name: c.clients ? `${c.clients.first_name} ${c.clients.last_name}` : 'Crédito Sin Cliente',
-      }));
-      setCreditsList(formattedCredits);
-
-      // Cargar seguimientos
-      const { data: followUpsData } = await supabase
-        .from('follow_ups')
-        .select(`
-          *,
-          credit:credits(
-            id,
-            status,
-            client:clients(first_name, last_name),
-            asesor:profiles!credits_asesor_id_fkey(full_name)
-          )
-        `)
-        .order('next_action_date', { ascending: true });
-
-      let loadedEvents: CalendarEvent[] = [];
-
-      if (followUpsData && followUpsData.length > 0) {
-        loadedEvents = followUpsData.map((f: any) => ({
-          id: f.id,
-          credit_id: f.credit_id,
-          client_name: f.credit?.client
-            ? `${f.credit.client.first_name} ${f.credit.client.last_name}`
-            : 'Cliente CRM',
-          channel: (f.channel as any) || 'llamada',
-          comment: f.comment || f.next_action_note || 'Seguimiento agendado',
-          contact_date: f.contact_date,
-          next_action_date: f.next_action_date || f.contact_date,
-          completed: !!f.completed,
-          credit_status: f.credit?.status,
-          asesor_name: f.credit?.asesor?.full_name,
-        }));
-      } else {
-        // Generar tareas de demostración si la base de datos no tiene seguimientos aún
-        loadedEvents = generateDemoEvents();
-      }
-
-      setEvents(loadedEvents);
-    } catch (err) {
-      console.error('Error al cargar datos del calendario:', err);
-      setEvents(generateDemoEvents());
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function generateDemoEvents(): CalendarEvent[] {
+  const generateDemoEvents = useCallback((): CalendarEvent[] => {
     const today = new Date();
     return [
       {
@@ -282,7 +218,71 @@ export default function CalendarioPage() {
         asesor_name: 'Administrador',
       },
     ];
-  }
+  }, []);
+
+  const loadCalendarData = useCallback(async () => {
+    setLoading(true);
+
+    try {
+      // Cargar lista de créditos para vincular
+      const { data: creditsData } = await supabase
+        .from('credits')
+        .select('id, clients(first_name, last_name)');
+
+      const formattedCredits = (creditsData || []).map((c: any) => ({
+        id: c.id,
+        client_name: c.clients ? `${c.clients.first_name} ${c.clients.last_name}` : 'Crédito Sin Cliente',
+      }));
+      setCreditsList(formattedCredits);
+
+      // Cargar seguimientos
+      const { data: followUpsData } = await supabase
+        .from('follow_ups')
+        .select(`
+          *,
+          credit:credits(
+            id,
+            status,
+            client:clients(first_name, last_name),
+            asesor:profiles!credits_asesor_id_fkey(full_name)
+          )
+        `)
+        .order('next_action_date', { ascending: true });
+
+      let loadedEvents: CalendarEvent[] = [];
+
+      if (followUpsData && followUpsData.length > 0) {
+        loadedEvents = followUpsData.map((f: any) => ({
+          id: f.id,
+          credit_id: f.credit_id,
+          client_name: f.credit?.client
+            ? `${f.credit.client.first_name} ${f.credit.client.last_name}`
+            : 'Cliente CRM',
+          channel: (f.channel as any) || 'llamada',
+          comment: f.comment || f.next_action_note || 'Seguimiento agendado',
+          contact_date: f.contact_date,
+          next_action_date: f.next_action_date || f.contact_date,
+          completed: !!f.completed,
+          credit_status: f.credit?.status,
+          asesor_name: f.credit?.asesor?.full_name,
+        }));
+      } else {
+        // Generar tareas de demostración si la base de datos no tiene seguimientos aún
+        loadedEvents = generateDemoEvents();
+      }
+
+      setEvents(loadedEvents);
+    } catch (err) {
+      console.error('Error al cargar datos del calendario:', err);
+      setEvents(generateDemoEvents());
+    } finally {
+      setLoading(false);
+    }
+  }, [generateDemoEvents]);
+
+  useEffect(() => {
+    loadCalendarData();
+  }, [loadCalendarData]);
 
   function subDays(date: Date, amount: number) {
     const res = new Date(date);

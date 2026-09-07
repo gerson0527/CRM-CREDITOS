@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { apiError } from '@/lib/api-error';
 import { getSessionUser } from '@/lib/auth/session';
+import { canAccessCredit, creditIdFromKey } from '@/lib/auth/visibility';
 import { getDownloadUrl } from '@/lib/storage';
 
 /**
@@ -20,6 +21,11 @@ export async function GET(request: Request) {
   const key = searchParams.get('key');
   if (!key) {
     return NextResponse.json({ error: 'Falta key' }, { status: 400 });
+  }
+
+  const creditId = creditIdFromKey(key);
+  if (creditId && creditId !== 'temp' && !(await canAccessCredit(user, creditId))) {
+    return NextResponse.json({ error: 'No tienes permiso para ver este archivo' }, { status: 403 });
   }
 
   try {

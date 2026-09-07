@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
@@ -40,19 +40,14 @@ export default function SupervisorDashboard() {
   const [ranking, setRanking] = useState<{ name: string; total: number; count: number }[]>([]);
   const [change, setChange] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (profile?.id) {
-      loadDashboard();
-    }
-  }, [profile?.id]);
-
-  async function loadDashboard() {
+  const loadDashboard = useCallback(async () => {
+    if (!profile?.id) return;
     setLoading(true);
 
     const { data: team } = await supabase
       .from('profiles')
       .select('*')
-      .eq('supervisor_id', profile!.id)
+      .eq('supervisor_id', profile.id)
       .eq('status', 'activo');
 
     const teamIds = (team || []).map((t: Profile) => t.id);
@@ -127,7 +122,11 @@ export default function SupervisorDashboard() {
     }
 
     setLoading(false);
-  }
+  }, [profile?.id]);
+
+  useEffect(() => {
+    loadDashboard();
+  }, [loadDashboard]);
 
   const metaProgress = stats.teamMeta > 0 ? (stats.teamColocado / stats.teamMeta) * 100 : 0;
   const asesorTop = ranking[0];

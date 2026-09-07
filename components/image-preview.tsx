@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Download, Eye, ZoomIn, X, FileText, Loader2 } from 'lucide-react';
+import { Download, Eye, ZoomIn, X, FileText, Loader2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -60,17 +60,28 @@ export function ImagePreview({
     setErrored(false);
     try {
       const res = await fetch(`/api/uploads/preview?key=${encodeURIComponent(mainKey)}&expires=3600`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.url) {
-          setFullUrl(data.url);
-          setZoomed(true);
-        } else {
-          setErrored(true);
-        }
-      } else {
+      if (!res.ok) {
         setErrored(true);
+        return;
       }
+      const data = await res.json();
+      if (!data.url) {
+        setErrored(true);
+        return;
+      }
+      // Pre-validar que la URL firmada realmente devuelve el archivo
+      // (no un XML de error tipo NoSuchKey). Si falla, marcamos error.
+      try {
+        const probe = await fetch(data.url, { method: 'HEAD' });
+        if (!probe.ok) {
+          setErrored(true);
+          return;
+        }
+      } catch {
+        // Si el navegador bloquea HEAD (CORS), continuamos al iframe.
+      }
+      setFullUrl(data.url);
+      setZoomed(true);
     } catch {
       setErrored(true);
     } finally {
@@ -125,19 +136,26 @@ export function ImagePreview({
   if (variant === 'inline') {
     return (
       <>
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={loadFullUrl}
-            disabled={!mainKey || loading}
-            className="h-8 rounded-lg text-xs"
-            title="Ver documento"
-          >
-            {loading ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Eye className="mr-1.5 h-3.5 w-3.5" />}
-            Ver documento
-          </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          {errored ? (
+            <div className="flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1.5 text-xs text-amber-700 dark:text-amber-300">
+              <AlertCircle className="h-3.5 w-3.5" />
+              Archivo no disponible en el storage
+            </div>
+          ) : (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={loadFullUrl}
+              disabled={!mainKey || loading}
+              className="h-8 rounded-lg text-xs"
+              title="Ver documento"
+            >
+              {loading ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Eye className="mr-1.5 h-3.5 w-3.5" />}
+              Ver documento
+            </Button>
+          )}
           {canDownload && mainKey && (
             <Button type="button" size="sm" variant="outline" onClick={download} className="h-8 rounded-lg text-xs">
               <Download className="mr-1.5 h-3.5 w-3.5" />
@@ -207,30 +225,38 @@ export function ImagePreview({
         className
       )}>
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-slate-100">
-          {thumbUrl ? (
+          {errored ? (
+            <div className="flex h-full w-full flex-col items-center justify-center gap-1.5 text-amber-600 dark:text-amber-400">
+              <AlertCircle className="h-8 w-8" />
+              <span className="px-2 text-center text-[11px] font-medium">Archivo no disponible</span>
+            </div>
+          ) : thumbUrl ? (
             <img
               src={thumbUrl}
               alt={filename}
               className="h-full w-full object-cover transition-transform group-hover:scale-105"
               loading="lazy"
+              onError={() => setErrored(true)}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-slate-400">
               {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <FileText className="h-12 w-12" />}
             </div>
           )}
-          <div className="absolute inset-0 flex items-center justify-center gap-1.5 bg-slate-900/0 opacity-0 transition-all group-hover:bg-slate-900/40 group-hover:opacity-100">
-            {mainKey && (
-              <Button size="icon" variant="secondary" onClick={loadFullUrl} className="h-8 w-8 rounded-full">
-                <ZoomIn className="h-4 w-4" />
-              </Button>
-            )}
-            {mainKey && canDownload && (
-              <Button size="icon" variant="secondary" onClick={download} className="h-8 w-8 rounded-full">
-                <Download className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
+          {!errored && (
+            <div className="absolute inset-0 flex items-center justify-center gap-1.5 bg-slate-900/0 opacity-0 transition-all group-hover:bg-slate-900/40 group-hover:opacity-100">
+              {mainKey && (
+                <Button size="icon" variant="secondary" onClick={loadFullUrl} className="h-8 w-8 rounded-full">
+                  <ZoomIn className="h-4 w-4" />
+                </Button>
+              )}
+              {mainKey && canDownload && (
+                <Button size="icon" variant="secondary" onClick={download} className="h-8 w-8 rounded-full">
+                  <Download className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          )}
         </div>
         <div className="px-1 pt-2 pb-1">
           <p className="truncate text-xs font-medium text-slate-900" title={filename}>
@@ -288,10 +314,6 @@ export function ImagePreview({
           </motion.div>
         )}
       </AnimatePresence>
-
-      {errored && (
-        <p className="mt-1 text-[10px] text-red-600">Error al cargar el archivo</p>
-      )}
     </>
   );
 }

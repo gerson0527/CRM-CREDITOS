@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Filter, Plus, FileSpreadsheet, RotateCcw } from 'lucide-react';
 import { AppLayout } from '@/components/app-layout';
@@ -41,29 +41,7 @@ export default function CreditsTablePage() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(15);
 
-  useEffect(() => {
-    loadData();
-  }, [profile?.id]);
-
-  async function loadData() {
-    if (!profile) return;
-    setLoading(true);
-
-    const { data: ents } = await supabase.from('financial_entities').select('*').eq('active', true);
-    setEntities(ents as FinancialEntity[] || []);
-
-    if (profile.role === 'admin') {
-      const { data: users } = await supabase.from('profiles').select('*').eq('role', 'asesor').eq('status', 'activo');
-      setAsesores(users as Profile[] || []);
-    } else if (profile.role === 'supervisor') {
-      const { data: team } = await supabase.from('profiles').select('*').eq('supervisor_id', profile.id).eq('status', 'activo');
-      setAsesores(team as Profile[] || []);
-    }
-
-    await loadCredits();
-  }
-
-  async function loadCredits() {
+  const loadCredits = useCallback(async () => {
     if (!profile) return;
 
     let query = supabase
@@ -88,7 +66,29 @@ export default function CreditsTablePage() {
     const { data } = await query.order('created_at', { ascending: false });
     setCredits(data as Credit[] || []);
     setLoading(false);
-  }
+  }, [profile]);
+
+  const loadData = useCallback(async () => {
+    if (!profile) return;
+    setLoading(true);
+
+    const { data: ents } = await supabase.from('financial_entities').select('*').eq('active', true);
+    setEntities(ents as FinancialEntity[] || []);
+
+    if (profile.role === 'admin') {
+      const { data: users } = await supabase.from('profiles').select('*').eq('role', 'asesor').eq('status', 'activo');
+      setAsesores(users as Profile[] || []);
+    } else if (profile.role === 'supervisor') {
+      const { data: team } = await supabase.from('profiles').select('*').eq('supervisor_id', profile.id).eq('status', 'activo');
+      setAsesores(team as Profile[] || []);
+    }
+
+    await loadCredits();
+  }, [profile, loadCredits]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const filteredCredits = useMemo(() => {
     return credits.filter((c) => {

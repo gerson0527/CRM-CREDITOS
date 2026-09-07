@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { apiError } from '@/lib/api-error';
 import { getSessionUser } from '@/lib/auth/session';
 import { query } from '@/lib/db/pg';
-import { buildClientsWhere, buildCreditsWhere, buildFollowUpsWhere } from '@/lib/auth/visibility';
+import { buildClientsWhere, buildCreditsWhere, buildFollowUpsWhere, buildCreditChildWhere } from '@/lib/auth/visibility';
 
 type Table =
   | 'roles'
@@ -109,7 +109,11 @@ export async function GET(request: Request, { params }: { params: { table: strin
 
   const { searchParams } = new URL(request.url);
   const selectCols = searchParams.get('select') || '*';
-  const limit = parseInt(searchParams.get('limit') ?? '200', 10);
+  const rawLimit = parseInt(searchParams.get('limit') ?? '50', 10);
+  const limit = Math.min(Math.max(Number.isNaN(rawLimit) ? 50 : rawLimit, 1), 200);
+  const rawOffset = parseInt(searchParams.get('offset') ?? '0', 10);
+  const offset = Math.max(Number.isNaN(rawOffset) ? 0 : rawOffset, 0);
+
   const orderBy = searchParams.get('order_by');
   const orderDir = (searchParams.get('order') ?? 'asc').toLowerCase() === 'desc' ? 'DESC' : 'ASC';
   const eq: Record<string, string> = {};
@@ -183,8 +187,12 @@ export async function GET(request: Request, { params }: { params: { table: strin
     const w = await buildClientsWhere(user, sqlParams);
     whereSql = w.sql;
     sqlParams.push(...w.params);
-  } else if (tableKey === 'credits' || tableKey === 'credit_status_history' || tableKey === 'documents') {
+  } else if (tableKey === 'credits') {
     const w = await buildCreditsWhere(user, sqlParams);
+    whereSql = w.sql;
+    sqlParams.push(...w.params);
+  } else if (tableKey === 'documents' || tableKey === 'credit_status_history') {
+    const w = await buildCreditChildWhere(user, sqlParams);
     whereSql = w.sql;
     sqlParams.push(...w.params);
   } else if (tableKey === 'follow_ups') {
@@ -216,13 +224,11 @@ export async function GET(request: Request, { params }: { params: { table: strin
   if (orderBy && allowedCols.includes(orderBy)) {
     sql += ` ORDER BY ${tableKey}.${orderBy} ${orderDir}`;
   }
-  if (!Number.isNaN(limit) && limit > 0) {
-    sql += ` LIMIT ${Math.min(limit, 500)}`;
-  }
+  sql += ` LIMIT ${limit} OFFSET ${offset}`;
 
   try {
     const rows = await query(sql, sqlParams);
-    return NextResponse.json({ rows });
+    return NextResponse.json({ rows, limit, offset });
   } catch (err) {
     return apiError(err);
   }
@@ -240,31 +246,37 @@ export async function POST(request: Request, { params }: { params: { table: stri
 
   const body = await request.json().catch(() => ({}));
   const allowedCols = ALLOWED_COLUMNS[tableKey];
+
+  // Forzar campos de ownership sin permitir overrides desde el body
+  const FORCED_OWNERSHIP: Partial<Record<Table, string>> = {
+    clients: 'created_by',
+    credits: 'asesor_id',
+    follow_ups: 'asesor_id',
+    documents: 'uploaded_by',
+  };
+
+  const forceCol = FORCED_OWNERSHIP[tableKey];
   const cols: string[] = [];
   const values: unknown[] = [];
+
   for (const [k, v] of Object.entries(body)) {
-    if (allowedCols.includes(k)) {
+    if (allowedCols.includes(k) && k !== forceCol) {
       cols.push(k);
       values.push(v);
     }
   }
 
-  // Restricciones: clients se asignan a sí mismo
-  if (tableKey === 'clients' && !body.created_by) {
-    cols.push('created_by');
-    values.push(user.id);
-  }
-  if (tableKey === 'credits' && !body.asesor_id) {
-    cols.push('asesor_id');
-    values.push(user.id);
-  }
-  if (tableKey === 'follow_ups' && !body.asesor_id) {
-    cols.push('asesor_id');
-    values.push(user.id);
+  if (forceCol && allowedCols.includes(forceCol)) {
+    if (user.role !== 'admin' || !body[forceCol]) {
+      cols.push(forceCol);
+      values.push(user.id);
+    } else {
+      cols.push(forceCol);
+      values.push(body[forceCol]);
+    }
   }
 
   // Los perfiles y roles solo se crean vía /api/users (admin).
-  // Sin esto, cualquier usuario autenticado podría insertar un perfil admin.
   if ((tableKey === 'roles' || tableKey === 'profiles') && user.role !== 'admin') {
     return NextResponse.json({ error: 'Solo administradores' }, { status: 403 });
   }
