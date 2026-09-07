@@ -43,21 +43,27 @@ const nextConfig = {
   // Next 14+: serverExternalPackages (top-level)
   serverExternalPackages: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner', 'pg'],
   async headers() {
+    const staticHeaders = isProd
+      // Produccion: cache agresivo e inmutable (el nombre del archivo
+      // incluye el hash, asi que el contenido es efectivamente inmutable).
+      ? [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }]
+      // Desarrollo: NO cachear. En dev, el mismo URL de chunk puede tener
+      // contenido distinto entre recargas del dev server. Sin este header
+      // el navegador sirve versiones obsoletas tras recompilaciones y se
+      // produce ChunkLoadError. (Next.js usa '?v=' en dev, pero algunos
+      // navegadores cachean HTML antes de aplicar el query param.)
+      : [{ key: 'Cache-Control', value: 'no-store, must-revalidate' }];
+
     return [
       // Headers de seguridad globales para todas las rutas.
       {
         source: '/:path*',
         headers: securityHeaders,
       },
-      // Caché agresivo para los assets hasheados de Next (CSS/JS chunks).
-      // El nombre del archivo incluye el hash, así que el contenido es
-      // efectivamente inmutable: max-age=1 año + 'immutable' es la
-      // práctica recomendada por el equipo de Next.js.
+      // Caché de assets estaticos de Next.
       {
         source: '/_next/static/:path*',
-        headers: [
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
-        ],
+        headers: staticHeaders,
       },
     ];
   },
