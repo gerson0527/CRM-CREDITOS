@@ -1,6 +1,6 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
+import { Inter, Manrope } from 'next/font/google';
 import { AuthProvider } from '@/components/providers/auth-provider';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { NotificationProvider } from '@/components/providers/notification-provider';
@@ -13,7 +13,7 @@ const inter = Inter({
   display: 'swap',
 });
 
-const plusJakarta = Plus_Jakarta_Sans({
+const manrope = Manrope({
   subsets: ['latin'],
   variable: '--font-display',
   weight: ['500', '600', '700', '800'],
@@ -31,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={`${inter.variable} ${plusJakarta.variable}`} suppressHydrationWarning>
+    <html lang="es" className={`${inter.variable} ${manrope.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased selection:bg-primary/20 selection:text-primary" suppressHydrationWarning>
         <ThemeProvider>
           <AuthProvider>

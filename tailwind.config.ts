@@ -10,9 +10,11 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
+        // Inter: textos, tablas, formularios, párrafos, inputs.
         sans: ['var(--font-sans)', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        display: ['var(--font-display)', 'var(--font-sans)', 'sans-serif'],
-        brand: ['var(--font-display)', 'var(--font-sans)', 'sans-serif'],
+        // Manrope: títulos (h1-h6), badges destacados, kpis, brand. Cae a Inter si falla.
+        display: ['var(--font-display)', 'var(--font-sans)', 'system-ui', 'sans-serif'],
+        brand: ['var(--font-display)', 'var(--font-sans)', 'system-ui', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

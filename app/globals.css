@@ -116,8 +116,27 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1, "cv02" 1, "cv03" 1, "cv04" 1, "cv11" 1;
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+  }
+  /* Manrope para títulos: aplica font-display a h1-h6 y a elementos con data-display="true" */
+  h1, h2, h3, h4, h5, h6,
+  [data-display="true"] {
+    font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
+    letter-spacing: -0.015em;
+  }
+  /* Las clases utility font-display existentes (componentes internos) siguen funcionando */
+  .font-display {
+    font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
+    letter-spacing: -0.015em;
+  }
+  /* Tablas y formularios: heredar Inter sin rasgos estilisticos raros */
+  table, input, select, textarea, button {
+    font-family: inherit;
+  }
+  /* Números y KPIs: Manrope con tabular-nums ya activo, fijamos el font */
+  .tabular-nums, td, th {
+    font-variant-numeric: tabular-nums;
   }
 }
 
