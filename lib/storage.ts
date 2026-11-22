@@ -76,6 +76,16 @@ export async function deleteFile(key: string): Promise<void> {
   await client().send(new DeleteObjectCommand({ Bucket: bucket(), Key: key }));
 }
 
+/**
+ * Sube un buffer directamente desde el servidor. Se usa cuando el bucket no
+ * tiene CORS configurado y el navegador no puede hacer el PUT pre-firmado.
+ */
+export async function uploadObject(key: string, body: Uint8Array, contentType: string): Promise<void> {
+  await client().send(
+    new PutObjectCommand({ Bucket: bucket(), Key: key, Body: body, ContentType: contentType })
+  );
+}
+
 export function generateKey(opts: {
   rootFolder: string;
   documentType: string;

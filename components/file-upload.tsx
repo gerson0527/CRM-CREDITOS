@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Upload, X, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { hasAllowedMagicBytes, processFileForUpload, uploadToPresignedUrl, type ProcessedFile } from '@/lib/image-optimization';
+import { hasAllowedMagicBytes, processFileForUpload, uploadToStorage, type ProcessedFile } from '@/lib/image-optimization';
 import { isAllowedMimeType } from '@/lib/storage';
 
 export interface UploadedFile {
@@ -122,12 +122,7 @@ export function FileUpload({
       });
       const presigned = await presignedRes.json();
       if (!presignedRes.ok) throw new Error(presigned.error || 'Error al obtener URL de subida');
-      const ok = await uploadToPresignedUrl(
-        presigned.uploadUrl,
-        processed.main,
-        presigned.requiredHeaders,
-        (p) => setProgress(p)
-      );
+      const ok = await uploadToStorage(presigned.key, processed.main, (p) => setProgress(p));
       if (!ok) throw new Error('Falló la subida del archivo principal');
       let thumbKey: string | undefined;
       if (processed.thumb) {
@@ -146,7 +141,7 @@ export function FileUpload({
           });
           const thumbPresigned = await thumbRes.json();
           if (thumbRes.ok) {
-            await uploadToPresignedUrl(thumbPresigned.uploadUrl, processed.thumb, thumbPresigned.requiredHeaders);
+            await uploadToStorage(thumbPresigned.key, processed.thumb);
             thumbKey = thumbPresigned.key;
             if (thumbKey) {
               const tRes = await fetch(`/api/uploads/preview?key=${encodeURIComponent(thumbKey)}`);

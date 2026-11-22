@@ -121,23 +121,27 @@ export async function processFileForUpload(
   };
 }
 
-export function uploadToPresignedUrl(
-  url: string,
+/**
+ * Sube el archivo al mismo origen; el servidor hace el PUT a S3. Evita el
+ * preflight CORS cuando el bucket no tiene configurada su política.
+ */
+export function uploadToStorage(
+  key: string,
   file: File,
-  requiredHeaders: Record<string, string> = {},
   onProgress?: (percent: number) => void
 ): Promise<boolean> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const xhr = new XMLHttpRequest();
-    xhr.open('PUT', url, true);
-    Object.entries(requiredHeaders).forEach(([k, v]) => xhr.setRequestHeader(k, v));
+    xhr.open('POST', '/api/uploads/proxy', true);
+    xhr.setRequestHeader('x-upload-key', key);
+    xhr.setRequestHeader('Content-Type', file.type);
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable && onProgress) {
         onProgress(Math.round((e.loaded / e.total) * 100));
       }
     };
     xhr.onload = () => resolve(xhr.status >= 200 && xhr.status < 300);
-    xhr.onerror = () => reject(new Error('Error de red al subir el archivo'));
+    xhr.onerror = () => resolve(false);
     xhr.send(file);
   });
 }
