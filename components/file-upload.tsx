@@ -186,7 +186,19 @@ export function FileUpload({
     }
   }
 
-  function remove() {
+  async function remove() {
+    const keys = [value?.key, value?.thumbKey].filter(Boolean) as string[];
+    if (keys.length > 0) {
+      try {
+        await fetch('/api/uploads/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ keys }),
+        });
+      } catch {
+        // Si falla el borrado remoto, igual se limpia el formulario.
+      }
+    }
     onChange(null);
     setError(null);
     setCompressionInfo(null);

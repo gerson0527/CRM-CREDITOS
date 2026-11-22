@@ -1,4 +1,7 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand,
+  ListObjectsV2Command, DeleteObjectsCommand,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 /**
@@ -84,6 +87,38 @@ export async function uploadObject(key: string, body: Uint8Array, contentType: s
   await client().send(
     new PutObjectCommand({ Bucket: bucket(), Key: key, Body: body, ContentType: contentType })
   );
+}
+
+/** Borra varios objetos del bucket en una sola llamada. */
+export async function deleteObjects(keys: string[]): Promise<void> {
+  if (keys.length === 0) return;
+  await client().send(
+    new DeleteObjectsCommand({
+      Bucket: bucket(),
+      Delete: { Objects: keys.map((Key) => ({ Key })), Quiet: true },
+    })
+  );
+}
+
+/** Lista objetos temporales (creditos/temp/) mas antiguos que `olderThan`. */
+export async function listStaleTempObjects(olderThan: Date): Promise<string[]> {
+  const keys: string[] = [];
+  let continuationToken: string | undefined;
+  do {
+    const res = await client().send(
+      new ListObjectsV2Command({
+        Bucket: bucket(),
+        Prefix: 'creditos/temp/',
+        ContinuationToken: continuationToken,
+        MaxKeys: 1000,
+      })
+    );
+    for (const obj of res.Contents ?? []) {
+      if (obj.Key && obj.LastModified && obj.LastModified < olderThan) keys.push(obj.Key);
+    }
+    continuationToken = res.IsTruncated ? res.NextContinuationToken : undefined;
+  } while (continuationToken);
+  return keys;
 }
 
 export function generateKey(opts: {
