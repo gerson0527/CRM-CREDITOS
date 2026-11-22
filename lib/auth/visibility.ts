@@ -31,7 +31,7 @@ export async function buildClientsWhere(user: SessionUser, params: unknown[] = [
   const ids = await getVisibleAsesorIds(user);
   if (user.role === 'admin') return { sql: '1=1', params };
   if (ids.length === 0) return { sql: '1=0', params };
-  return { sql: `created_by = ANY($${params.length + 1}::uuid[])`, params: [...params, ids] };
+  return { sql: `clients.created_by = ANY($${params.length + 1}::uuid[])`, params: [...params, ids] };
 }
 
 /**
@@ -41,7 +41,7 @@ export async function buildCreditsWhere(user: SessionUser, params: unknown[] = [
   const ids = await getVisibleAsesorIds(user);
   if (user.role === 'admin') return { sql: '1=1', params };
   if (ids.length === 0) return { sql: '1=0', params };
-  return { sql: `asesor_id = ANY($${params.length + 1}::uuid[])`, params: [...params, ids] };
+  return { sql: `credits.asesor_id = ANY($${params.length + 1}::uuid[])`, params: [...params, ids] };
 }
 
 /**
@@ -51,7 +51,7 @@ export async function buildFollowUpsWhere(user: SessionUser, params: unknown[] =
   const ids = await getVisibleAsesorIds(user);
   if (user.role === 'admin') return { sql: '1=1', params };
   if (ids.length === 0) return { sql: '1=0', params };
-  return { sql: `asesor_id = ANY($${params.length + 1}::uuid[])`, params: [...params, ids] };
+  return { sql: `follow_ups.asesor_id = ANY($${params.length + 1}::uuid[])`, params: [...params, ids] };
 }
 
 /**
