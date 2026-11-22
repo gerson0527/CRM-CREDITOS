@@ -218,19 +218,25 @@ export default function NewCreditPage() {
         comment: 'Crédito creado',
       });
 
-      // 4. Registrar documentos cargados.
-      // Guardamos el "key" (o JSON {original, thumb}) en file_url.
-      // En tu modelo real de Prisma puedes agregar un campo storage_key y thumbnail_key separados.
+      // 4. Registrar documentos cargados, uno por uno, y verificar que
+      //    todos quedaron guardados antes de dar el crédito por creado.
       const filesArr = Object.values(uploadedFiles);
       if (filesArr.length > 0) {
-        const docsToInsert = filesArr.map((f) => ({
-          credit_id: credit.id,
-          document_type: f.documentType,
-          file_url: JSON.stringify({ original: f.key, thumb: f.thumbKey }),
-          status: 'pendiente',
-          uploaded_by: profile.id,
-        }));
-        await supabase.from('documents').insert(docsToInsert);
+        let saved = 0;
+        for (const f of filesArr) {
+          const { error: docErr } = await supabase.from('documents').insert({
+            credit_id: credit.id,
+            document_type: f.documentType,
+            file_url: JSON.stringify({ original: f.key, thumb: f.thumbKey }),
+            status: 'pendiente',
+            uploaded_by: profile.id,
+          });
+          if (docErr) throw docErr;
+          saved++;
+        }
+        if (saved !== filesArr.length) {
+          throw new Error(`Se guardaron ${saved} de ${filesArr.length} documentos`);
+        }
       }
 
       toast.success('Crédito creado', {
