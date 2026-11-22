@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
+import { usePersistedState, clearDraft } from '@/hooks/use-persisted-state';
 import { supabase } from '@/lib/supabase/client';
 import type { Sede } from '@/lib/types';
 
@@ -33,9 +34,9 @@ export default function SedesPage() {
 function SedesManagement() {
   const [sedes, setSedes] = useState<Sede[]>([]);
   const [loading, setLoading] = useState(true);
-  const [createOpen, setCreateOpen] = useState(false);
-  const [editingSede, setEditingSede] = useState<Sede | null>(null);
-  const [form, setForm] = useState({ name: '', code: '', address: '', city: '', phone: '' });
+  const [createOpen, setCreateOpen] = usePersistedState('sedes', 'createOpen', false);
+  const [editingSede, setEditingSede] = usePersistedState<Sede | null>('sedes', 'editingSede', null);
+  const [form, setForm] = usePersistedState('sedes', 'form', { name: '', code: '', address: '', city: '', phone: '' });
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(9);
 
@@ -84,7 +85,9 @@ function SedesManagement() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Error');
       toast.success('Sede creada', { description: form.name });
+      clearDraft('sedes');
       setCreateOpen(false);
+      setEditingSede(null);
       loadSedes();
     } catch (err: any) {
       toast.error('Error', { description: err.message });
@@ -114,6 +117,7 @@ function SedesManagement() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Error');
       toast.success('Sede actualizada');
+      clearDraft('sedes');
       setEditingSede(null);
       loadSedes();
     } catch (err: any) {

@@ -21,6 +21,7 @@ import { Label } from '@/components/ui/label';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import { usePersistedState } from '@/hooks/use-persisted-state';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/providers/auth-provider';
 import { CREDIT_STATUSES, PIPELINE_ORDER, formatCurrency, formatDate, daysSince } from '@/lib/constants';
@@ -45,12 +46,12 @@ export default function KanbanPage() {
   const [loadingAdvisors, setLoadingAdvisors] = useState(false);
   const today = new Date().toISOString().slice(0, 10);
   const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = usePersistedState('kanban', 'filters', {
     asesor_id: profile?.role === 'asesor' ? profile.id : 'all',
     from: monthAgo,
     to: today,
   });
-  const [appliedFilters, setAppliedFilters] = useState<typeof filters | null>(null);
+  const [appliedFilters, setAppliedFilters] = usePersistedState<typeof filters | null>('kanban', 'appliedFilters', null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })

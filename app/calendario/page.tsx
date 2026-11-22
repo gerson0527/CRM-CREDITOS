@@ -65,6 +65,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { usePersistedState, clearDraft } from '@/hooks/use-persisted-state';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/providers/auth-provider';
 import { FOLLOW_UP_CHANNELS, formatCurrency, formatDate } from '@/lib/constants';
@@ -142,21 +143,21 @@ export default function CalendarioPage() {
   const [loading, setLoading] = useState(true);
 
   // Filtros
-  const [filterChannel, setFilterChannel] = useState<string>('todos');
-  const [filterStatus, setFilterStatus] = useState<'todos' | 'pendientes' | 'completados'>('todos');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [filterChannel, setFilterChannel] = usePersistedState('calendario', 'filterChannel', 'todos');
+  const [filterStatus, setFilterStatus] = usePersistedState<'todos' | 'pendientes' | 'completados'>('calendario', 'filterStatus', 'todos');
+  const [searchTerm, setSearchTerm] = usePersistedState('calendario', 'searchTerm', '');
 
   // Modales
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = usePersistedState('calendario', 'isCreateOpen', false);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
 
   // Formulario nuevo seguimiento
-  const [newCreditId, setNewCreditId] = useState<string>('');
-  const [newChannel, setNewChannel] = useState<'llamada' | 'whatsapp' | 'visita' | 'email'>('llamada');
-  const [newComment, setNewComment] = useState('');
-  const [newDate, setNewDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-  const [newTime, setNewTime] = useState('09:00');
-  const [newAllDay, setNewAllDay] = useState(false);
+  const [newCreditId, setNewCreditId] = usePersistedState('calendario', 'newCreditId', '');
+  const [newChannel, setNewChannel] = usePersistedState<'llamada' | 'whatsapp' | 'visita' | 'email'>('calendario', 'newChannel', 'llamada');
+  const [newComment, setNewComment] = usePersistedState('calendario', 'newComment', '');
+  const [newDate, setNewDate] = usePersistedState('calendario', 'newDate', format(new Date(), 'yyyy-MM-dd'));
+  const [newTime, setNewTime] = usePersistedState('calendario', 'newTime', '09:00');
+  const [newAllDay, setNewAllDay] = usePersistedState('calendario', 'newAllDay', false);
   const [submitting, setSubmitting] = useState(false);
 
   const generateDemoEvents = useCallback((): CalendarEvent[] => {
@@ -376,6 +377,7 @@ export default function CalendarioPage() {
         description: `Fecha: ${formatDate(newDate)}`,
       });
 
+      clearDraft('calendario');
       setIsCreateOpen(false);
       setNewComment('');
       setNewCreditId('');

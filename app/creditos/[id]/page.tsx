@@ -27,6 +27,7 @@ import {
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
+import { usePersistedState, clearDraft } from '@/hooks/use-persisted-state';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/providers/auth-provider';
 import {
@@ -64,18 +65,19 @@ export default function CreditDetailPage() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [followUps, setFollowUps] = useState<FollowUp[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showFollowUpForm, setShowFollowUpForm] = useState(false);
-  const [newFollowUp, setNewFollowUp] = useState({
+  const draftNs = `credito-${id ?? 'new'}`;
+  const [showFollowUpForm, setShowFollowUpForm] = usePersistedState(draftNs, 'showFollowUpForm', false);
+  const [newFollowUp, setNewFollowUp] = usePersistedState(draftNs, 'newFollowUp', {
     channel: 'llamada', comment: '', next_action_date: '', next_action_note: '',
   });
 
   // Devolución: modales separados para admin (motivo + flag) y asesor (subida de archivos)
-  const [requestModalOpen, setRequestModalOpen] = useState(false);
-  const [requestReason, setRequestReason] = useState('');
-  const [requestRequiresUpload, setRequestRequiresUpload] = useState(true);
+  const [requestModalOpen, setRequestModalOpen] = usePersistedState(draftNs, 'requestModalOpen', false);
+  const [requestReason, setRequestReason] = usePersistedState(draftNs, 'requestReason', '');
+  const [requestRequiresUpload, setRequestRequiresUpload] = usePersistedState(draftNs, 'requestRequiresUpload', true);
 
-  const [uploadModalOpen, setUploadModalOpen] = useState(false);
-  const [uploadFiles, setUploadFiles] = useState<Record<string, UploadedFile>>({});
+  const [uploadModalOpen, setUploadModalOpen] = usePersistedState(draftNs, 'uploadModalOpen', false);
+  const [uploadFiles, setUploadFiles] = usePersistedState<Record<string, UploadedFile>>(draftNs, 'uploadFiles', {});
   const [savingUpload, setSavingUpload] = useState(false);
 
   const canManageStatus = profile?.role === 'admin' || profile?.role === 'supervisor';
@@ -194,6 +196,7 @@ export default function CreditDetailPage() {
     const reason = requestReason.trim();
     const requiresUpload = requestRequiresUpload;
     await changeStatus('devolucion', { reason, requiresUpload });
+    clearDraft(draftNs);
     setRequestModalOpen(false);
     setRequestReason('');
     setRequestRequiresUpload(true);
@@ -220,6 +223,7 @@ export default function CreditDetailPage() {
       toast.success('Archivos de devolución subidos', {
         description: `${files.length} archivo(s) registrados. El administrador revisará y continuará el flujo.`,
       });
+      clearDraft(draftNs);
       setUploadFiles({});
       setUploadModalOpen(false);
       loadData();
@@ -248,6 +252,7 @@ export default function CreditDetailPage() {
     }
 
     toast.success('Seguimiento registrado');
+    clearDraft(draftNs);
     setNewFollowUp({ channel: 'llamada', comment: '', next_action_date: '', next_action_note: '' });
     setShowFollowUpForm(false);
     loadData();

@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
+import { usePersistedState, clearDraft } from '@/hooks/use-persisted-state';
 import { supabase } from '@/lib/supabase/client';
 import { formatCurrency } from '@/lib/constants';
 import type { FinancialEntity } from '@/lib/types';
@@ -34,11 +35,11 @@ export default function EntidadesPage() {
 function EntitiesManagement() {
   const [entities, setEntities] = useState<FinancialEntity[]>([]);
   const [loading, setLoading] = useState(true);
-  const [createOpen, setCreateOpen] = useState(false);
-  const [editing, setEditing] = useState<FinancialEntity | null>(null);
+  const [createOpen, setCreateOpen] = usePersistedState('entidades', 'createOpen', false);
+  const [editing, setEditing] = usePersistedState<FinancialEntity | null>('entidades', 'editing', null);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
-  const [form, setForm] = useState({
+  const [form, setForm] = usePersistedState('entidades', 'form', {
     name: '',
     contact_name: '',
     contact_phone: '',
@@ -105,7 +106,9 @@ function EntitiesManagement() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Error');
       toast.success('Entidad creada', { description: form.name });
+      clearDraft('entidades');
       setCreateOpen(false);
+      setEditing(null);
       load();
     } catch (err: any) {
       toast.error('Error', { description: err.message });
@@ -132,6 +135,7 @@ function EntitiesManagement() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Error');
       toast.success('Entidad actualizada');
+      clearDraft('entidades');
       setEditing(null);
       load();
     } catch (err: any) {

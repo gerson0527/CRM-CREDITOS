@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import { usePersistedState, clearDraft } from '@/hooks/use-persisted-state';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/providers/auth-provider';
 import type { Profile } from '@/lib/types';
@@ -24,7 +25,7 @@ export default function NuevoClientePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [asesores, setAsesores] = useState<Profile[]>([]);
-  const [data, setData] = useState({
+  const [data, setData] = usePersistedState('clientes-nuevo', 'data', {
     first_name: '',
     last_name: '',
     document_number: '',
@@ -102,6 +103,7 @@ export default function NuevoClientePage() {
       toast.success('Cliente creado', {
         description: `${data.first_name} ${data.last_name} fue registrado.`,
       });
+      clearDraft('clientes-nuevo');
       router.push(`/clientes/${created.id}`);
     } catch (err: any) {
       toast.error('Error al crear cliente', { description: err?.message });

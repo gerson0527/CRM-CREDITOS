@@ -18,6 +18,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { usePersistedState, clearDraft } from '@/hooks/use-persisted-state';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/providers/auth-provider';
 import { STATUS_LABELS } from '@/lib/constants';
@@ -38,8 +39,8 @@ function PendingRequests() {
   const [pending, setPending] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [supervisors, setSupervisors] = useState<Profile[]>([]);
-  const [assignModal, setAssignModal] = useState<Profile | null>(null);
-  const [selectedSupervisor, setSelectedSupervisor] = useState<string>('');
+  const [assignModal, setAssignModal] = usePersistedState<Profile | null>('solicitudes', 'assignModal', null);
+  const [selectedSupervisor, setSelectedSupervisor] = usePersistedState('solicitudes', 'selectedSupervisor', '');
   const [processing, setProcessing] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(9);
@@ -84,6 +85,7 @@ function PendingRequests() {
     }
 
     toast.success('Usuario aprobado', { description: `${user.full_name} ya puede iniciar sesión.` });
+    clearDraft('solicitudes');
     setAssignModal(null);
     setSelectedSupervisor('');
     setProcessing(null);

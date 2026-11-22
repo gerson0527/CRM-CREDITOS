@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/components/providers/auth-provider';
 import { Eye, EyeOff, LogIn, Clock, XCircle, PauseCircle, Zap, ShieldCheck, CheckCircle2, ArrowRight, Building2, CreditCard, Landmark, LineChart } from 'lucide-react';
 import { STATUS_LABELS } from '@/lib/constants';
+import { usePersistedState } from '@/hooks/use-persisted-state';
 
 const DEMO_ACCOUNTS: Record<string, { role: string; full_name: string; status: string; label: string; color: string }> = {
   'admin@credilibranzas.com': {
@@ -69,7 +70,8 @@ function LoginForm() {
   const { refreshProfile } = useAuth();
   const blockedStatus = searchParams.get('blocked');
 
-  const [email, setEmail] = useState('');
+  // Solo se recuerda el correo; la contraseña nunca se persiste.
+  const [email, setEmail] = usePersistedState('login', 'email', '');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);

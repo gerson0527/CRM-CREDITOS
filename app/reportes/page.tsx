@@ -28,6 +28,7 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+import { usePersistedState } from '@/hooks/use-persisted-state';
 import { supabase } from '@/lib/supabase/client';
 import { CREDIT_STATUSES, formatCompactCurrency, formatCurrency, formatDate, formatDateShort } from '@/lib/constants';
 import type { Credit, Profile } from '@/lib/types';
@@ -54,12 +55,12 @@ function Reports() {
   const [loading, setLoading] = useState(true);
 
   // ==== Filtros ====
-  const [dateFrom, setDateFrom] = useState<string>('');
-  const [dateTo, setDateTo] = useState<string>('');
-  const [activeRange, setActiveRange] = useState<string>('all');
-  const [asesorFilter, setAsesorFilter] = useState<string>('all');
-  const [entityFilter, setEntityFilter] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [dateFrom, setDateFrom] = usePersistedState('reportes', 'dateFrom', '');
+  const [dateTo, setDateTo] = usePersistedState('reportes', 'dateTo', '');
+  const [activeRange, setActiveRange] = usePersistedState('reportes', 'activeRange', 'all');
+  const [asesorFilter, setAsesorFilter] = usePersistedState('reportes', 'asesorFilter', 'all');
+  const [entityFilter, setEntityFilter] = usePersistedState('reportes', 'entityFilter', 'all');
+  const [statusFilter, setStatusFilter] = usePersistedState('reportes', 'statusFilter', 'all');
 
   const filteredCredits = useMemo(() => {
     return credits.filter((c) => {

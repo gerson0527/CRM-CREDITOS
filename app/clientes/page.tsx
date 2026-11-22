@@ -18,6 +18,7 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+import { usePersistedState } from '@/hooks/use-persisted-state';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/providers/auth-provider';
 import { formatCurrency, formatDateShort } from '@/lib/constants';
@@ -38,9 +39,9 @@ export default function ClientesPage() {
   const [asesores, setAsesores] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [search, setSearch] = useState('');
-  const [asesorFilter, setAsesorFilter] = useState<string>('all');
-  const [cityFilter, setCityFilter] = useState<string>('all');
+  const [search, setSearch] = usePersistedState('clientes', 'search', '');
+  const [asesorFilter, setAsesorFilter] = usePersistedState('clientes', 'asesorFilter', 'all');
+  const [cityFilter, setCityFilter] = usePersistedState('clientes', 'cityFilter', 'all');
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(15);
 

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { usePersistedState, clearDraft } from '@/hooks/use-persisted-state';
 import { supabase } from '@/lib/supabase/client';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
@@ -14,9 +15,10 @@ import { Eye, EyeOff, UserPlus, CheckCircle2, Phone, Mail, User, ArrowLeft, Shie
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [fullName, setFullName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
+  // La contraseña NO se persiste por seguridad.
+  const [fullName, setFullName] = usePersistedState('registro', 'fullName', '');
+  const [phone, setPhone] = usePersistedState('registro', 'phone', '');
+  const [email, setEmail] = usePersistedState('registro', 'email', '');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -50,6 +52,7 @@ export default function RegisterPage() {
       }
 
       if (data?.user) {
+        clearDraft('registro');
         setSuccess(true);
         toast.success('Cuenta creada exitosamente', {
           description: 'Tu solicitud se encuentra en proceso de validación.',

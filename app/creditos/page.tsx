@@ -18,6 +18,7 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+import { usePersistedState } from '@/hooks/use-persisted-state';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/providers/auth-provider';
 import { CREDIT_STATUSES, formatCurrency, formatDateShort } from '@/lib/constants';
@@ -34,10 +35,10 @@ export default function CreditsTablePage() {
   const [loading, setLoading] = useState(true);
 
   // Filters
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [asesorFilter, setAsesorFilter] = useState<string>('all');
-  const [entityFilter, setEntityFilter] = useState<string>('all');
+  const [search, setSearch] = usePersistedState('creditos', 'search', '');
+  const [statusFilter, setStatusFilter] = usePersistedState('creditos', 'statusFilter', 'all');
+  const [asesorFilter, setAsesorFilter] = usePersistedState('creditos', 'asesorFilter', 'all');
+  const [entityFilter, setEntityFilter] = usePersistedState('creditos', 'entityFilter', 'all');
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(15);
 

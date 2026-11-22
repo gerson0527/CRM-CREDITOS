@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
+import { usePersistedState, clearDraft } from '@/hooks/use-persisted-state';
 import { supabase } from '@/lib/supabase/client';
 import type { Role } from '@/lib/types';
 
@@ -54,9 +55,9 @@ function RolesManagement() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [loading, setLoading] = useState(true);
-  const [createOpen, setCreateOpen] = useState(false);
-  const [editingRole, setEditingRole] = useState<Role | null>(null);
-  const [createForm, setCreateForm] = useState({
+  const [createOpen, setCreateOpen] = usePersistedState('roles', 'createOpen', false);
+  const [editingRole, setEditingRole] = usePersistedState<Role | null>('roles', 'editingRole', null);
+  const [createForm, setCreateForm] = usePersistedState('roles', 'createForm', {
     slug: '',
     name: '',
     description: '',
@@ -95,7 +96,9 @@ function RolesManagement() {
       if (!res.ok) throw new Error(data.error || 'Error al crear');
 
       toast.success('Rol creado', { description: `${createForm.name} ya está disponible.` });
+      clearDraft('roles');
       setCreateOpen(false);
+      setEditingRole(null);
       setCreateForm({ slug: '', name: '', description: '', permissions: [], is_default: false });
       loadRoles();
     } catch (err: any) {
@@ -123,6 +126,7 @@ function RolesManagement() {
       if (!res.ok) throw new Error(data.error || 'Error al guardar');
 
       toast.success('Rol actualizado', { description: `${newName} ahora tiene ${newPermissions.length} permiso(s).` });
+      clearDraft('roles');
       setEditingRole(null);
       loadRoles();
     } catch (err: any) {

@@ -16,6 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import { usePersistedState, clearDraft } from '@/hooks/use-persisted-state';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/providers/auth-provider';
 import { formatCurrency } from '@/lib/constants';
@@ -23,7 +24,7 @@ import { FileUpload, type UploadedFile } from '@/components/file-upload';
 import type { FinancialEntity, CreditType } from '@/lib/types';
 
 const MAX_FILE_SIZE_MB = 10;
-const DRAFT_KEY = 'nuevo-credito-draft-v1';
+const DRAFT_NS = 'nuevo-credito';
 
 const REQUIRED_DOCUMENTS: { key: string; label: string; required: boolean }[] = [
   { key: 'desprendible', label: 'Desprendibles', required: true },
@@ -37,24 +38,23 @@ const REQUIRED_DOCUMENTS: { key: string; label: string; required: boolean }[] = 
 export default function NewCreditPage() {
   const { profile } = useAuth();
   const router = useRouter();
-  const [step, setStep] = useState(0);
+  const [step, setStep, resetStep] = usePersistedState(DRAFT_NS, 'step', 0);
   const [loading, setLoading] = useState(false);
   const [entities, setEntities] = useState<FinancialEntity[]>([]);
   const [creditTypes, setCreditTypes] = useState<CreditType[]>([]);
 
-  // Form data
-  const [clientData, setClientData] = useState({
+  // Form data (persistido entre recargas)
+  const [clientData, setClientData, resetClientData] = usePersistedState(DRAFT_NS, 'clientData', {
     first_name: '', last_name: '', document_number: '', phone: '', email: '', address: '', city: '', reported_income: '',
   });
-  const [creditData, setCreditData] = useState({
+  const [creditData, setCreditData, resetCreditData] = usePersistedState(DRAFT_NS, 'creditData', {
     entity_id: '', credit_type_id: '', requested_amount: '', term_months: '36',
   });
-  const [uploadedFiles, setUploadedFiles] = useState<Record<string, UploadedFile>>({});
-  const [draftLoaded, setDraftLoaded] = useState(false);
+  const [uploadedFiles, setUploadedFiles, resetUploadedFiles] = usePersistedState<Record<string, UploadedFile>>(DRAFT_NS, 'uploadedFiles', {});
+  const [clientFound, setClientFound, resetClientFound] = usePersistedState<null | { id: string; first_name: string; last_name: string }>(DRAFT_NS, 'clientFound', null);
 
   // Búsqueda por cédula
   const [lookingUp, setLookingUp] = useState(false);
-  const [clientFound, setClientFound] = useState<null | { id: string; first_name: string; last_name: string }>(null);
   const lookupSeq = useRef(0);
 
   useEffect(() => {
@@ -62,45 +62,13 @@ export default function NewCreditPage() {
     supabase.from('credit_types').select('*').eq('active', true).then(({ data }) => setCreditTypes(data || []));
   }, []);
 
-  // Restaurar borrador al montar (después del primer render para no
-  // sobrescribirlo con el estado inicial vacío).
-  useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem(DRAFT_KEY);
-      if (raw) {
-        const d = JSON.parse(raw);
-        if (typeof d.step === 'number') setStep(d.step);
-        if (d.clientData) setClientData(d.clientData);
-        if (d.creditData) setCreditData(d.creditData);
-        if (d.uploadedFiles) setUploadedFiles(d.uploadedFiles);
-        if (d.clientFound !== undefined) setClientFound(d.clientFound);
-      }
-    } catch {
-      // Borrador corrupto: se ignora.
-    }
-    setDraftLoaded(true);
-  }, []);
-
-  // Guardar borrador en cada cambio.
-  useEffect(() => {
-    if (!draftLoaded) return;
-    try {
-      sessionStorage.setItem(
-        DRAFT_KEY,
-        JSON.stringify({ step, clientData, creditData, uploadedFiles, clientFound })
-      );
-    } catch {
-      // Almacenamiento no disponible: la app sigue funcionando sin borrador.
-    }
-  }, [draftLoaded, step, clientData, creditData, uploadedFiles, clientFound]);
-
   function discardDraft() {
-    sessionStorage.removeItem(DRAFT_KEY);
-    setStep(0);
-    setClientData({ first_name: '', last_name: '', document_number: '', phone: '', email: '', address: '', city: '', reported_income: '' });
-    setCreditData({ entity_id: '', credit_type_id: '', requested_amount: '', term_months: '36' });
-    setUploadedFiles({});
-    setClientFound(null);
+    clearDraft(DRAFT_NS);
+    resetStep(0);
+    resetClientData({ first_name: '', last_name: '', document_number: '', phone: '', email: '', address: '', city: '', reported_income: '' });
+    resetCreditData({ entity_id: '', credit_type_id: '', requested_amount: '', term_months: '36' });
+    resetUploadedFiles({});
+    resetClientFound(null);
     toast.success('Borrador descartado');
   }
 
@@ -268,7 +236,7 @@ export default function NewCreditPage() {
       toast.success('Crédito creado', {
         description: `Cliente + crédito${filesArr.length > 0 ? ` + ${filesArr.length} archivo(s)` : ''} registrado(s).`,
       });
-      sessionStorage.removeItem(DRAFT_KEY);
+      clearDraft(DRAFT_NS);
       router.push(`/creditos/${credit.id}`);
     } catch (err: any) {
       toast.error('Error al crear crédito', { description: err.message });

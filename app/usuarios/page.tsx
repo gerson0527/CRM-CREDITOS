@@ -27,6 +27,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { EditUserDialog } from '@/components/edit-user-dialog';
+import { usePersistedState } from '@/hooks/use-persisted-state';
 import { supabase } from '@/lib/supabase/client';
 import { ROLE_LABELS, STATUS_LABELS, STATUS_STYLES, formatDateShort, formatCurrency } from '@/lib/constants';
 import type { Profile, Role, UserRole, UserStatus, Sede } from '@/lib/types';
@@ -58,9 +59,9 @@ function UserManagement() {
   const [showPassword, setShowPassword] = useState(false);
   const [createdResult, setCreatedResult] = useState<{ email: string; password: string; full_name: string } | null>(null);
   const [copied, setCopied] = useState(false);
-  const [form, setForm] = useState({
+  // La contraseña se genera por separado y NO se persiste.
+  const [form, setForm, resetForm] = usePersistedState('usuarios', 'form', {
     email: '',
-    password: '',
     full_name: '',
     role: 'admin' as UserRole,
     role_id: '',
@@ -70,6 +71,7 @@ function UserManagement() {
     phone: '',
     sede_id: '',
   });
+  const [password, setPassword] = useState('');
   const [sedes, setSedes] = useState<Sede[]>([]);
   const [editingUser, setEditingUser] = useState<Profile | null>(null);
   const [editOpen, setEditOpen] = useState(false);
@@ -133,7 +135,6 @@ function UserManagement() {
   function openCreate() {
     setForm({
       email: '',
-      password: randomPassword(),
       full_name: '',
       role: (defaultRole?.slug as UserRole) || 'admin',
       role_id: defaultRole?.id || '',
@@ -143,6 +144,7 @@ function UserManagement() {
       phone: '',
       sede_id: '',
     });
+    setPassword(randomPassword());
     setCreatedResult(null);
     setShowPassword(false);
     setCopied(false);
@@ -160,7 +162,7 @@ function UserManagement() {
 
   async function handleCreate(e: FormEvent) {
     e.preventDefault();
-    if (!form.email || !form.password || !form.full_name) {
+    if (!form.email || !password || !form.full_name) {
       toast.error('Completa nombre, email y contraseña');
       return;
     }
@@ -179,7 +181,7 @@ function UserManagement() {
         credentials: 'include',
         body: JSON.stringify({
           email: form.email,
-          password: form.password,
+          password,
           full_name: form.full_name,
           role: form.role,
           role_id: form.role_id || null,
@@ -196,9 +198,21 @@ function UserManagement() {
 
       setCreatedResult({
         email: form.email,
-        password: form.password,
+        password,
         full_name: form.full_name,
       });
+      resetForm({
+        email: '',
+        full_name: '',
+        role: 'admin' as UserRole,
+        role_id: '',
+        supervisor_id: '',
+        monthly_goal: '',
+        commission_rate: '',
+        phone: '',
+        sede_id: '',
+      });
+      setPassword('');
       toast.success('Usuario creado', { description: `${form.full_name} ya puede iniciar sesión.` });
       loadData();
     } catch (err: any) {
@@ -586,8 +600,8 @@ function UserManagement() {
                       <div className="relative flex-1">
                         <Input
                           type={showPassword ? 'text' : 'password'}
-                          value={form.password}
-                          onChange={(e) => setForm({ ...form, password: e.target.value })}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
                           required
                           className="font-mono pr-10"
                         />
@@ -604,7 +618,7 @@ function UserManagement() {
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => setForm({ ...form, password: randomPassword() })}
+                        onClick={() => setPassword(randomPassword())}
                       >
                         Generar
                       </Button>
