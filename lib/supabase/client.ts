@@ -164,6 +164,23 @@ class InsertResult<T = any> implements PromiseLike<{ data: any; error: any }> {
   }
 
   async exec(): Promise<{ data: any; error: any }> {
+    // La API /api/db/[table] inserta una fila por request: enviar un array
+    // directamente solo persistía el primer elemento. Iteramos para soportar
+    // insert() con multiples filas como la API real de Supabase.
+    const payload = this.payload;
+    if (this.method === 'POST' && Array.isArray(payload)) {
+      const rows: any[] = [];
+      for (const item of payload) {
+        const { data, error } = await this.execOne(item);
+        if (error) return { data: null, error };
+        rows.push(data);
+      }
+      return { data: rows, error: null };
+    }
+    return this.execOne(payload as Partial<T> | undefined);
+  }
+
+  private async execOne(payload: Partial<T> | undefined): Promise<{ data: any; error: any }> {
     const params = new URLSearchParams();
     if (this.selectCols !== '*') params.set('select', this.selectCols);
     for (const f of this.filters) {
@@ -178,7 +195,7 @@ class InsertResult<T = any> implements PromiseLike<{ data: any; error: any }> {
       const res = await fetch(url, {
         method: this.method,
         headers: { 'Content-Type': 'application/json' },
-        body: this.payload !== undefined ? JSON.stringify(Array.isArray(this.payload) ? this.payload[0] : this.payload) : undefined,
+        body: payload !== undefined ? JSON.stringify(payload) : undefined,
         credentials: 'include',
       });
       const data = await res.json();
