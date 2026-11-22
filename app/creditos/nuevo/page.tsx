@@ -23,6 +23,7 @@ import { FileUpload, type UploadedFile } from '@/components/file-upload';
 import type { FinancialEntity, CreditType } from '@/lib/types';
 
 const MAX_FILE_SIZE_MB = 10;
+const DRAFT_KEY = 'nuevo-credito-draft-v1';
 
 const REQUIRED_DOCUMENTS: { key: string; label: string; required: boolean }[] = [
   { key: 'desprendible', label: 'Desprendibles', required: true },
@@ -49,6 +50,7 @@ export default function NewCreditPage() {
     entity_id: '', credit_type_id: '', requested_amount: '', term_months: '36',
   });
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, UploadedFile>>({});
+  const [draftLoaded, setDraftLoaded] = useState(false);
 
   // Búsqueda por cédula
   const [lookingUp, setLookingUp] = useState(false);
@@ -59,6 +61,48 @@ export default function NewCreditPage() {
     supabase.from('financial_entities').select('*').eq('active', true).then(({ data }) => setEntities(data || []));
     supabase.from('credit_types').select('*').eq('active', true).then(({ data }) => setCreditTypes(data || []));
   }, []);
+
+  // Restaurar borrador al montar (después del primer render para no
+  // sobrescribirlo con el estado inicial vacío).
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (typeof d.step === 'number') setStep(d.step);
+        if (d.clientData) setClientData(d.clientData);
+        if (d.creditData) setCreditData(d.creditData);
+        if (d.uploadedFiles) setUploadedFiles(d.uploadedFiles);
+        if (d.clientFound !== undefined) setClientFound(d.clientFound);
+      }
+    } catch {
+      // Borrador corrupto: se ignora.
+    }
+    setDraftLoaded(true);
+  }, []);
+
+  // Guardar borrador en cada cambio.
+  useEffect(() => {
+    if (!draftLoaded) return;
+    try {
+      sessionStorage.setItem(
+        DRAFT_KEY,
+        JSON.stringify({ step, clientData, creditData, uploadedFiles, clientFound })
+      );
+    } catch {
+      // Almacenamiento no disponible: la app sigue funcionando sin borrador.
+    }
+  }, [draftLoaded, step, clientData, creditData, uploadedFiles, clientFound]);
+
+  function discardDraft() {
+    sessionStorage.removeItem(DRAFT_KEY);
+    setStep(0);
+    setClientData({ first_name: '', last_name: '', document_number: '', phone: '', email: '', address: '', city: '', reported_income: '' });
+    setCreditData({ entity_id: '', credit_type_id: '', requested_amount: '', term_months: '36' });
+    setUploadedFiles({});
+    setClientFound(null);
+    toast.success('Borrador descartado');
+  }
 
   const steps = [
     { label: 'Datos del cliente', icon: <User className="h-4 w-4" /> },
@@ -224,6 +268,7 @@ export default function NewCreditPage() {
       toast.success('Crédito creado', {
         description: `Cliente + crédito${filesArr.length > 0 ? ` + ${filesArr.length} archivo(s)` : ''} registrado(s).`,
       });
+      sessionStorage.removeItem(DRAFT_KEY);
       router.push(`/creditos/${credit.id}`);
     } catch (err: any) {
       toast.error('Error al crear crédito', { description: err.message });
@@ -235,11 +280,17 @@ export default function NewCreditPage() {
   return (
     <AppLayout>
       <PageTransition>
-        <div className="mb-4 flex items-center gap-3">
+        <div className="mb-4 flex items-center justify-between gap-3">
           <Button variant="ghost" size="sm" onClick={() => router.push('/creditos')}>
             <ArrowLeft className="h-4 w-4" />
             Volver
           </Button>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-400">Borrador guardado automáticamente</span>
+            <Button variant="ghost" size="sm" onClick={discardDraft} className="text-slate-400 hover:text-red-600">
+              Descartar borrador
+            </Button>
+          </div>
         </div>
 
         <PageHeader
