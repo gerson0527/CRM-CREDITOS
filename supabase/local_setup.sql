@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   supervisor_id uuid REFERENCES public.profiles(id) ON DELETE SET NULL,
   monthly_goal numeric DEFAULT 0,
   commission_rate numeric DEFAULT 0,
+  must_change_password boolean NOT NULL DEFAULT false,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
@@ -285,10 +286,10 @@ BEGIN
       CASE WHEN random() < 0.5 THEN v_asesor1 ELSE v_asesor2 END,
       CASE (random() * 3)::int WHEN 0 THEN v_entity_bog WHEN 1 THEN v_entity_ban ELSE v_entity_pop END,
       v_type_libre,
-      (ARRAY['lead','documentacion','enviado','estudio','aprobado','desembolsado'])[(random() * 6)::int + 1],
+      (ARRAY['lead','documentacion','enviado','estudio','aprobado','desembolsado'])[(floor(random() * 6))::int + 1],
       (random() * 50 + 5)::int * 1000000,
       CASE WHEN random() < 0.5 THEN (random() * 50 + 5)::int * 1000000 ELSE NULL END,
-      (ARRAY[24,36,48,60])[(random() * 4)::int + 1],
+      (ARRAY[24,36,48,60])[(floor(random() * 4))::int + 1],
       15.0 + (random() * 8)::numeric
     );
   END LOOP;
@@ -306,7 +307,7 @@ BEGIN
     SELECT
       v_credit.id,
       (SELECT asesor_id FROM public.credits WHERE id = v_credit.id),
-      (ARRAY['llamada','whatsapp','visita','email'])[(random() * 4)::int + 1],
+      (ARRAY['llamada','whatsapp','visita','email'])[(floor(random() * 4))::int + 1],
       'Confirmar documentacion pendiente del cliente',
       CURRENT_DATE + (random() * 7)::int,
       'Llamar para verificar estado del credito';

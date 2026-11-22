@@ -39,9 +39,11 @@ const nextConfig = {
   },
   images: { unoptimized: true },
   // Marcar paquetes de servidor como externos.
-  // Next 13: experimental.serverComponentsExternalPackages
-  // Next 14+: serverExternalPackages (top-level)
-  serverExternalPackages: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner', 'pg'],
+  // Next 14: experimental.serverComponentsExternalPackages
+  // Next 15+: serverExternalPackages (top-level)
+  experimental: {
+    serverComponentsExternalPackages: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner', 'pg'],
+  },
   async headers() {
     const staticHeaders = isProd
       // Produccion: cache agresivo e inmutable (el nombre del archivo

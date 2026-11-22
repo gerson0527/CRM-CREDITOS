@@ -110,12 +110,13 @@ function LoginForm() {
     }
   };
 
-  // Los accesos rápidos solo autocompletan el correo (solo desarrollo).
-  // La contraseña SIEMPRE la escribe el usuario: nunca hardcodear
-  // credenciales en el cliente, el repo es público.
+  // Los accesos rápidos autocompletan correo y contraseña (solo desarrollo).
+  // La contraseña proviene de NEXT_PUBLIC_DEMO_PASSWORD (definida únicamente
+  // en el .env local, gitignored). Nunca se hardcodea en el cliente ni en
+  // el repo (público). En producción la variable no existe → queda vacía.
   const handleQuickAccess = (emailVal: string) => {
     setEmail(emailVal);
-    setPassword('');
+    setPassword(process.env.NEXT_PUBLIC_DEMO_PASSWORD || '');
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -309,7 +310,7 @@ function LoginForm() {
                   <span>Acceso Rápido Demo</span>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Autocompleta el correo institucional (la contraseña la escribes tú):
+                  Autocompleta correo y contraseña (solo desarrollo local):
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {Object.entries(DEMO_ACCOUNTS).map(([demoEmail, u]) => (

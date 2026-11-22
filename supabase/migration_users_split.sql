@@ -20,10 +20,10 @@ ALTER TABLE public.users DISABLE ROW LEVEL SECURITY;
 
 -- 1. Migrar usuarios existentes desde profiles
 INSERT INTO public.users (id, email, password_hash, status)
-SELECT id, email, password_hash, status
+SELECT id, email, NULL::text AS password_hash, status
 FROM public.profiles
 ON CONFLICT (email) DO UPDATE SET
-  password_hash = EXCLUDED.password_hash,
+  password_hash = COALESCE(EXCLUDED.password_hash, public.users.password_hash),
   status = EXCLUDED.status;
 
 -- 2. Agregar user_id a profiles (FK) y backfillear
@@ -41,6 +41,9 @@ UPDATE public.profiles p
 SET user_id = u.id
 FROM public.users u
 WHERE u.email = p.email AND p.user_id IS NULL;
+
+-- 2b. must_change_password (forzado por admin al crear usuarios)
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS must_change_password boolean NOT NULL DEFAULT false;
 
 -- 3. Asegurar que user_id sea NOT NULL (después del backfill)
 DO $$
