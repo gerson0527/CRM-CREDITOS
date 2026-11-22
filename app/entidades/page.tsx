@@ -18,6 +18,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
 import { usePersistedState, clearDraft } from '@/hooks/use-persisted-state';
+import { CurrencyInput } from '@/components/currency-input';
 import { supabase } from '@/lib/supabase/client';
 import { formatCurrency } from '@/lib/constants';
 import type { FinancialEntity } from '@/lib/types';
@@ -317,11 +318,11 @@ function EntitiesManagement() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label>Monto crédito (mín)</Label>
-                  <Input type="number" min="0" value={form.credit_min_amount} onChange={(e) => setForm({ ...form, credit_min_amount: e.target.value })} placeholder="1000000" />
+                  <CurrencyInput value={form.credit_min_amount} onValueChange={(v) => setForm({ ...form, credit_min_amount: v })} placeholder="1.000.000" />
                 </div>
                 <div className="space-y-1">
                   <Label>Monto crédito (máx)</Label>
-                  <Input type="number" min="0" value={form.credit_max_amount} onChange={(e) => setForm({ ...form, credit_max_amount: e.target.value })} placeholder="100000000" />
+                  <CurrencyInput value={form.credit_max_amount} onValueChange={(v) => setForm({ ...form, credit_max_amount: v })} placeholder="100.000.000" />
                 </div>
               </div>
             </div>

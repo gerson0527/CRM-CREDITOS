@@ -28,6 +28,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { EditUserDialog } from '@/components/edit-user-dialog';
 import { usePersistedState } from '@/hooks/use-persisted-state';
+import { CurrencyInput } from '@/components/currency-input';
 import { supabase } from '@/lib/supabase/client';
 import { ROLE_LABELS, STATUS_LABELS, STATUS_STYLES, formatDateShort, formatCurrency } from '@/lib/constants';
 import type { Profile, Role, UserRole, UserStatus, Sede } from '@/lib/types';
@@ -575,11 +576,10 @@ function UserManagement() {
                     <>
                       <div className="space-y-2">
                         <Label>Meta mensual (COP)</Label>
-                        <Input
-                          type="number"
+                        <CurrencyInput
                           value={form.monthly_goal}
-                          onChange={(e) => setForm({ ...form, monthly_goal: e.target.value })}
-                          placeholder="5000000"
+                          onValueChange={(v) => setForm({ ...form, monthly_goal: v })}
+                          placeholder="5.000.000"
                         />
                       </div>
                       <div className="space-y-2">

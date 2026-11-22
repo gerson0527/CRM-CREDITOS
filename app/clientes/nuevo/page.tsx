@@ -16,6 +16,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { usePersistedState, clearDraft } from '@/hooks/use-persisted-state';
+import { CurrencyInput } from '@/components/currency-input';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/providers/auth-provider';
 import type { Profile } from '@/lib/types';
@@ -225,11 +226,10 @@ export default function NuevoClientePage() {
                 </div>
                 <div className="space-y-2 sm:col-span-2">
                   <Label>Ingresos reportados (COP)</Label>
-                  <Input
-                    type="number"
+                  <CurrencyInput
                     value={data.reported_income}
-                    onChange={(e) => setData({ ...data, reported_income: e.target.value })}
-                    placeholder="3500000"
+                    onValueChange={(v) => setData({ ...data, reported_income: v })}
+                    placeholder="3.500.000"
                   />
                 </div>
               </div>

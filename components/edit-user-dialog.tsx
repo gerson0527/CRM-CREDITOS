@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import { CurrencyInput } from '@/components/currency-input';
 import { supabase } from '@/lib/supabase/client';
 import type { Profile, Role, Sede } from '@/lib/types';
 
@@ -254,10 +255,10 @@ export function EditUserDialog({ open, onOpenChange, user, roles, sedes, supervi
             {form.role === 'asesor' && (
               <div className="col-span-2 space-y-1.5">
                 <Label>Meta mensual (COP)</Label>
-                <Input
-                  type="number"
+                <CurrencyInput
                   value={form.monthly_goal}
-                  onChange={(e) => setForm({ ...form, monthly_goal: e.target.value })}
+                  onValueChange={(v) => setForm({ ...form, monthly_goal: v })}
+                  placeholder="5.000.000"
                 />
               </div>
             )}

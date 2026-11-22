@@ -21,6 +21,7 @@ import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/providers/auth-provider';
 import { formatCurrency } from '@/lib/constants';
 import { FileUpload, type UploadedFile } from '@/components/file-upload';
+import { CurrencyInput } from '@/components/currency-input';
 import type { FinancialEntity, CreditType } from '@/lib/types';
 
 const MAX_FILE_SIZE_MB = 10;
@@ -351,7 +352,7 @@ export default function NewCreditPage() {
                     </div>
                     <div className="space-y-2">
                       <Label>Ingresos reportados (COP)</Label>
-                      <Input type="number" value={clientData.reported_income} onChange={(e) => setClientData({ ...clientData, reported_income: e.target.value })} placeholder="3500000" />
+                      <CurrencyInput value={clientData.reported_income} onValueChange={(v) => setClientData({ ...clientData, reported_income: v })} placeholder="3.500.000" />
                     </div>
                     <div className="space-y-2 sm:col-span-2">
                       <Label>Dirección</Label>
@@ -395,7 +396,7 @@ export default function NewCreditPage() {
                     </div>
                     <div className="space-y-2">
                       <Label>Monto solicitado *</Label>
-                      <Input type="number" value={creditData.requested_amount} onChange={(e) => setCreditData({ ...creditData, requested_amount: e.target.value })} placeholder="5000000" />
+                      <CurrencyInput value={creditData.requested_amount} onValueChange={(v) => setCreditData({ ...creditData, requested_amount: v })} placeholder="5.000.000" />
                       {selectedCreditType && (
                         <p className="text-xs text-slate-500">
                           Rango: {formatCurrency(selectedCreditType.min_amount)} - {formatCurrency(selectedCreditType.max_amount)}
