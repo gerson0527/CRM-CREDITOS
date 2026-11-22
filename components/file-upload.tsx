@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, type ChangeEvent } from 'react';
 import { motion } from 'framer-motion';
-import { Upload, X, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
+import { Upload, X, CheckCircle2, Loader2, AlertCircle, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { hasAllowedMagicBytes, processFileForUpload, uploadToStorage, type ProcessedFile } from '@/lib/image-optimization';
@@ -44,6 +44,7 @@ export function FileUpload({
   disabled = false,
 }: FileUploadProps) {
   const [uploading, setUploading] = useState(false);
+  const [opening, setOpening] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [compressionInfo, setCompressionInfo] = useState<string | null>(null);
@@ -169,6 +170,22 @@ export function FileUpload({
     }
   }
 
+  async function previewFile() {
+    if (!value?.key || opening) return;
+    setOpening(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/uploads/preview?key=${encodeURIComponent(value.key)}`);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.url) throw new Error(data.error || 'No se pudo abrir el archivo');
+      window.open(data.url, '_blank', 'noopener,noreferrer');
+    } catch (err: any) {
+      setError(err.message || 'No se pudo abrir el archivo');
+    } finally {
+      setOpening(false);
+    }
+  }
+
   function remove() {
     onChange(null);
     setError(null);
@@ -228,16 +245,32 @@ export function FileUpload({
         </div>
         <div className="flex items-center gap-1 shrink-0">
           {value ? (
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={remove}
-              className="h-7 w-7 text-slate-400 hover:text-red-600"
-              type="button"
-              disabled={disabled}
-            >
-              <X className="h-4 w-4" />
-            </Button>
+            <>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={previewFile}
+                className="h-7 w-7 text-slate-400 hover:text-primary"
+                type="button"
+                disabled={opening}
+                title="Ver archivo"
+                aria-label="Ver archivo"
+              >
+                {opening ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />}
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={remove}
+                className="h-7 w-7 text-slate-400 hover:text-red-600"
+                type="button"
+                disabled={disabled}
+                title="Quitar archivo"
+                aria-label="Quitar archivo"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </>
           ) : (
             <label>
               <input
