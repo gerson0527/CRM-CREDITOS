@@ -199,6 +199,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [desktopExpanded, setDesktopExpanded] = useState(false);
   const { theme, setTheme } = useTheme();
 
   if (!profile) return null;
@@ -210,11 +211,27 @@ export function AppShell({ children }: { children: ReactNode }) {
     router.replace('/login');
   };
 
-  const Sidebar = (
+  const renderSidebar = (expanded: boolean) => (
     <div className="flex h-full flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground select-none">
       {/* Brand Header */}
-      <div className="flex h-16 items-center border-b border-sidebar-border/80 px-5">
-        <Logo showText={true} />
+      <div className={cn(
+        'relative flex h-16 items-center border-b border-sidebar-border/80 transition-all duration-300 ease-out',
+        expanded ? 'justify-start px-5' : 'justify-center px-2'
+      )}>
+        <div className={cn(
+          'absolute inset-y-0 left-5 right-5 flex items-center transition-all duration-300 ease-out',
+          expanded ? 'translate-x-0 opacity-100' : '-translate-x-2 opacity-0'
+        )}>
+          <Logo showText={true} />
+        </div>
+        <div className={cn(
+          'absolute inset-0 flex items-center justify-center transition-all duration-300 ease-out',
+          expanded ? 'translate-x-2 opacity-0' : 'translate-x-0 opacity-100'
+        )}>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-primary via-blue-600 to-indigo-500 font-display text-sm font-black text-white shadow-md shadow-primary/20">
+            JG
+          </div>
+        </div>
       </div>
 
       {/* Navigation Sections */}
@@ -224,7 +241,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           if (items.length === 0) return null;
           return (
             <div key={section.id} className="space-y-1">
-              <p className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+              <p className={cn(
+                'pb-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70 transition-all duration-300 ease-out',
+                expanded ? 'translate-y-0 px-3 opacity-100' : 'h-0 translate-y-1 overflow-hidden px-0 opacity-0'
+              )}>
                 {section.label}
               </p>
               <div className="space-y-1">
@@ -235,19 +255,26 @@ export function AppShell({ children }: { children: ReactNode }) {
                       key={item.href}
                       href={item.href}
                       onClick={() => setMobileOpen(false)}
+                      title={expanded ? undefined : item.label}
                       className={cn(
-                        'group flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200',
+                        'group flex items-center rounded-xl py-2 text-sm font-medium transition-all duration-200',
+                        expanded ? 'gap-3 px-3' : 'justify-center gap-0 px-2',
                         active
                           ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/30 font-semibold'
                           : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                       )}
                     >
-                      <span className={cn('transition-transform duration-200 group-hover:scale-110', active ? 'text-white' : 'text-muted-foreground group-hover:text-primary')}>
+                      <span className={cn('shrink-0 transition-transform duration-200 group-hover:scale-110', active ? 'text-white' : 'text-muted-foreground group-hover:text-primary')}>
                         {item.icon}
                       </span>
-                      <span className="flex-1 truncate">{item.label}</span>
-                      {active && (
-                        <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+                      <span className={cn(
+                        'truncate transition-all duration-300 ease-out',
+                        expanded ? 'flex-1 translate-y-0 opacity-100' : 'w-0 translate-y-1 opacity-0'
+                      )}>
+                        {item.label}
+                      </span>
+                      {active && expanded && (
+                        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-white animate-pulse" />
                       )}
                     </Link>
                   );
@@ -259,23 +286,32 @@ export function AppShell({ children }: { children: ReactNode }) {
       </nav>
 
       {/* User Footer Card */}
-      <div className="border-t border-sidebar-border/80 p-3">
-        <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-accent/40 p-2.5 backdrop-blur-sm transition-all hover:bg-accent/70">
+      <div className={cn('border-t border-sidebar-border/80 transition-all duration-300', expanded ? 'p-3' : 'p-2')}>
+        <div className={cn(
+          'flex items-center rounded-2xl border border-border/60 bg-accent/40 backdrop-blur-sm transition-all hover:bg-accent/70',
+          expanded ? 'gap-3 p-2.5' : 'flex-col gap-2 p-2'
+        )}>
           <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-indigo-600 font-display text-sm font-bold text-white shadow-xs">
             {profile.full_name.charAt(0).toUpperCase()}
             <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-background" />
           </div>
-          <div className="flex-1 overflow-hidden">
+          <div className={cn(
+            'overflow-hidden transition-all duration-300 ease-out',
+            expanded ? 'flex-1 translate-y-0 opacity-100' : 'h-0 w-0 translate-y-1 opacity-0'
+          )}>
             <p className="truncate text-xs font-bold text-foreground">{profile.full_name}</p>
             <p className="truncate text-[11px] font-medium text-muted-foreground">{ROLE_LABELS[profile.role]}</p>
           </div>
-          <button
-            onClick={handleSignOut}
-            className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-            title="Cerrar sesión"
-          >
-            <LogOut className="h-4 w-4" />
-          </button>
+          {expanded && (
+            <button
+              onClick={handleSignOut}
+              className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+              title="Cerrar sesión"
+              aria-label="Cerrar sesión"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -289,8 +325,17 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      {/* Desktop sidebar */}
-      <aside className="hidden w-64 shrink-0 lg:block">{Sidebar}</aside>
+      {/* Desktop sidebar: colapsado por defecto, se expande al pasar el mouse */}
+      <motion.aside
+        onMouseEnter={() => setDesktopExpanded(true)}
+        onMouseLeave={() => setDesktopExpanded(false)}
+        initial={false}
+        animate={{ width: desktopExpanded ? 256 : 76 }}
+        transition={{ type: 'spring', stiffness: 260, damping: 30, mass: 0.9 }}
+        className="hidden shrink-0 lg:block"
+      >
+        {renderSidebar(desktopExpanded)}
+      </motion.aside>
 
       {/* Mobile sidebar */}
       <AnimatePresence>
@@ -310,7 +355,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
               className="fixed inset-y-0 left-0 z-50 w-64 lg:hidden"
             >
-              {Sidebar}
+              {renderSidebar(true)}
             </motion.aside>
           </>
         )}
