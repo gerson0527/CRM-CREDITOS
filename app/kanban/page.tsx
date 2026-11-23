@@ -3,12 +3,11 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  DndContext, DragOverlay, PointerSensor, useSensor, useSensors,
+  DndContext, DragOverlay, PointerSensor, MeasuringStrategy, useSensor, useSensors,
   type DragEndEvent, type DragStartEvent, type DragOverEvent,
 } from '@dnd-kit/core';
 import { useDroppable } from '@dnd-kit/core';
-import { useSortable, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { useDraggable } from '@dnd-kit/core';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/app-layout';
 import { PageTransition } from '@/components/transitions';
@@ -38,6 +37,7 @@ export default function KanbanPage() {
   const [loading, setLoading] = useState(true);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeCredit, setActiveCredit] = useState<Credit | null>(null);
+  const [boardVersion, setBoardVersion] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const columnRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
@@ -210,8 +210,13 @@ export default function KanbanPage() {
     const newStatus = targetStatus;
 
     setCredits((prev) =>
-      prev.map((c) => (c.id === creditId ? { ...c, status: newStatus } : c))
+      prev.map((c) =>
+        c.id === creditId
+          ? { ...c, status: newStatus, status_changed_at: new Date().toISOString() }
+          : c
+      )
     );
+    setBoardVersion((v) => v + 1);
 
     const { error } = await supabase
       .from('credits')
@@ -223,6 +228,7 @@ export default function KanbanPage() {
       setCredits((prev) =>
         prev.map((c) => (c.id === creditId ? { ...c, status: oldStatus } : c))
       );
+      setBoardVersion((v) => v + 1);
       return;
     }
 
@@ -323,8 +329,10 @@ export default function KanbanPage() {
               ) : (
                 <DndContext
                   sensors={sensors}
+                  measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
                   onDragStart={handleDragStart}
                   onDragEnd={handleDragEnd}
+                  onDragCancel={() => setActiveCredit(null)}
                 >
               <div className="relative flex-1">
                 <Button
@@ -348,6 +356,7 @@ export default function KanbanPage() {
                   <ArrowRight className="h-4 w-4" />
                 </Button>
                 <div
+                  key={boardVersion}
                   ref={scrollRef}
                   className="flex h-full gap-4 overflow-x-auto overflow-y-hidden pb-4 pl-4 pr-4 snap-x snap-mandatory"
                 >
@@ -426,11 +435,9 @@ function KanbanColumn({
           isOver ? 'bg-primary/10 ring-2 ring-primary/30 ring-inset' : 'bg-transparent'
         )}
       >
-        <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
-          {items.map((credit) => (
-            <SortableCard key={credit.id} credit={credit} onCardClick={onCardClick} />
-          ))}
-        </SortableContext>
+        {items.map((credit) => (
+          <SortableCard key={credit.id} credit={credit} onCardClick={onCardClick} />
+        ))}
 
         {items.length === 0 && (
           <div className="flex h-32 items-center justify-center rounded-2xl border border-dashed border-border/60 text-xs font-medium text-muted-foreground/60">
@@ -443,24 +450,13 @@ function KanbanColumn({
 }
 
 function SortableCard({ credit, onCardClick }: { credit: Credit; onCardClick: (id: string) => void }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: credit.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.3 : 1,
-  };
+  const { attributes, listeners, setNodeRef } = useDraggable({ id: credit.id });
 
   return (
-    <motion.div
+    <div
       ref={setNodeRef}
-      style={style}
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.2 }}
       className="cursor-pointer"
-      onClick={() => !isDragging && onCardClick(credit.id)}
+      onClick={() => onCardClick(credit.id)}
     >
       <div className="group relative overflow-hidden rounded-2xl border border-border/80 bg-background/90 p-3.5 shadow-2xs transition-all hover:border-primary/40 hover:shadow-md">
         {/* Grip Handle */}
@@ -515,7 +511,7 @@ function SortableCard({ credit, onCardClick }: { credit: Credit; onCardClick: (i
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
